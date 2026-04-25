@@ -1,0 +1,923 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+type Tab = "overview" | "faculty" | "users" | "reports" | "admins" | "schedule";
+
+interface Props {
+    stats: {
+        faculty: number;
+        reviews: number;
+        users: number;
+        posts: number;
+        pendingReports: number;
+    };
+    reports: any[];
+    faculty: any[];
+    users: any[];
+    adminAccounts: any[];
+    departments: any[];
+    semesters: any[];
+}
+
+export default function AdminClient({
+    stats, reports, faculty, users, adminAccounts, departments, semesters,
+}: Props) {
+    const router = useRouter();
+    const [tab, setTab] = useState<Tab>("overview");
+    const [saving, setSaving] = useState<string | null>(null);
+
+    // Faculty form
+    const [newFaculty, setNewFaculty] = useState({
+        name: "", department: "", initial: "",
+    });
+    const [facultyMsg, setFacultyMsg] = useState<string | null>(null);
+
+    // New admin form
+    const [newAdmin, setNewAdmin] = useState({ email: "", password: "" });
+    const [adminMsg, setAdminMsg] = useState<string | null>(null);
+
+    // Departments
+    const [newDept, setNewDept] = useState("");
+    const [deptMsg, setDeptMsg] = useState<string | null>(null);
+
+    async function handleDeptAction(action: string, id?: string, name?: string) {
+        setSaving("dept");
+        const res = await fetch("/api/admin/departments", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action, id, name }),
+        });
+        const data = await res.json();
+        if (!res.ok) setDeptMsg(data.error);
+        else { setDeptMsg(action === "add" ? "✓ Department added." : "✓ Removed."); setNewDept(""); router.refresh(); }
+        setSaving(null);
+    }
+
+    async function handleAddFaculty() {
+        if (!newFaculty.name.trim() || !newFaculty.department.trim()) {
+            setFacultyMsg("Name and department are required.");
+            return;
+        }
+        setSaving("faculty");
+        setFacultyMsg(null);
+
+        const res = await fetch("/api/admin/faculty", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newFaculty),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            setFacultyMsg(data.error || "Failed to add faculty.");
+        } else {
+            setFacultyMsg("✓ Faculty added successfully.");
+            setNewFaculty({ name: "", department: "", initial: "" });
+            router.refresh();
+        }
+        setSaving(null);
+    }
+
+    async function handleAddAdmin() {
+        if (!newAdmin.email.trim() || !newAdmin.password.trim()) {
+            setAdminMsg("Email and password are required.");
+            return;
+        }
+        if (newAdmin.password.length < 6) {
+            setAdminMsg("Password must be at least 6 characters.");
+            return;
+        }
+        setSaving("admin");
+        setAdminMsg(null);
+
+        const res = await fetch("/api/admin/create-admin", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newAdmin),
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+            setAdminMsg(data.error || "Failed to create admin.");
+        } else {
+            setAdminMsg("✓ Admin account created.");
+            setNewAdmin({ email: "", password: "" });
+            router.refresh();
+        }
+        setSaving(null);
+    }
+
+    async function handleReportAction(
+        reportId: string,
+        action: "actioned" | "dismissed"
+    ) {
+        setSaving(reportId);
+        await fetch("/api/admin/reports", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ reportId, action }),
+        });
+        setSaving(null);
+        router.refresh();
+    }
+
+    async function handleToggleBan(userId: string, isBanned: boolean) {
+        setSaving(userId);
+        await fetch("/api/admin/users", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId, action: isBanned ? "unban" : "ban" }),
+        });
+        setSaving(null);
+        router.refresh();
+    }
+
+    const TABS: Tab[] = ["overview", "faculty", "users", "reports", "admins", "schedule"];
+
+    return (
+        <div>
+            {/* Header */}
+            <div style={{
+                padding: "48px 32px 0",
+                borderBottom: "1.5px solid #0f0f0f",
+            }}>
+                <div style={{
+                    fontFamily: "var(--font-mono)", fontSize: "11px",
+                    letterSpacing: "0.14em", textTransform: "uppercase",
+                    opacity: 0.4, marginBottom: "12px",
+                }}>
+                    Admin Panel
+                </div>
+                <h1 style={{
+                    fontFamily: "var(--font-sans)",
+                    fontSize: "clamp(32px, 4vw, 52px)",
+                    fontWeight: 800, letterSpacing: "-0.03em",
+                    lineHeight: 1, marginBottom: "32px",
+                }}>
+                    Dashboard
+                </h1>
+
+                <div style={{ display: "flex", overflowX: "auto" }}>
+                    {TABS.map((t) => (
+                        <button key={t} onClick={() => setTab(t)} style={{
+                            fontFamily: "var(--font-mono)", fontSize: "11px",
+                            letterSpacing: "0.08em", textTransform: "uppercase",
+                            padding: "14px 20px",
+                            background: tab === t ? "#0f0f0f" : "transparent",
+                            color: tab === t ? "#f5f2eb" : "#0f0f0f",
+                            border: "none", borderRight: "1px solid #e8e3d9",
+                            cursor: "pointer", whiteSpace: "nowrap",
+                            display: "inline-flex", alignItems: "center", gap: "6px",
+                        }}>
+                            {t}
+                            {t === "reports" && stats.pendingReports > 0 && (
+                                <span style={{
+                                    background: "#d4401a", color: "#f5f2eb",
+                                    borderRadius: "50%", width: "16px", height: "16px",
+                                    fontSize: "10px", display: "inline-flex",
+                                    alignItems: "center", justifyContent: "center",
+                                }}>
+                                    {stats.pendingReports}
+                                </span>
+                            )}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            <div style={{ padding: "48px 32px" }}>
+
+                {/* ── OVERVIEW ── */}
+                {tab === "overview" && (
+                    <div>
+                        <div style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(5,1fr)",
+                            border: "1.5px solid #0f0f0f",
+                            marginBottom: "48px",
+                        }} className="stats-overview">
+                            {[
+                                { label: "Faculty", val: stats.faculty },
+                                { label: "Reviews", val: stats.reviews },
+                                { label: "Students", val: stats.users },
+                                { label: "Feed posts", val: stats.posts },
+                                {
+                                    label: "Pending reports", val: stats.pendingReports,
+                                    alert: stats.pendingReports > 0,
+                                },
+                            ].map((s, i) => (
+                                <div key={i} style={{
+                                    padding: "32px 24px",
+                                    borderRight: i < 4 ? "1.5px solid #0f0f0f" : "none",
+                                }}>
+                                    <div style={{
+                                        fontFamily: "var(--font-sans)", fontSize: "40px",
+                                        fontWeight: 800, letterSpacing: "-0.04em",
+                                        color: s.alert ? "#d4401a" : "#0f0f0f",
+                                        marginBottom: "6px",
+                                    }}>
+                                        {s.val}
+                                    </div>
+                                    <div style={{
+                                        fontFamily: "var(--font-mono)", fontSize: "11px",
+                                        letterSpacing: "0.08em", textTransform: "uppercase",
+                                        opacity: 0.45,
+                                    }}>
+                                        {s.label}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <p style={{
+                            fontFamily: "var(--font-mono)", fontSize: "13px",
+                            lineHeight: 1.7, opacity: 0.5, maxWidth: "480px",
+                        }}>
+                            Use the tabs above to manage faculty, moderate reports,
+                            manage student accounts, and create new admin credentials.
+                        </p>
+                    </div>
+                )}
+
+                {/* ── FACULTY ── */}
+                {tab === "faculty" && (
+                    <div>
+                        <div style={{
+                            display: "grid", gridTemplateColumns: "1fr 1fr", gap: "48px",
+                        }} className="two-col">
+
+                        <div>
+                            <div style={sectionLabel}>Add new faculty</div>
+                            {[
+                                { label: "Full name", key: "name", placeholder: "Dr. A. Rahman" },
+                                { label: "Department", key: "department", placeholder: "CSE" },
+                                { label: "Initial (optional)", key: "initial", placeholder: "AR" },
+                            ].map((f) => (
+                                <div key={f.key} style={{ marginBottom: "14px" }}>
+                                    <div style={fieldLabel}>{f.label}</div>
+                                    <input
+                                        value={(newFaculty as any)[f.key]}
+                                        onChange={(e) =>
+                                            setNewFaculty((p) => ({ ...p, [f.key]: e.target.value }))
+                                        }
+                                        placeholder={f.placeholder}
+                                        style={inputStyle}
+                                    />
+                                </div>
+                            ))}
+                            {facultyMsg && (
+                                <div style={{
+                                    fontFamily: "var(--font-mono)", fontSize: "12px",
+                                    color: facultyMsg.startsWith("✓") ? "#1a4fd4" : "#d4401a",
+                                    marginBottom: "12px",
+                                }}>
+                                    {facultyMsg}
+                                </div>
+                            )}
+                            <button
+                                onClick={handleAddFaculty}
+                                disabled={saving === "faculty"}
+                                style={primaryBtn}>
+                                {saving === "faculty" ? "Adding…" : "Add faculty →"}
+                            </button>
+                        </div>
+
+                        <div>
+                            <div style={sectionLabel}>{faculty.length} faculty listed</div>
+                            <div style={{ maxHeight: "500px", overflowY: "auto" }}>
+                                {faculty.map((f) => (
+  <div key={f.id} style={{
+    display: "flex", justifyContent: "space-between",
+    alignItems: "center", padding: "14px 0",
+    borderBottom: "1px solid #e8e3d9", gap: "12px",
+  }}>
+    <div>
+      <div style={{
+        fontFamily: "var(--font-sans)", fontSize: "14px",
+        fontWeight: 700, letterSpacing: "-0.01em",
+      }}>
+        {f.name}
+      </div>
+      <div style={{
+        fontFamily: "var(--font-mono)", fontSize: "11px",
+        opacity: 0.4, textTransform: "uppercase",
+        letterSpacing: "0.06em", marginTop: "2px",
+      }}>
+        {f.department}{f.initial && ` · ${f.initial}`}
+      </div>
+    </div>
+    <button
+      onClick={() => {
+        if (confirm(`Remove ${f.name} from the directory?`)) {
+          setSaving(f.id);
+          fetch("/api/admin/faculty/delete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ facultyId: f.id }),
+          }).then(() => { setSaving(null); router.refresh(); });
+        }
+      }}
+      style={{
+        fontFamily: "var(--font-mono)", fontSize: "11px",
+        letterSpacing: "0.06em", textTransform: "uppercase",
+        padding: "6px 12px", background: "transparent",
+        color: "#d4401a", border: "1px solid #d4401a",
+        cursor: "pointer", flexShrink: 0,
+      }}>
+      {saving === f.id ? "…" : "Remove"}
+    </button>
+  </div>
+))}
+                            </div>
+                        </div>
+                        </div>
+
+                        {/* Departments manager */}
+                        <div style={{
+                            marginTop: "48px", paddingTop: "48px",
+                            borderTop: "1.5px solid #0f0f0f",
+                        }}>
+                            <div style={sectionLabel}>Manage departments</div>
+                            <div style={{
+                                display: "grid", gridTemplateColumns: "1fr 1fr", gap: "48px",
+                            }} className="two-col">
+                                <div>
+                                    <div style={fieldLabel}>New department name</div>
+                                    <div style={{ display: "flex", gap: "12px" }}>
+                                        <input
+                                            value={newDept}
+                                            onChange={(e) => setNewDept(e.target.value)}
+                                            placeholder="e.g. MBA"
+                                            style={{ ...inputStyle, flex: 1 }}
+                                        />
+                                        <button
+                                            onClick={() => handleDeptAction("add", undefined, newDept)}
+                                            disabled={saving === "dept"}
+                                            style={primaryBtn}>
+                                            Add
+                                        </button>
+                                    </div>
+                                    {deptMsg && (
+                                        <div style={{
+                                            fontFamily: "var(--font-mono)", fontSize: "12px",
+                                            color: deptMsg.startsWith("✓") ? "#1a4fd4" : "#d4401a",
+                                            marginTop: "10px",
+                                        }}>
+                                            {deptMsg}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <div style={sectionLabel}>{departments.length} departments</div>
+                                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                                        {departments.map((d: any) => (
+                                            <div key={d.id} style={{
+                                                display: "flex", alignItems: "center", gap: "0",
+                                                border: "1.5px solid #0f0f0f",
+                                            }}>
+                                                <span style={{
+                                                    fontFamily: "var(--font-mono)", fontSize: "12px",
+                                                    letterSpacing: "0.06em", padding: "7px 12px",
+                                                }}>
+                                                    {d.name}
+                                                </span>
+                                                <button
+                                                    onClick={() => handleDeptAction("delete", d.id)}
+                                                    style={{
+                                                        fontFamily: "var(--font-mono)", fontSize: "11px",
+                                                        padding: "7px 10px", background: "none",
+                                                        border: "none", borderLeft: "1.5px solid #0f0f0f",
+                                                        cursor: "pointer", color: "#d4401a",
+                                                    }}>
+                                                    ×
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ── USERS ── */}
+                {tab === "users" && (
+                    <div>
+                        <div style={sectionLabel}>{users.length} registered students</div>
+                        {users.map((u) => (
+                            <div key={u.id} style={{
+                                display: "grid",
+                                gridTemplateColumns: "1fr auto auto auto",
+                                alignItems: "center", gap: "16px",
+                                padding: "16px 0", borderBottom: "1px solid #e8e3d9",
+                            }} className="user-row">
+                                <div>
+                                    <div style={{
+                                        fontFamily: "var(--font-mono)", fontSize: "13px",
+                                        fontWeight: 500, marginBottom: "2px",
+                                    }}>
+                                        {u.alias}
+                                    </div>
+                                    <div style={{
+                                        fontFamily: "var(--font-mono)", fontSize: "11px", opacity: 0.4,
+                                    }}>
+                                        {u.email}
+                                    </div>
+                                </div>
+                                <span style={{
+                                    ...badge,
+                                    background: u.role === "admin" ? "#0f0f0f" : "#e8e3d9",
+                                    color: u.role === "admin" ? "#f5f2eb" : "#0f0f0f",
+                                }}>
+                                    {u.role}
+                                </span>
+                                <span style={{
+                                    ...badge,
+                                    background: u.is_banned ? "#d4401a" : "#e8e3d9",
+                                    color: u.is_banned ? "#f5f2eb" : "#0f0f0f",
+                                }}>
+                                    {u.is_banned ? "Banned" : "Active"}
+                                </span>
+                                <button
+                                    onClick={() => handleToggleBan(u.id, u.is_banned)}
+                                    disabled={saving === u.id || u.role === "admin"}
+                                    style={{
+                                        fontFamily: "var(--font-mono)", fontSize: "11px",
+                                        letterSpacing: "0.06em", textTransform: "uppercase",
+                                        padding: "7px 14px", background: "transparent",
+                                        color: u.is_banned ? "#1a4fd4" : "#d4401a",
+                                        border: `1px solid ${u.is_banned ? "#1a4fd4" : "#d4401a"}`,
+                                        cursor: u.role === "admin" ? "not-allowed" : "pointer",
+                                        opacity: u.role === "admin" ? 0.3 : 1,
+                                    }}>
+                                    {saving === u.id ? "…" : u.is_banned ? "Unban" : "Ban"}
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {/* ── REPORTS ── */}
+                {tab === "reports" && (
+                    <div>
+                        <div style={sectionLabel}>
+                            {reports.length} pending report{reports.length !== 1 ? "s" : ""}
+                        </div>
+                        {reports.length === 0 ? (
+                            <div style={{
+                                fontFamily: "var(--font-mono)", fontSize: "13px",
+                                opacity: 0.4, padding: "48px 0",
+                            }}>
+                                No pending reports. All clear.
+                            </div>
+                        ) : (
+                            reports.map((r) => (
+                                <div key={r.id} style={{
+                                    padding: "24px", border: "1.5px solid #0f0f0f",
+                                    marginBottom: "16px",
+                                }}>
+                                    <div style={{
+                                        fontFamily: "var(--font-mono)", fontSize: "11px",
+                                        opacity: 0.4, marginBottom: "12px",
+                                    }}>
+                                        Reported by {r.reporter?.alias || "unknown"} ·{" "}
+                                        {new Date(r.created_at).toLocaleDateString("en-GB")}
+                                    </div>
+                                    <div style={{
+                                        fontFamily: "var(--font-mono)", fontSize: "13px",
+                                        lineHeight: 1.7, padding: "14px",
+                                        background: "#e8e3d9", marginBottom: "16px",
+                                    }}>
+                                        {r.post?.body}
+                                    </div>
+                                    {r.reason && (
+                                        <div style={{
+                                            fontFamily: "var(--font-mono)", fontSize: "12px",
+                                            opacity: 0.5, marginBottom: "16px",
+                                        }}>
+                                            Reason: {r.reason}
+                                        </div>
+                                    )}
+                                    <div style={{ display: "flex", gap: "10px" }}>
+                                        <button
+                                            onClick={() => handleReportAction(r.id, "actioned")}
+                                            disabled={saving === r.id}
+                                            style={{ ...primaryBtn, background: "#d4401a", borderColor: "#d4401a" }}>
+                                            Remove post
+                                        </button>
+                                        <button
+                                            onClick={() => handleReportAction(r.id, "dismissed")}
+                                            disabled={saving === r.id}
+                                            style={primaryBtn}>
+                                            Dismiss
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                )}
+
+                {/* ── ADMINS ── */}
+                {tab === "admins" && (
+                    <div style={{
+                        display: "grid", gridTemplateColumns: "1fr 1fr", gap: "48px",
+                    }} className="two-col">
+
+                        <div>
+                            <div style={sectionLabel}>Create admin account</div>
+                            <div style={{ marginBottom: "14px" }}>
+                                <div style={fieldLabel}>Email</div>
+                                <input
+                                    type="email"
+                                    value={newAdmin.email}
+                                    onChange={(e) =>
+                                        setNewAdmin((p) => ({ ...p, email: e.target.value }))
+                                    }
+                                    placeholder="newadmin@kyf.com"
+                                    style={inputStyle}
+                                />
+                            </div>
+                            <div style={{ marginBottom: "20px" }}>
+                                <div style={fieldLabel}>Password</div>
+                                <input
+                                    type="password"
+                                    value={newAdmin.password}
+                                    onChange={(e) =>
+                                        setNewAdmin((p) => ({ ...p, password: e.target.value }))
+                                    }
+                                    placeholder="min 6 characters"
+                                    style={inputStyle}
+                                />
+                            </div>
+                            {adminMsg && (
+                                <div style={{
+                                    fontFamily: "var(--font-mono)", fontSize: "12px",
+                                    color: adminMsg.startsWith("✓") ? "#1a4fd4" : "#d4401a",
+                                    marginBottom: "12px",
+                                }}>
+                                    {adminMsg}
+                                </div>
+                            )}
+                            <button
+                                onClick={handleAddAdmin}
+                                disabled={saving === "admin"}
+                                style={primaryBtn}>
+                                {saving === "admin" ? "Creating…" : "Create admin →"}
+                            </button>
+                        </div>
+
+                        <div>
+                            <div style={sectionLabel}>
+                                {adminAccounts.length} admin account{adminAccounts.length !== 1 ? "s" : ""}
+                            </div>
+                            {adminAccounts.map((a) => (
+  <div key={a.id} style={{
+    padding: "16px 0", borderBottom: "1px solid #e8e3d9",
+  }}>
+    <div style={{
+      display: "flex", justifyContent: "space-between",
+      alignItems: "center", marginBottom: "10px",
+    }}>
+      <div style={{
+        fontFamily: "var(--font-mono)", fontSize: "13px", fontWeight: 500,
+      }}>
+        {a.email}
+      </div>
+      <div style={{ display: "flex", gap: "8px" }}>
+        <button
+          onClick={() => {
+            const newPass = prompt(`New password for ${a.email} (min 6 chars):`);
+            if (newPass && newPass.length >= 6) {
+              setSaving(a.id);
+              fetch("/api/admin/update-admin-password", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ adminId: a.id, newPassword: newPass }),
+              }).then(() => { setSaving(null); router.refresh(); });
+            }
+          }}
+          style={{
+            fontFamily: "var(--font-mono)", fontSize: "11px",
+            letterSpacing: "0.06em", textTransform: "uppercase",
+            padding: "6px 12px", background: "transparent",
+            color: "#1a4fd4", border: "1px solid #1a4fd4",
+            cursor: "pointer",
+          }}>
+          Change pass
+        </button>
+        <button
+          onClick={() => {
+            if (confirm(`Delete admin ${a.email}? This cannot be undone.`)) {
+              setSaving(a.id);
+              fetch("/api/admin/delete-admin", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ adminId: a.id }),
+              }).then(async (res) => {
+                const data = await res.json();
+                if (!res.ok) alert(data.error);
+                setSaving(null);
+                router.refresh();
+              });
+            }
+          }}
+          style={{
+            fontFamily: "var(--font-mono)", fontSize: "11px",
+            letterSpacing: "0.06em", textTransform: "uppercase",
+            padding: "6px 12px", background: "transparent",
+            color: "#d4401a", border: "1px solid #d4401a",
+            cursor: "pointer",
+          }}>
+          {saving === a.id ? "…" : "Delete"}
+        </button>
+      </div>
+    </div>
+    <div style={{
+      fontFamily: "var(--font-mono)", fontSize: "11px", opacity: 0.4,
+    }}>
+      Created {new Date(a.created_at).toLocaleDateString("en-GB")}
+    </div>
+  </div>
+))}
+                        </div>
+                    </div>
+                )}
+
+                {/* ── SCHEDULE ── */}
+                {tab === "schedule" && (
+                    <div style={{ maxWidth: "600px" }}>
+                        <div style={sectionLabel}>Schedule management</div>
+                        <ScheduleUploader semesters={semesters} />
+                    </div>
+                )}
+            </div>
+
+            <style>{`
+        .stats-overview { grid-template-columns: repeat(5,1fr); }
+        .two-col { grid-template-columns: 1fr 1fr; }
+        .user-row { grid-template-columns: 1fr auto auto auto; }
+        @media (max-width: 900px) {
+          .stats-overview { grid-template-columns: repeat(2,1fr) !important; }
+          .two-col { grid-template-columns: 1fr !important; }
+          .user-row { grid-template-columns: 1fr auto !important; }
+          .user-row > span:first-of-type { display: none; }
+        }
+      `}</style>
+        </div>
+    );
+}
+
+const sectionLabel: React.CSSProperties = {
+    fontFamily: "var(--font-mono)", fontSize: "11px",
+    letterSpacing: "0.14em", textTransform: "uppercase",
+    opacity: 0.4, marginBottom: "24px",
+};
+
+const fieldLabel: React.CSSProperties = {
+    fontFamily: "var(--font-mono)", fontSize: "11px",
+    letterSpacing: "0.1em", textTransform: "uppercase",
+    opacity: 0.4, marginBottom: "6px",
+};
+
+const inputStyle: React.CSSProperties = {
+    width: "100%", fontFamily: "var(--font-mono)",
+    fontSize: "13px", padding: "12px 14px",
+    border: "1.5px solid #0f0f0f", background: "transparent",
+    color: "#0f0f0f", outline: "none",
+};
+
+const primaryBtn: React.CSSProperties = {
+    fontFamily: "var(--font-mono)", fontSize: "12px",
+    fontWeight: 500, letterSpacing: "0.06em",
+    textTransform: "uppercase", padding: "12px 24px",
+    background: "#0f0f0f", color: "#f5f2eb",
+    border: "1.5px solid #0f0f0f", cursor: "pointer",
+};
+
+const badge: React.CSSProperties = {
+    fontFamily: "var(--font-mono)", fontSize: "10px",
+    letterSpacing: "0.08em", textTransform: "uppercase",
+    padding: "3px 8px", whiteSpace: "nowrap",
+};
+
+function ScheduleUploader({ semesters }: { semesters: any[] }) {
+  const router = useRouter();
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [deletingSem, setDeletingSem] = useState<string | null>(null);
+
+  async function handleUpload() {
+    if (!file) {
+      setError("Please select a PDF file.");
+      return;
+    }
+
+    setUploading(true);
+    setError(null);
+    setResult(null);
+
+    const formData = new FormData();
+    formData.append("pdf", file);
+
+    try {
+      const res = await fetch("/api/admin/upload-schedule", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setResult(data);
+      router.refresh();
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function handleDeleteSemester(semesterId: string, label: string) {
+    if (!confirm(`Remove all data for "${label}"? This deletes all sections for this semester.`)) return;
+    setDeletingSem(semesterId);
+
+    const res = await fetch("/api/admin/delete-semester", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ semesterId }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) alert(data.error);
+    setDeletingSem(null);
+    router.refresh();
+  }
+
+  return (
+    <div>
+      {/* Existing semesters */}
+      {semesters.length > 0 && (
+        <div style={{ marginBottom: "40px" }}>
+          <div style={sectionLabel}>Existing semesters</div>
+          {semesters.map((s) => (
+            <div key={s.id} style={{
+              display: "flex", justifyContent: "space-between",
+              alignItems: "center", padding: "14px 0",
+              borderBottom: "1px solid #e8e3d9",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <span style={{
+                  fontFamily: "var(--font-mono)", fontSize: "13px", fontWeight: 500,
+                }}>
+                  {s.label}
+                </span>
+                {s.is_active && (
+                  <span style={{
+                    fontFamily: "var(--font-mono)", fontSize: "10px",
+                    letterSpacing: "0.08em", textTransform: "uppercase",
+                    color: "#1a4fd4", border: "1px solid #1a4fd4",
+                    padding: "2px 7px",
+                  }}>
+                    Active
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={() => handleDeleteSemester(s.id, s.label)}
+                disabled={deletingSem === s.id}
+                style={{
+                  fontFamily: "var(--font-mono)", fontSize: "11px",
+                  letterSpacing: "0.06em", textTransform: "uppercase",
+                  padding: "6px 12px", background: "transparent",
+                  color: "#d4401a", border: "1px solid #d4401a",
+                  cursor: "pointer",
+                }}>
+                {deletingSem === s.id ? "…" : "Remove"}
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Upload new */}
+      <div style={sectionLabel}>Upload new schedule PDF</div>
+
+      <div style={{
+        padding: "16px", background: "#e8e3d9",
+        marginBottom: "24px",
+      }}>
+        <div style={{
+          fontFamily: "var(--font-mono)", fontSize: "11px",
+          letterSpacing: "0.06em", textTransform: "uppercase",
+          opacity: 0.5, marginBottom: "4px",
+        }}>
+          Note
+        </div>
+        <div style={{
+          fontFamily: "var(--font-mono)", fontSize: "12px",
+          lineHeight: 1.6, opacity: 0.7,
+        }}>
+          The semester name is detected automatically from the PDF.
+          Faculty with no assignment will be shown as TBA.
+          New faculty and courses are created automatically.
+        </div>
+      </div>
+
+      <div style={{ marginBottom: "24px" }}>
+        <div style={fieldLabel}>Select PDF</div>
+        <label style={{
+          display: "flex", alignItems: "center", gap: "12px",
+          padding: "16px", border: "1.5px dashed #c8c2b4",
+          cursor: "pointer",
+        }}>
+          <input
+            type="file"
+            accept=".pdf"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            style={{ display: "none" }}
+          />
+          <span style={{
+            fontFamily: "var(--font-mono)", fontSize: "11px",
+            letterSpacing: "0.08em", textTransform: "uppercase",
+            padding: "8px 14px", background: "#0f0f0f",
+            color: "#f5f2eb", flexShrink: 0,
+          }}>
+            Choose PDF
+          </span>
+          <span style={{
+            fontFamily: "var(--font-mono)", fontSize: "12px", opacity: 0.5,
+          }}>
+            {file ? file.name : "No file selected"}
+          </span>
+        </label>
+      </div>
+
+      {error && (
+        <div style={{
+          fontFamily: "var(--font-mono)", fontSize: "12px",
+          color: "#d4401a", border: "1px solid #d4401a",
+          padding: "12px 16px", marginBottom: "16px",
+        }}>
+          {error}
+        </div>
+      )}
+
+      <button
+        onClick={handleUpload}
+        disabled={uploading || !file}
+        style={{
+          ...primaryBtn,
+          opacity: uploading || !file ? 0.5 : 1,
+          cursor: uploading || !file ? "not-allowed" : "pointer",
+          width: "100%", textAlign: "center",
+        }}>
+        {uploading ? "Parsing & importing…" : "Upload & import →"}
+      </button>
+
+      {/* Result */}
+      {result && (
+        <div style={{
+          marginTop: "24px", padding: "20px",
+          border: "1.5px solid #1a4fd4",
+        }}>
+          <div style={{
+            fontFamily: "var(--font-mono)", fontSize: "11px",
+            letterSpacing: "0.1em", textTransform: "uppercase",
+            color: "#1a4fd4", marginBottom: "12px",
+          }}>
+            ✓ Import successful
+          </div>
+          {[
+            ["Semester detected", result.semester],
+            ["Sections imported", result.sections_imported],
+            ["Total in PDF", result.total_parsed],
+            ["New faculty created", result.faculty_created],
+            ["New courses created", result.courses_created],
+          ].map(([label, val]) => (
+            <div key={label as string} style={{
+              display: "flex", justifyContent: "space-between",
+              fontFamily: "var(--font-mono)", fontSize: "12px",
+              padding: "6px 0", borderBottom: "1px solid #e8e3d9",
+            }}>
+              <span style={{ opacity: 0.5 }}>{label}</span>
+              <span style={{ fontWeight: 500 }}>{val}</span>
+            </div>
+          ))}
+          {result.faculty_created > 0 && (
+            <div style={{
+              fontFamily: "var(--font-mono)", fontSize: "11px",
+              opacity: 0.5, marginTop: "12px", lineHeight: 1.6,
+            }}>
+              {result.faculty_created} new faculty created with initials as placeholder names.
+              Go to the Faculty tab to update their full names and departments.
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
