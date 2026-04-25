@@ -50,16 +50,7 @@ export default async function HomePage() {
             teaching quality — filtered by semester, backed by data. No fluff.
           </p>
 
-          <div style={{
-            display: "inline-flex", alignItems: "center", gap: "6px",
-            fontFamily: "var(--font-mono)", fontSize: "11px",
-            letterSpacing: "0.06em", textTransform: "uppercase",
-            background: "#e8e3d9", border: "1px solid #c8c2b4",
-            padding: "5px 10px", marginBottom: "32px",
-          }}>
-            <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#1a4fd4", display: "inline-block" }} />
-            1 review per faculty · EWU email required
-          </div>
+
 
           <div style={{
             display: "flex", alignItems: "center",
@@ -182,7 +173,6 @@ export default async function HomePage() {
     @media (max-width: 900px) {
       section:first-of-type { grid-template-columns: 1fr !important; }
       section:first-of-type > div:last-of-type { border-left: none !important; padding-left: 0 !important; padding-top: 40px; }
-      .hero-right { display: none !important; }
     }
   `}</style>
       </section>
