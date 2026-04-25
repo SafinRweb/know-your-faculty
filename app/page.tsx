@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import HeroSearch from "@/components/HeroSearch";
 import { getAllFaculty } from "@/lib/db/faculty";
 import { getFacultyReviewCount } from "@/lib/db/faculty";
 import { auth } from "@/lib/auth";
@@ -116,29 +117,7 @@ export default async function HomePage() {
           }}>
             Quick search
           </div>
-          <div style={{
-            display: "flex", alignItems: "stretch",
-            border: "1.5px solid #0f0f0f", marginBottom: "48px",
-          }}>
-            <input
-              type="text"
-              placeholder="Faculty name, initial or course…"
-              style={{
-                flex: 1, fontFamily: "var(--font-mono)", fontSize: "13px",
-                padding: "13px 16px", border: "none", background: "transparent",
-                color: "#0f0f0f", outline: "none",
-              }}
-            />
-            <Link href="/schedule" style={{
-              fontFamily: "var(--font-mono)", fontSize: "11px",
-              letterSpacing: "0.1em", textTransform: "uppercase",
-              padding: "13px 18px", background: "#0f0f0f",
-              color: "#f5f2eb", textDecoration: "none",
-              display: "flex", alignItems: "center",
-            }}>
-              Search
-            </Link>
-          </div>
+          <HeroSearch />
 
           {/* Stats — only 2 on desktop, clean */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0" }}>
