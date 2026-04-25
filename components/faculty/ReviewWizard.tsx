@@ -88,82 +88,86 @@ export default function ReviewWizard({
                 display: "flex", flexDirection: "column",
                 justifyContent: "space-between", borderRight: "1.5px solid #0f0f0f",
             }} className="wizard-left">
-                <div>
-                    <Link href={`/faculty/${faculty.id}`} style={{
-                        fontFamily: "var(--font-mono)", fontSize: "11px",
-                        letterSpacing: "0.1em", textTransform: "uppercase",
-                        color: "#f5f2eb", opacity: 0.4, textDecoration: "none",
-                    }}>
-                        ← Back to profile
-                    </Link>
-                </div>
-
-                <div>
-                    <div style={{
-                        fontFamily: "var(--font-mono)", fontSize: "11px",
-                        letterSpacing: "0.14em", textTransform: "uppercase",
-                        color: "#f5f2eb", opacity: 0.4, marginBottom: "12px",
-                    }}>
-                        {isEditing ? "Editing review for" : "Reviewing"}
+                <div className="wizard-header">
+                    <div style={{ marginBottom: "32px" }}>
+                        <Link href={`/faculty/${faculty.id}`} style={{
+                            fontFamily: "var(--font-mono)", fontSize: "11px",
+                            letterSpacing: "0.1em", textTransform: "uppercase",
+                            color: "#f5f2eb", opacity: 0.4, textDecoration: "none",
+                        }}>
+                            ← Back to profile
+                        </Link>
                     </div>
-                    <h2 style={{
-                        fontFamily: "var(--font-sans)",
-                        fontSize: "clamp(28px, 3.5vw, 48px)",
-                        fontWeight: 800, letterSpacing: "-0.03em",
-                        lineHeight: 1, color: "#f5f2eb", marginBottom: "8px",
-                    }}>
-                        {faculty.name}
-                    </h2>
-                    <div style={{
-                        fontFamily: "var(--font-mono)", fontSize: "12px",
-                        letterSpacing: "0.08em", textTransform: "uppercase",
-                        color: "#f5f2eb", opacity: 0.4,
-                    }}>
-                        {faculty.department}
+
+                    <div>
+                        <div style={{
+                            fontFamily: "var(--font-mono)", fontSize: "11px",
+                            letterSpacing: "0.14em", textTransform: "uppercase",
+                            color: "#f5f2eb", opacity: 0.4, marginBottom: "12px",
+                        }}>
+                            {isEditing ? "Editing review for" : "Reviewing"}
+                        </div>
+                        <h2 style={{
+                            fontFamily: "var(--font-sans)",
+                            fontSize: "clamp(28px, 3.5vw, 48px)",
+                            fontWeight: 800, letterSpacing: "-0.03em",
+                            lineHeight: 1, color: "#f5f2eb", marginBottom: "8px",
+                        }}>
+                            {faculty.name}
+                        </h2>
+                        <div style={{
+                            fontFamily: "var(--font-mono)", fontSize: "12px",
+                            letterSpacing: "0.08em", textTransform: "uppercase",
+                            color: "#f5f2eb", opacity: 0.4,
+                        }}>
+                            {faculty.department}
+                        </div>
                     </div>
                 </div>
 
                 {/* Warning notice */}
-                <div style={{
-                padding: "16px",
-                border: "1px solid rgba(255,255,255,0.1)",
-                marginBottom: "32px",
-                }}>
-                <div style={{
-                    fontFamily: "var(--font-mono)", fontSize: "10px",
-                    letterSpacing: "0.1em", textTransform: "uppercase",
-                    color: "#d4401a", marginBottom: "10px",
-                }}>
-                    Before you review
-                </div>
-                {[
-                    "Be honest — your review helps real students",
-                    "No personal attacks or offensive language",
-                    "You can edit this review anytime after submitting",
-                    "One review per faculty — this is yours permanently",
-                    "Your identity is never shown publicly",
-                ].map((note, i) => (
-                    <div key={i} style={{
-                    display: "flex", gap: "8px",
-                    alignItems: "flex-start", marginBottom: "6px",
+                <div className="wizard-warning-wrapper">
+                    <div style={{
+                    padding: "16px",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    marginBottom: "32px",
                     }}>
-                    <span style={{
-                        color: "#f5f2eb", opacity: 0.3,
-                        fontFamily: "var(--font-mono)", fontSize: "11px",
-                        marginTop: "1px", flexShrink: 0,
-                    }}>—</span>
-                    <span style={{
-                        fontFamily: "var(--font-mono)", fontSize: "11px",
-                        color: "#f5f2eb", opacity: 0.45, lineHeight: 1.5,
+                    <div style={{
+                        fontFamily: "var(--font-mono)", fontSize: "10px",
+                        letterSpacing: "0.1em", textTransform: "uppercase",
+                        color: "#d4401a", marginBottom: "10px",
                     }}>
-                        {note}
-                    </span>
+                        Before you review
                     </div>
-                ))}
+                    {[
+                        "Be honest — your review helps real students",
+                        "No personal attacks or offensive language",
+                        "You can edit this review anytime after submitting",
+                        "One review per faculty — this is yours permanently",
+                        "Your identity is never shown publicly",
+                    ].map((note, i) => (
+                        <div key={i} style={{
+                        display: "flex", gap: "8px",
+                        alignItems: "flex-start", marginBottom: "6px",
+                        }}>
+                        <span style={{
+                            color: "#f5f2eb", opacity: 0.3,
+                            fontFamily: "var(--font-mono)", fontSize: "11px",
+                            marginTop: "1px", flexShrink: 0,
+                        }}>—</span>
+                        <span style={{
+                            fontFamily: "var(--font-mono)", fontSize: "11px",
+                            color: "#f5f2eb", opacity: 0.45, lineHeight: 1.5,
+                        }}>
+                            {note}
+                        </span>
+                        </div>
+                    ))}
+                    </div>
                 </div>
 
                 {/* Progress */}
-                <div>
+                <div className="wizard-progress">
                     <div style={{
                         display: "flex", justifyContent: "space-between",
                         fontFamily: "var(--font-mono)", fontSize: "11px",
@@ -184,7 +188,7 @@ export default function ReviewWizard({
                         }} />
                     </div>
 
-                    <div style={{
+                    <div className="step-list" style={{
                         marginTop: "24px", display: "flex",
                         flexDirection: "column", gap: "8px",
                     }}>
@@ -219,7 +223,7 @@ export default function ReviewWizard({
             <div style={{
                 display: "flex", flexDirection: "column",
                 justifyContent: "center", padding: "56px 48px",
-            }}>
+            }} className="wizard-right">
                 <div style={{ maxWidth: "440px", width: "100%" }}>
 
                     {/* STEP 0 — Semester */}
@@ -396,8 +400,15 @@ export default function ReviewWizard({
         .wizard-grid { grid-template-columns: 1fr 1fr; }
         .wizard-left { display: flex; }
         @media (max-width: 768px) {
-          .wizard-grid { grid-template-columns: 1fr !important; }
-          .wizard-left { display: none !important; }
+          .wizard-grid { display: flex !important; flex-direction: column !important; min-height: 100svh !important; }
+          .wizard-left { display: contents !important; }
+          
+          .wizard-header { order: 1; padding: 72px 24px 16px !important; background: #0f0f0f; }
+          .wizard-right { order: 2; flex: 1; padding: 32px 24px !important; justify-content: center !important; }
+          .wizard-warning-wrapper { order: 3; padding: 0 24px !important; background: #0f0f0f; }
+          .wizard-warning-wrapper > div { margin-bottom: 0 !important; }
+          .wizard-progress { order: 4; padding: 16px 24px 32px !important; background: #0f0f0f; }
+          .step-list { display: none !important; }
         }
       `}</style>
         </div>

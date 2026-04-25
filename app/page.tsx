@@ -5,21 +5,23 @@ import HeroSearch from "@/components/HeroSearch";
 import { getAllFaculty } from "@/lib/db/faculty";
 import { getFacultyReviewCount } from "@/lib/db/faculty";
 import { auth } from "@/lib/auth";
+import { supabaseAdmin } from "@/lib/supabase";
 
 export default async function HomePage() {
-  const [faculty, session] = await Promise.all([
+  const [faculty, session, studentCountRes] = await Promise.all([
     getAllFaculty(),
     auth(),
+    supabaseAdmin.from("users").select("*", { count: "exact", head: true }).eq("role", "student")
   ]);
   const user = session?.user as any;
   const isLoggedIn = !!session;
+  const studentCount = studentCountRes.count || 0;
   const preview = faculty.slice(0, 5);
 
   return (
     <>
       <Navbar />
 
-      {/* HERO */}
       {/* HERO */}
       <section style={{
         minHeight: "100svh", padding: "100px 32px 64px",
@@ -123,7 +125,7 @@ export default async function HomePage() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0" }}>
             {[
               { num: faculty.length + "+", label: "Faculty listed" },
-              { num: "—", label: "Students enrolled" },
+              { num: studentCount + "+", label: "Students enrolled" },
             ].map((s, i) => (
               <div key={i} style={{
                 padding: "28px 24px",
