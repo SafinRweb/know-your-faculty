@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-type Tab = "overview" | "faculty" | "users" | "reports" | "admins" | "schedule";
+type Tab = "overview" | "faculty" | "users" | "reports" | "admins" | "contributors" | "schedule";
 
 interface Props {
     stats: {
@@ -19,10 +19,12 @@ interface Props {
     adminAccounts: any[];
     departments: any[];
     semesters: any[];
+    contributors: any[];
+    siteConfig: Record<string, string>;
 }
 
 export default function AdminClient({
-    stats, reports, faculty, users, adminAccounts, departments, semesters,
+    stats, reports, faculty, users, adminAccounts, departments, semesters, contributors, siteConfig,
 }: Props) {
     const router = useRouter();
     const [tab, setTab] = useState<Tab>("overview");
@@ -41,6 +43,14 @@ export default function AdminClient({
     // Departments
     const [newDept, setNewDept] = useState("");
     const [deptMsg, setDeptMsg] = useState<string | null>(null);
+
+    // Contributors
+    const [newContributor, setNewContributor] = useState({
+        role: "", name: "", student_id: "", email: "", website: "", display_order: "99",
+    });
+    const [contributorMsg, setContributorMsg] = useState<string | null>(null);
+    const [newVersion, setNewVersion] = useState(siteConfig.version || "1.0");
+    const [versionMsg, setVersionMsg] = useState<string | null>(null);
 
     async function handleDeptAction(action: string, id?: string, name?: string) {
         setSaving("dept");
@@ -134,7 +144,53 @@ export default function AdminClient({
         router.refresh();
     }
 
-    const TABS: Tab[] = ["overview", "faculty", "users", "reports", "admins", "schedule"];
+    async function handleAddContributor() {
+        if (!newContributor.role.trim() || !newContributor.name.trim()) {
+            setContributorMsg("Role and name are required.");
+            return;
+        }
+        setSaving("contributor");
+        const res = await fetch("/api/admin/contributors", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "add", data: newContributor }),
+        });
+        const data = await res.json();
+        if (!res.ok) setContributorMsg(data.error);
+        else {
+            setContributorMsg("✓ Contributor added.");
+            setNewContributor({ role: "", name: "", student_id: "", email: "", website: "", display_order: "99" });
+            router.refresh();
+        }
+        setSaving(null);
+    }
+
+    async function handleDeleteContributor(id: string) {
+        if (!confirm("Remove this contributor?")) return;
+        setSaving(id);
+        await fetch("/api/admin/contributors", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "delete", id }),
+        });
+        setSaving(null);
+        router.refresh();
+    }
+
+    async function handleUpdateVersion() {
+        setSaving("version");
+        const res = await fetch("/api/admin/contributors", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action: "update_version", data: { version: newVersion } }),
+        });
+        const data = await res.json();
+        if (!res.ok) setVersionMsg(data.error);
+        else { setVersionMsg("✓ Version updated."); router.refresh(); }
+        setSaving(null);
+    }
+
+    const TABS: Tab[] = ["overview", "faculty", "users", "reports", "admins", "contributors", "schedule"];
 
     return (
         <div>
@@ -644,6 +700,131 @@ export default function AdminClient({
 ))}
                         </div>
                     </div>
+                )}
+
+                {/* ── CONTRIBUTORS ── */}
+                {tab === "contributors" && (
+                  <div>
+                    {/* Version control */}
+                    <div style={{
+                      marginBottom: "48px", paddingBottom: "48px",
+                      borderBottom: "1.5px solid #0f0f0f",
+                    }}>
+                      <div style={sectionLabel}>Site version</div>
+                      <div style={{ display: "flex", gap: "12px", alignItems: "flex-end", maxWidth: "360px" }}>
+                        <div style={{ flex: 1 }}>
+                          <div style={fieldLabel}>Current version</div>
+                          <input
+                            value={newVersion}
+                            onChange={(e) => setNewVersion(e.target.value)}
+                            placeholder="e.g. 1.1"
+                            style={inputStyle}
+                          />
+                        </div>
+                        <button onClick={handleUpdateVersion} disabled={saving === "version"} style={primaryBtn}>
+                          {saving === "version" ? "Saving…" : "Update"}
+                        </button>
+                      </div>
+                      {versionMsg && (
+                        <div style={{
+                          fontFamily: "var(--font-mono)", fontSize: "12px",
+                          color: versionMsg.startsWith("✓") ? "#1a4fd4" : "#d4401a",
+                          marginTop: "8px",
+                        }}>
+                          {versionMsg}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Add contributor */}
+                    <div style={{
+                      display: "grid", gridTemplateColumns: "1fr 1fr", gap: "48px",
+                    }} className="two-col">
+                      <div>
+                        <div style={sectionLabel}>Add contributor</div>
+                        {[
+                          { label: "Role / Title", key: "role", placeholder: "e.g. Developer" },
+                          { label: "Full name", key: "name", placeholder: "e.g. MD. Safin Rahman" },
+                          { label: "Student ID", key: "student_id", placeholder: "e.g. 2023-3-60-072" },
+                          { label: "Email (optional)", key: "email", placeholder: "e.g. name@gmail.com" },
+                          { label: "Website (optional)", key: "website", placeholder: "e.g. example.com" },
+                          { label: "Display order", key: "display_order", placeholder: "e.g. 1" },
+                        ].map((f) => (
+                          <div key={f.key} style={{ marginBottom: "12px" }}>
+                            <div style={fieldLabel}>{f.label}</div>
+                            <input
+                              value={(newContributor as any)[f.key]}
+                              onChange={(e) => setNewContributor((p) => ({ ...p, [f.key]: e.target.value }))}
+                              placeholder={f.placeholder}
+                              style={inputStyle}
+                            />
+                          </div>
+                        ))}
+                        {contributorMsg && (
+                          <div style={{
+                            fontFamily: "var(--font-mono)", fontSize: "12px",
+                            color: contributorMsg.startsWith("✓") ? "#1a4fd4" : "#d4401a",
+                            marginBottom: "12px",
+                          }}>
+                            {contributorMsg}
+                          </div>
+                        )}
+                        <button onClick={handleAddContributor} disabled={saving === "contributor"} style={primaryBtn}>
+                          {saving === "contributor" ? "Adding…" : "Add contributor →"}
+                        </button>
+                      </div>
+
+                      {/* Current contributors */}
+                      <div>
+                        <div style={sectionLabel}>{contributors.length} contributors</div>
+                        {contributors.map((c) => (
+                          <div key={c.id} style={{
+                            padding: "16px 0", borderBottom: "1px solid #e8e3d9",
+                            display: "flex", justifyContent: "space-between",
+                            alignItems: "flex-start", gap: "12px",
+                          }}>
+                            <div>
+                              <div style={{
+                                fontFamily: "var(--font-mono)", fontSize: "10px",
+                                letterSpacing: "0.1em", textTransform: "uppercase",
+                                color: "#d4401a", opacity: 0.8, marginBottom: "4px",
+                              }}>
+                                {c.role}
+                              </div>
+                              <div style={{
+                                fontFamily: "var(--font-sans)", fontSize: "14px",
+                                fontWeight: 700, marginBottom: "2px",
+                              }}>
+                                {c.name}
+                              </div>
+                              {c.student_id && (
+                                <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", opacity: 0.4 }}>
+                                  {c.student_id}
+                                </div>
+                              )}
+                              {c.email && (
+                                <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", opacity: 0.4 }}>
+                                  {c.email}
+                                </div>
+                              )}
+                            </div>
+                            <button
+                              onClick={() => handleDeleteContributor(c.id)}
+                              disabled={saving === c.id}
+                              style={{
+                                fontFamily: "var(--font-mono)", fontSize: "11px",
+                                letterSpacing: "0.06em", textTransform: "uppercase",
+                                padding: "6px 12px", background: "transparent",
+                                color: "#d4401a", border: "1px solid #d4401a",
+                                cursor: "pointer", flexShrink: 0,
+                              }}>
+                              {saving === c.id ? "…" : "Remove"}
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
                 )}
 
                 {/* ── SCHEDULE ── */}

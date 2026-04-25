@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { getAllFaculty } from "@/lib/db/faculty";
 import { getFacultyReviewCount } from "@/lib/db/faculty";
 import { auth } from "@/lib/auth";
@@ -326,26 +327,7 @@ export default async function HomePage() {
       )}
 
       {/* FOOTER */}
-      <footer style={{
-        padding: "40px 32px", display: "flex",
-        alignItems: "center", justifyContent: "space-between",
-        flexWrap: "wrap", gap: "24px",
-      }}>
-        <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", opacity: 0.4 }}>
-          © 2025 Know Your Faculty · EWU Students
-        </div>
-        <div style={{ display: "flex", gap: "32px" }}>
-          {[["Schedule", "/schedule"], ["Faculty", "/faculty"], ["Feed", "/feed"]].map(([label, href]) => (
-            <Link key={href} href={href} style={{
-              fontFamily: "var(--font-mono)", fontSize: "11px",
-              letterSpacing: "0.08em", textTransform: "uppercase",
-              color: "#0f0f0f", textDecoration: "none", opacity: 0.4,
-            }}>
-              {label}
-            </Link>
-          ))}
-        </div>
-      </footer>
+      <Footer />
 
       <style>{`
         @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }

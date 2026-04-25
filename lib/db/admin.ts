@@ -75,3 +75,20 @@ export async function getDepartments() {
   if (error) return [];
   return data;
 }
+
+export async function getContributorsAdmin() {
+  const { data, error } = await supabase
+    .from("contributors")
+    .select("*")
+    .order("display_order");
+  if (error) return [];
+  return data;
+}
+
+export async function getSiteConfigAdmin() {
+  const { data, error } = await supabase
+    .from("site_config")
+    .select("*");
+  if (error) return {};
+  return Object.fromEntries((data || []).map((r) => [r.key, r.value]));
+}
