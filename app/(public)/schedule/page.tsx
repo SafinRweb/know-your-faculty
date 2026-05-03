@@ -102,7 +102,7 @@ export default async function SchedulePage({
       {/* HEADER */}
       <div style={{
         padding: "56px 32px 0",
-        borderBottom: "1.5px solid #f5f2eb",
+        borderBottom: "1.5px solid #d4401a",
       }}>
         <div style={{
           display: "grid", gridTemplateColumns: "1fr 1fr",
@@ -133,7 +133,7 @@ export default async function SchedulePage({
 
           <form method="GET" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {semesterId && <input type="hidden" name="semester" value={semesterId} />}
-            <div style={{ display: "flex", border: "1.5px solid #f5f2eb" }}>
+            <div style={{ display: "flex", border: "1.5px solid #d4401a" }}>
               <input
                 name="q"
                 defaultValue={params.q || ""}
@@ -147,7 +147,7 @@ export default async function SchedulePage({
               <button type="submit" style={{
                 fontFamily: "var(--font-mono)", fontSize: "11px",
                 letterSpacing: "0.1em", textTransform: "uppercase",
-                padding: "13px 18px", background: "#f5f2eb",
+                padding: "13px 18px", background: "#d4401a",
                 color: "#0f0f0f", border: "none", cursor: "pointer",
               }}>
                 Search
@@ -160,7 +160,7 @@ export default async function SchedulePage({
         <div style={{ display: "flex", overflowX: "auto" }}>
           <Link href={`/schedule${query ? `?q=${query}` : ""}`} style={{
             ...tabStyle,
-            background: !semesterId ? "#f5f2eb" : "transparent",
+            background: !semesterId ? "#d4401a" : "transparent",
             color: !semesterId ? "#0f0f0f" : "#f5f2eb",
           }}>
             All semesters
@@ -170,7 +170,7 @@ export default async function SchedulePage({
               href={`/schedule?semester=${s.id}${query ? `&q=${query}` : ""}`}
               style={{
                 ...tabStyle,
-                background: semesterId === s.id ? "#f5f2eb" : "transparent",
+                background: semesterId === s.id ? "#d4401a" : "transparent",
                 color: semesterId === s.id ? "#0f0f0f" : "#f5f2eb",
               }}>
               {s.label}
@@ -191,7 +191,7 @@ export default async function SchedulePage({
         display: "grid",
         gridTemplateColumns: "90px 50px 1fr 170px 130px 70px",
         gap: "16px", padding: "12px 32px",
-        borderBottom: "1.5px solid #f5f2eb",
+        borderBottom: "1.5px solid #2a2725",
         background: "#0f0f0f",
         position: "sticky", top: "57px", zIndex: 10,
       }} className="table-header">
@@ -221,7 +221,7 @@ export default async function SchedulePage({
               gridTemplateColumns: "90px 50px 1fr 170px 130px 70px",
               gap: "16px", padding: "14px 32px",
               borderBottom: "1px solid #2a2725",
-              background: i % 2 === 0 ? "transparent" : "#faf8f4",
+              background: i % 2 === 0 ? "transparent" : "#1a1917",
               alignItems: "center",
             }} className="section-row">
 
@@ -305,7 +305,7 @@ export default async function SchedulePage({
         <div style={{
           display: "flex", justifyContent: "center",
           alignItems: "center", gap: "8px",
-          padding: "32px", borderTop: "1.5px solid #f5f2eb",
+          padding: "32px", borderTop: "1.5px solid #d4401a",
         }}>
           {page > 1 && (
             <Link
@@ -431,8 +431,8 @@ function pageBtn(active: boolean): React.CSSProperties {
   return {
     fontFamily: "var(--font-mono)", fontSize: "12px",
     letterSpacing: "0.06em", padding: "8px 14px",
-    border: "1.5px solid #f5f2eb",
-    background: active ? "#f5f2eb" : "transparent",
+    border: "1.5px solid #2a2725",
+    background: active ? "#d4401a" : "transparent",
     color: active ? "#0f0f0f" : "#f5f2eb",
     textDecoration: "none",
   };

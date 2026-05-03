@@ -58,7 +58,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
         body: body.trim(),
         status: "active",
         created_at: new Date().toISOString(),
-        user: { alias: session?.alias || "Student", avatar_color: "#f5f2eb" },
+        user: { alias: session?.alias || "Student", avatar_color: "#d4401a" },
         replies: [],
       };
 
@@ -93,7 +93,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
         created_at: new Date().toISOString(),
         user: isAdmin
           ? undefined
-          : { alias: session?.alias || "Student", avatar_color: "#f5f2eb" },
+          : { alias: session?.alias || "Student", avatar_color: "#d4401a" },
       };
 
       setPosts((prev) =>
@@ -128,11 +128,11 @@ export default function FeedClient({ initialPosts, session }: Props) {
     <div>
       {/* Compose box */}
       {session ? (
-        <div style={{ padding: "28px 32px", borderBottom: "1.5px solid #f5f2eb" }}>
+        <div style={{ padding: "28px 32px", borderBottom: "1.5px solid #2a2725" }}>
           <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
             <div style={{
               width: "36px", height: "36px", borderRadius: "50%",
-              background: "#f5f2eb", display: "flex",
+              background: "#d4401a", display: "flex",
               alignItems: "center", justifyContent: "center",
               fontFamily: "var(--font-mono)", fontSize: "13px",
               color: "#0f0f0f", flexShrink: 0,
@@ -149,7 +149,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
                 style={{
                   width: "100%", fontFamily: "var(--font-mono)",
                   fontSize: "13px", lineHeight: 1.7,
-                  padding: "12px 14px", border: "1.5px solid #f5f2eb",
+                  padding: "12px 14px", border: "1.5px solid #2a2725",
                   background: "transparent", color: "#f5f2eb",
                   outline: "none", resize: "vertical", marginBottom: "10px",
                 }}
@@ -165,7 +165,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
                     fontFamily: "var(--font-mono)", fontSize: "12px",
                     fontWeight: 500, letterSpacing: "0.06em",
                     textTransform: "uppercase", padding: "10px 20px",
-                    background: posting || body.trim().length < 10 ? "#c8c2b4" : "#f5f2eb",
+                    background: posting || body.trim().length < 10 ? "#1a1917" : "#d4401a",
                     color: "#0f0f0f", border: "none",
                     cursor: posting || body.trim().length < 10 ? "not-allowed" : "pointer",
                   }}>
@@ -182,7 +182,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
         </div>
       ) : (
         <div style={{
-          padding: "24px 32px", borderBottom: "1.5px solid #f5f2eb",
+          padding: "24px 32px", borderBottom: "1.5px solid #2a2725",
           display: "flex", alignItems: "center",
           justifyContent: "space-between", gap: "16px", flexWrap: "wrap",
         }}>
@@ -192,7 +192,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
           <a href="/login" style={{
             fontFamily: "var(--font-mono)", fontSize: "12px",
             fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase",
-            color: "#0f0f0f", background: "#f5f2eb",
+            color: "#0f0f0f", background: "#d4401a",
             padding: "10px 20px", textDecoration: "none",
           }}>
             Sign in →
@@ -219,7 +219,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
                 <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
                   <div style={{
                     width: "36px", height: "36px", borderRadius: "50%",
-                    background: post.admin ? post.admin.avatar_color : (post.user?.avatar_color || "#f5f2eb"),
+                    background: post.admin ? post.admin.avatar_color : (post.user?.avatar_color || "#d4401a"),
                     display: "flex", alignItems: "center", justifyContent: "center",
                     fontFamily: "var(--font-mono)", fontSize: "13px",
                     color: "#0f0f0f", flexShrink: 0,
@@ -306,12 +306,12 @@ export default function FeedClient({ initialPosts, session }: Props) {
                   {post.replies?.map((reply) => (
                     <div key={reply.id} style={{
                       padding: "16px 20px",
-                      borderBottom: "1px solid #f0ece3",
+                      borderBottom: "1px solid #1a1917",
                     }}>
                       <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
                         <div style={{
                           width: "28px", height: "28px", borderRadius: "50%",
-                          background: reply.is_admin ? "#d4401a" : (reply.user?.avatar_color || "#f5f2eb"),
+                          background: reply.is_admin ? "#d4401a" : (reply.user?.avatar_color || "#d4401a"),
                           display: "flex", alignItems: "center", justifyContent: "center",
                           fontFamily: "var(--font-mono)", fontSize: "11px",
                           color: "#0f0f0f", flexShrink: 0,
@@ -383,7 +383,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
                     }
                     style={{
                       flex: 1, fontFamily: "var(--font-mono)", fontSize: "13px",
-                      padding: "10px 14px", border: "1.5px solid #f5f2eb",
+                      padding: "10px 14px", border: "1.5px solid #2a2725",
                       background: "transparent", color: "#f5f2eb", outline: "none",
                     }}
                   />
@@ -394,7 +394,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
                       fontFamily: "var(--font-mono)", fontSize: "11px",
                       letterSpacing: "0.06em", textTransform: "uppercase",
                       padding: "10px 16px",
-                      background: replyingLoading ? "#c8c2b4" : "#f5f2eb",
+                      background: replyingLoading ? "#1a1917" : "#d4401a",
                       color: "#0f0f0f", border: "none", cursor: "pointer",
                     }}>
                     {replyingLoading ? "…" : "Send"}
