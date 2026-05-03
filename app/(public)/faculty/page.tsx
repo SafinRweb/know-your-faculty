@@ -37,7 +37,7 @@ export default async function FacultyDirectoryPage({
       {/* PAGE HEADER */}
       <div style={{
         padding: "64px 32px 48px",
-        borderBottom: "1.5px solid #0f0f0f",
+        borderBottom: "1.5px solid #f5f2eb",
         display: "grid", gridTemplateColumns: "1fr 1fr",
         gap: "48px", alignItems: "end",
       }} className="faculty-header">
@@ -78,13 +78,13 @@ export default async function FacultyDirectoryPage({
               {q && (
                 <span style={{
                   fontFamily: "var(--font-mono)", fontSize: "11px",
-                  letterSpacing: "0.06em", background: "#0f0f0f",
-                  color: "#f5f2eb", padding: "4px 10px",
+                  letterSpacing: "0.06em", background: "#f5f2eb",
+                  color: "#0f0f0f", padding: "4px 10px",
                   display: "flex", alignItems: "center", gap: "8px",
                 }}>
                   "{params.q}"
                   <Link href={`/faculty?dept=${dept}`} style={{
-                    color: "#f5f2eb", opacity: 0.6, textDecoration: "none",
+                    color: "#0f0f0f", opacity: 0.6, textDecoration: "none",
                     fontSize: "13px",
                   }}>×</Link>
                 </span>
@@ -92,13 +92,13 @@ export default async function FacultyDirectoryPage({
               {dept !== "All" && (
                 <span style={{
                   fontFamily: "var(--font-mono)", fontSize: "11px",
-                  letterSpacing: "0.06em", background: "#0f0f0f",
-                  color: "#f5f2eb", padding: "4px 10px",
+                  letterSpacing: "0.06em", background: "#f5f2eb",
+                  color: "#0f0f0f", padding: "4px 10px",
                   display: "flex", alignItems: "center", gap: "8px",
                 }}>
                   {dept}
                   <Link href={`/faculty${q ? `?q=${params.q}` : ""}`} style={{
-                    color: "#f5f2eb", opacity: 0.6, textDecoration: "none",
+                    color: "#0f0f0f", opacity: 0.6, textDecoration: "none",
                     fontSize: "13px",
                   }}>×</Link>
                 </span>
@@ -116,7 +116,7 @@ export default async function FacultyDirectoryPage({
 
         <form method="GET" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {dept !== "All" && <input type="hidden" name="dept" value={dept} />}
-          <div style={{ display: "flex", border: "1.5px solid #0f0f0f" }}>
+          <div style={{ display: "flex", border: "1.5px solid #f5f2eb" }}>
             <input
               name="q"
               defaultValue={params.q || ""}
@@ -124,14 +124,14 @@ export default async function FacultyDirectoryPage({
               style={{
                 flex: 1, fontFamily: "var(--font-mono)", fontSize: "13px",
                 padding: "13px 16px", border: "none",
-                background: "transparent", color: "#0f0f0f", outline: "none",
+                background: "transparent", color: "#f5f2eb", outline: "none",
               }}
             />
             <button type="submit" style={{
               fontFamily: "var(--font-mono)", fontSize: "11px",
               letterSpacing: "0.1em", textTransform: "uppercase",
-              padding: "13px 18px", background: "#0f0f0f",
-              color: "#f5f2eb", border: "none", cursor: "pointer",
+              padding: "13px 18px", background: "#f5f2eb",
+              color: "#0f0f0f", border: "none", cursor: "pointer",
             }}>
               Search
             </button>
@@ -147,9 +147,9 @@ export default async function FacultyDirectoryPage({
                   fontFamily: "var(--font-mono)", fontSize: "11px",
                   letterSpacing: "0.08em", textTransform: "uppercase",
                   padding: "6px 12px", textDecoration: "none",
-                  border: "1.5px solid #0f0f0f",
-                  background: dept === d ? "#0f0f0f" : "transparent",
-                  color: dept === d ? "#f5f2eb" : "#0f0f0f",
+                  border: "1.5px solid #f5f2eb",
+                  background: dept === d ? "#f5f2eb" : "transparent",
+                  color: dept === d ? "#0f0f0f" : "#f5f2eb",
                 }}>
                 {d}
               </Link>
@@ -173,7 +173,7 @@ export default async function FacultyDirectoryPage({
             <Link href="/faculty" style={{
               fontFamily: "var(--font-mono)", fontSize: "12px",
               letterSpacing: "0.06em", textTransform: "uppercase",
-              color: "#0f0f0f", border: "1.5px solid #0f0f0f",
+              color: "#f5f2eb", border: "1.5px solid #f5f2eb",
               padding: "10px 20px", textDecoration: "none",
             }}>
               Clear search
@@ -190,8 +190,8 @@ export default async function FacultyDirectoryPage({
                   gridTemplateColumns: "56px 1fr auto auto",
                   alignItems: "center", gap: "24px",
                   padding: "24px 0",
-                  borderBottom: "1px solid #e8e3d9",
-                  textDecoration: "none", color: "#0f0f0f",
+                  borderBottom: "1px solid #2a2725",
+                  textDecoration: "none", color: "#f5f2eb",
                 }}
                 className="faculty-row"
               >
@@ -217,7 +217,7 @@ export default async function FacultyDirectoryPage({
                     {f.department}
                     {f.initial && (
                       <span style={{
-                        background: "#0f0f0f", color: "#f5f2eb",
+                        background: "#f5f2eb", color: "#0f0f0f",
                         padding: "2px 7px", fontSize: "10px",
                       }}>
                         {f.initial}

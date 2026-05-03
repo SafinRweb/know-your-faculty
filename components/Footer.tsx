@@ -18,7 +18,7 @@ export default async function Footer() {
 
   return (
     <footer style={{
-      borderTop: "1.5px solid #0f0f0f",
+      borderTop: "3px solid #d4401a",
       background: "#0f0f0f",
     }}>
 

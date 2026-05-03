@@ -102,7 +102,7 @@ export default async function SchedulePage({
       {/* HEADER */}
       <div style={{
         padding: "56px 32px 0",
-        borderBottom: "1.5px solid #0f0f0f",
+        borderBottom: "1.5px solid #f5f2eb",
       }}>
         <div style={{
           display: "grid", gridTemplateColumns: "1fr 1fr",
@@ -133,7 +133,7 @@ export default async function SchedulePage({
 
           <form method="GET" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {semesterId && <input type="hidden" name="semester" value={semesterId} />}
-            <div style={{ display: "flex", border: "1.5px solid #0f0f0f" }}>
+            <div style={{ display: "flex", border: "1.5px solid #f5f2eb" }}>
               <input
                 name="q"
                 defaultValue={params.q || ""}
@@ -141,14 +141,14 @@ export default async function SchedulePage({
                 style={{
                   flex: 1, fontFamily: "var(--font-mono)", fontSize: "13px",
                   padding: "13px 16px", border: "none",
-                  background: "transparent", color: "#0f0f0f", outline: "none",
+                  background: "transparent", color: "#f5f2eb", outline: "none",
                 }}
               />
               <button type="submit" style={{
                 fontFamily: "var(--font-mono)", fontSize: "11px",
                 letterSpacing: "0.1em", textTransform: "uppercase",
-                padding: "13px 18px", background: "#0f0f0f",
-                color: "#f5f2eb", border: "none", cursor: "pointer",
+                padding: "13px 18px", background: "#f5f2eb",
+                color: "#0f0f0f", border: "none", cursor: "pointer",
               }}>
                 Search
               </button>
@@ -160,8 +160,8 @@ export default async function SchedulePage({
         <div style={{ display: "flex", overflowX: "auto" }}>
           <Link href={`/schedule${query ? `?q=${query}` : ""}`} style={{
             ...tabStyle,
-            background: !semesterId ? "#0f0f0f" : "transparent",
-            color: !semesterId ? "#f5f2eb" : "#0f0f0f",
+            background: !semesterId ? "#f5f2eb" : "transparent",
+            color: !semesterId ? "#0f0f0f" : "#f5f2eb",
           }}>
             All semesters
           </Link>
@@ -170,14 +170,14 @@ export default async function SchedulePage({
               href={`/schedule?semester=${s.id}${query ? `&q=${query}` : ""}`}
               style={{
                 ...tabStyle,
-                background: semesterId === s.id ? "#0f0f0f" : "transparent",
-                color: semesterId === s.id ? "#f5f2eb" : "#0f0f0f",
+                background: semesterId === s.id ? "#f5f2eb" : "transparent",
+                color: semesterId === s.id ? "#0f0f0f" : "#f5f2eb",
               }}>
               {s.label}
               {s.is_active && (
                 <span style={{
                   width: "5px", height: "5px", borderRadius: "50%",
-                  background: semesterId === s.id ? "#f5f2eb" : "#1a4fd4",
+                  background: semesterId === s.id ? "#0f0f0f" : "#1a4fd4",
                   display: "inline-block", marginLeft: "6px",
                 }} />
               )}
@@ -191,8 +191,8 @@ export default async function SchedulePage({
         display: "grid",
         gridTemplateColumns: "90px 50px 1fr 170px 130px 70px",
         gap: "16px", padding: "12px 32px",
-        borderBottom: "1.5px solid #0f0f0f",
-        background: "#f5f2eb",
+        borderBottom: "1.5px solid #f5f2eb",
+        background: "#0f0f0f",
         position: "sticky", top: "57px", zIndex: 10,
       }} className="table-header">
         {["Course", "Sec", "Faculty", "Time", "Room", ""].map((h) => (
@@ -220,7 +220,7 @@ export default async function SchedulePage({
               display: "grid",
               gridTemplateColumns: "90px 50px 1fr 170px 130px 70px",
               gap: "16px", padding: "14px 32px",
-              borderBottom: "1px solid #e8e3d9",
+              borderBottom: "1px solid #2a2725",
               background: i % 2 === 0 ? "transparent" : "#faf8f4",
               alignItems: "center",
             }} className="section-row">
@@ -253,7 +253,7 @@ export default async function SchedulePage({
                 <Link href={`/faculty/${s.faculty?.id}`} style={{
                   fontFamily: "var(--font-sans)", fontSize: "14px",
                   fontWeight: 600, letterSpacing: "-0.01em",
-                  color: "#0f0f0f", textDecoration: "none",
+                  color: "#f5f2eb", textDecoration: "none",
                   display: "flex", alignItems: "center", gap: "8px",
                 }}>
                   {s.faculty?.name === s.faculty?.initial
@@ -262,7 +262,7 @@ export default async function SchedulePage({
                   <span style={{
                     fontFamily: "var(--font-mono)", fontSize: "10px",
                     opacity: 0.4, fontWeight: 400,
-                    background: "#e8e3d9", padding: "2px 6px",
+                    background: "#2a2725", padding: "2px 6px",
                   }}>
                     {s.faculty?.initial}
                   </span>
@@ -289,7 +289,7 @@ export default async function SchedulePage({
                 <Link href={`/faculty/${s.faculty?.id}`} style={{
                   fontFamily: "var(--font-mono)", fontSize: "11px",
                   letterSpacing: "0.06em", textTransform: "uppercase",
-                  color: "#0f0f0f", opacity: 0.3,
+                  color: "#f5f2eb", opacity: 0.3,
                   textDecoration: "none", whiteSpace: "nowrap",
                 }}>
                   Profile →
@@ -305,7 +305,7 @@ export default async function SchedulePage({
         <div style={{
           display: "flex", justifyContent: "center",
           alignItems: "center", gap: "8px",
-          padding: "32px", borderTop: "1.5px solid #0f0f0f",
+          padding: "32px", borderTop: "1.5px solid #f5f2eb",
         }}>
           {page > 1 && (
             <Link
@@ -376,7 +376,7 @@ export default async function SchedulePage({
             grid-template-rows: auto auto auto !important;
             padding: 16px 20px !important;
             gap: 6px !important;
-            border-bottom: 1.5px solid #e8e3d9 !important;
+            border-bottom: 1.5px solid #2a2725 !important;
             position: relative;
           }
           /* Course + Section on first row */
@@ -422,7 +422,7 @@ const tabStyle: React.CSSProperties = {
   fontFamily: "var(--font-mono)", fontSize: "11px",
   letterSpacing: "0.08em", textTransform: "uppercase",
   padding: "14px 20px", textDecoration: "none",
-  borderRight: "1px solid #e8e3d9", whiteSpace: "nowrap",
+  borderRight: "1px solid #2a2725", whiteSpace: "nowrap",
   display: "inline-flex", alignItems: "center",
   transition: "background 0.12s",
 };
@@ -431,9 +431,9 @@ function pageBtn(active: boolean): React.CSSProperties {
   return {
     fontFamily: "var(--font-mono)", fontSize: "12px",
     letterSpacing: "0.06em", padding: "8px 14px",
-    border: "1.5px solid #0f0f0f",
-    background: active ? "#0f0f0f" : "transparent",
-    color: active ? "#f5f2eb" : "#0f0f0f",
+    border: "1.5px solid #f5f2eb",
+    background: active ? "#f5f2eb" : "transparent",
+    color: active ? "#0f0f0f" : "#f5f2eb",
     textDecoration: "none",
   };
 }

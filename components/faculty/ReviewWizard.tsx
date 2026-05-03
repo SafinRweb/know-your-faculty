@@ -3,52 +3,86 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Faculty, ReviewQuestion, Semester } from "@/types";
+import { Faculty, Semester } from "@/types";
 
 interface Props {
     faculty: Faculty;
-    questions: ReviewQuestion[];
+    questions: any[]; // kept for backwards compat, not used
     semesters: Semester[];
     existingReview: any;
 }
 
+// Static question keys — stored as answer_value in the DB
+const QUESTIONS = [
+    { key: "course", label: "Which course did you take with this faculty?", type: "text" as const },
+    { key: "attendance", label: "Strict about attendance?", type: "yn" as const },
+    { key: "grading", label: "Fair grading?", type: "yn" as const },
+    { key: "teaching", label: "Clear teaching?", type: "yn" as const },
+    { key: "recommend", label: "Do you recommend this faculty?", type: "yn" as const },
+] as const;
+
+const PRECAUTION_ITEMS = [
+    "Be honest — your review should reflect your real experience",
+    "Your identity is anonymous. No one will know it's you",
+    "Your review could literally save someone's semester",
+    "You can edit this review anytime — it's yours forever",
+    "No personal attacks. Keep it respectful, keep it real",
+    "Don't sugarcoat it. If it was bad, say it was bad",
+];
+
 export default function ReviewWizard({
     faculty,
-    questions,
     semesters,
     existingReview,
 }: Props) {
     const router = useRouter();
     const isEditing = !!existingReview;
 
-    // Pre-fill answers if editing
+    // Pre-fill from existing review
     const prefilled: Record<string, string> = {};
+    let prefilledSemester = "";
     if (existingReview?.answers) {
         existingReview.answers.forEach((a: any) => {
-            prefilled[a.question_id] = a.answer_value || "";
+            // Try to match by question text or question_id
+            const q = a.question;
+            if (q) {
+                // Map old question text to our static keys
+                const matchedKey = QUESTIONS.find(
+                    (sq) => sq.label.toLowerCase() === q.question_text?.toLowerCase()
+                )?.key;
+                if (matchedKey) {
+                    prefilled[matchedKey] = a.answer_value || "";
+                } else if (q.type === "text") {
+                    prefilled["comment"] = a.answer_value || "";
+                }
+            }
         });
+        prefilledSemester = existingReview.semester_id || "";
     }
 
-    const [step, setStep] = useState(0); // 0 = semester select, 1..n = questions, last = confirm
+    // Steps: 0=precaution, 1=semester, 2=course, 3=attendance, 4=grading, 5=teaching, 6=recommend, 7=comment+submit
+    const [step, setStep] = useState(isEditing ? 1 : 0);
+    const [accepted, setAccepted] = useState(isEditing);
     const safeSemesters = semesters ?? [];
-    const safeQuestions = questions ?? [];
 
     const [selectedSemester, setSelectedSemester] = useState<string>(
-        existingReview?.semester_id || safeSemesters.find((s) => s.is_active)?.id || ""
+        prefilledSemester || safeSemesters.find((s) => s.is_active)?.id || ""
     );
     const [answers, setAnswers] = useState<Record<string, string>>(prefilled);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const mcqQuestions = safeQuestions.filter((q) => q.type === "mcq");
-    const textQuestion = safeQuestions.find((q) => q.type === "text");
-    const totalSteps = mcqQuestions.length + 2; // 0=semester, 1..n=mcq, last=text+confirm
+    const totalSteps = 8; // 0=precaution, 1=semester, 2-6=questions, 7=comment+submit
+    const progress = step === 0 ? 0 : Math.round((step / (totalSteps - 1)) * 100);
 
-    const currentMcq = step >= 1 && step <= mcqQuestions.length
-        ? mcqQuestions[step - 1]
-        : null;
-    const isTextStep = step === mcqQuestions.length + 1;
-    const progress = Math.round((step / (totalSteps - 1)) * 100);
+    const currentQuestion = step >= 2 && step <= 6 ? QUESTIONS[step - 2] : null;
+
+    const stepLabels = [
+        "Accept guidelines",
+        "Select semester",
+        ...QUESTIONS.map((q) => q.label),
+        "Final comment",
+    ];
 
     async function handleSubmit() {
         setSubmitting(true);
@@ -86,7 +120,7 @@ export default function ReviewWizard({
             <div style={{
                 background: "#0f0f0f", padding: "56px 48px",
                 display: "flex", flexDirection: "column",
-                justifyContent: "space-between", borderRight: "1.5px solid #0f0f0f",
+                justifyContent: "space-between", borderRight: "1.5px solid #d4401a",
             }} className="wizard-left">
                 <div className="wizard-header">
                     <div style={{ marginBottom: "32px" }}>
@@ -118,56 +152,15 @@ export default function ReviewWizard({
                         <div style={{
                             fontFamily: "var(--font-mono)", fontSize: "12px",
                             letterSpacing: "0.08em", textTransform: "uppercase",
-                            color: "#f5f2eb", opacity: 0.4,
+                            color: "#f5f2eb", opacity: 0.6,
                         }}>
                             {faculty.department}
                         </div>
                     </div>
                 </div>
 
-                {/* Warning notice */}
-                <div className="wizard-warning-wrapper">
-                    <div style={{
-                    padding: "16px",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    marginBottom: "32px",
-                    }}>
-                    <div style={{
-                        fontFamily: "var(--font-mono)", fontSize: "10px",
-                        letterSpacing: "0.1em", textTransform: "uppercase",
-                        color: "#d4401a", marginBottom: "10px",
-                    }}>
-                        Before you review
-                    </div>
-                    {[
-                        "Be honest — your review helps real students",
-                        "No personal attacks or offensive language",
-                        "You can edit this review anytime after submitting",
-                        "One review per faculty — this is yours permanently",
-                        "Your identity is never shown publicly",
-                    ].map((note, i) => (
-                        <div key={i} style={{
-                        display: "flex", gap: "8px",
-                        alignItems: "flex-start", marginBottom: "6px",
-                        }}>
-                        <span style={{
-                            color: "#f5f2eb", opacity: 0.3,
-                            fontFamily: "var(--font-mono)", fontSize: "11px",
-                            marginTop: "1px", flexShrink: 0,
-                        }}>—</span>
-                        <span style={{
-                            fontFamily: "var(--font-mono)", fontSize: "11px",
-                            color: "#f5f2eb", opacity: 0.45, lineHeight: 1.5,
-                        }}>
-                            {note}
-                        </span>
-                        </div>
-                    ))}
-                    </div>
-                </div>
-
-                {/* Progress */}
-                <div className="wizard-progress">
+                {/* Progress — hidden on precaution step */}
+                <div className="wizard-progress" style={{ opacity: step === 0 ? 0.3 : 1, transition: "opacity 0.3s" }}>
                     <div style={{
                         display: "flex", justifyContent: "space-between",
                         fontFamily: "var(--font-mono)", fontSize: "11px",
@@ -178,8 +171,7 @@ export default function ReviewWizard({
                         <span>{progress}%</span>
                     </div>
                     <div style={{
-                        height: "2px", background: "rgba(255,255,255,0.1)",
-                        position: "relative",
+                        height: "2px", position: "relative", background: "rgba(255,255,255,0.1)",
                     }}>
                         <div style={{
                             position: "absolute", top: 0, left: 0, bottom: 0,
@@ -192,9 +184,7 @@ export default function ReviewWizard({
                         marginTop: "24px", display: "flex",
                         flexDirection: "column", gap: "8px",
                     }}>
-                        {["Select semester", ...mcqQuestions.map((q) => q.question_text),
-                            "Add a comment",
-                        ].map((label, i) => (
+                        {stepLabels.map((label, i) => (
                             <div key={i} style={{
                                 display: "flex", alignItems: "center", gap: "10px",
                             }}>
@@ -224,10 +214,63 @@ export default function ReviewWizard({
                 display: "flex", flexDirection: "column",
                 justifyContent: "center", padding: "56px 48px",
             }} className="wizard-right">
-                <div style={{ maxWidth: "440px", width: "100%" }}>
+                <div style={{ maxWidth: "480px", width: "100%" }}>
 
-                    {/* STEP 0 — Semester */}
+                    {/* STEP 0 — Precautions */}
                     {step === 0 && (
+                        <div>
+                            <div style={stepLabel}>Before you begin</div>
+                            <h3 style={{
+                                ...questionStyle,
+                                fontSize: "clamp(24px, 3vw, 36px)",
+                            }}>
+                                Hold up.{" "}
+                                <em style={{
+                                    fontFamily: "var(--font-serif)", fontStyle: "italic",
+                                    fontWeight: 400, color: "#d4401a",
+                                }}>Read this first.</em>
+                            </h3>
+
+                            <div style={{
+                                display: "flex", flexDirection: "column", gap: "16px",
+                                marginBottom: "40px",
+                            }}>
+                                {PRECAUTION_ITEMS.map((item, i) => (
+                                    <div key={i} style={{
+                                        display: "flex", alignItems: "flex-start", gap: "12px",
+                                        padding: "14px 18px",
+                                        border: "1.5px solid rgba(0, 0, 0, 0.12)",
+                                        background: i === 2 ? "#d4401a" : "transparent",
+                                        color: i === 2 ? "#f5f2eb" : "#f5f2eb",
+                                    }}>
+                                        <span style={{
+                                            fontFamily: "var(--font-mono)", fontSize: "11px",
+                                            opacity: 0.3, marginTop: "2px", flexShrink: 0,
+                                        }}>—</span>
+                                        <span style={{
+                                            fontFamily: "var(--font-mono)", fontSize: "13px",
+                                            lineHeight: 1.6, opacity: 0.85,
+                                        }}>
+                                            {item}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <button
+                                onClick={() => { setAccepted(true); setStep(1); }}
+                                style={{
+                                    ...nextBtnStyle,
+                                    width: "100%", textAlign: "center",
+                                    background: "#d4401a", borderColor: "#d4401a",
+                                }}>
+                                I understand, let&apos;s go →
+                            </button>
+                        </div>
+                    )}
+
+                    {/* STEP 1 — Semester */}
+                    {step === 1 && accepted && (
                         <div>
                             <div style={stepLabel}>Step 01</div>
                             <h3 style={questionStyle}>Which semester did you take this faculty?</h3>
@@ -244,7 +287,7 @@ export default function ReviewWizard({
                                         {s.is_active && (
                                             <span style={{
                                                 fontFamily: "var(--font-mono)", fontSize: "10px",
-                                                color: selectedSemester === s.id ? "#f5f2eb" : "#1a4fd4",
+                                                color: selectedSemester === s.id ? "#1a4fd4" : "#1a4fd4",
                                                 opacity: 0.7, marginLeft: "8px",
                                             }}>
                                                 Current
@@ -253,27 +296,72 @@ export default function ReviewWizard({
                                     </button>
                                 ))}
                             </div>
-                            <button onClick={() => setStep(1)} style={nextBtnStyle}>
-                                Next →
-                            </button>
+                            <div style={{ display: "flex", gap: "12px" }}>
+                                {!isEditing && (
+                                    <button onClick={() => setStep(0)} style={backBtnStyle}>
+                                        ← Back
+                                    </button>
+                                )}
+                                <button onClick={() => setStep(2)} style={nextBtnStyle}>
+                                    Next →
+                                </button>
+                            </div>
                         </div>
                     )}
 
-                    {/* STEP 1..n — MCQ */}
-                    {currentMcq && (
-                        <div key={currentMcq.id}>
-                            <div style={stepLabel}>Step {String(step + 1).padStart(2, "0")}</div>
-                            <h3 style={questionStyle}>{currentMcq.question_text}</h3>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "40px" }}>
-                                {(currentMcq.options as string[]).map((opt) => (
+                    {/* STEP 2 — Course (text input) */}
+                    {step === 2 && (
+                        <div>
+                            <div style={stepLabel}>Step 02</div>
+                            <h3 style={questionStyle}>Which course did you take with this faculty?</h3>
+                            <input
+                                type="text"
+                                value={answers["course"] || ""}
+                                onChange={(e) => setAnswers((p) => ({ ...p, course: e.target.value }))}
+                                placeholder="e.g. CSE 110, ENG 101, MAT 120…"
+                                style={{
+                                    width: "100%", fontFamily: "var(--font-mono)",
+                                    fontSize: "14px", padding: "16px 18px",
+                                    border: "1.5px solid #2a2725", background: "transparent",
+                                    color: "#f5f2eb", outline: "none",
+                                    marginBottom: "40px",
+                                }}
+                            />
+                            <div style={{ display: "flex", gap: "12px" }}>
+                                <button onClick={() => setStep(1)} style={backBtnStyle}>
+                                    ← Back
+                                </button>
+                                <button
+                                    onClick={() => setStep(3)}
+                                    disabled={!answers["course"]?.trim()}
+                                    style={{
+                                        ...nextBtnStyle,
+                                        opacity: answers["course"]?.trim() ? 1 : 0.35,
+                                        cursor: answers["course"]?.trim() ? "pointer" : "not-allowed",
+                                    }}>
+                                    Next →
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* STEPS 3–6 — Yes/No questions */}
+                    {currentQuestion && currentQuestion.type === "yn" && (
+                        <div key={currentQuestion.key}>
+                            <div style={stepLabel}>Step {String(step).padStart(2, "0")}</div>
+                            <h3 style={questionStyle}>{currentQuestion.label}</h3>
+                            <div style={{ display: "flex", gap: "12px", marginBottom: "40px" }}>
+                                {["Yes", "No"].map((opt) => (
                                     <button key={opt}
-                                        onClick={() => {
-                                            setAnswers((prev) => ({ ...prev, [currentMcq.id]: opt }));
-                                        }}
+                                        onClick={() => setAnswers((p) => ({ ...p, [currentQuestion.key]: opt }))}
                                         style={{
                                             ...optionStyle,
-                                            background: answers[currentMcq.id] === opt ? "#0f0f0f" : "transparent",
-                                            color: answers[currentMcq.id] === opt ? "#f5f2eb" : "#0f0f0f",
+                                            flex: 1, justifyContent: "center",
+                                            background: answers[currentQuestion.key] === opt ? "#d4401a" : "transparent",
+                                            color: "#f5f2eb",
+                                            borderColor: answers[currentQuestion.key] === opt ? "#d4401a" : "#2a2725",
+                                            fontSize: "15px", fontWeight: 600,
+                                            padding: "20px 18px",
                                         }}>
                                         {opt}
                                     </button>
@@ -285,11 +373,11 @@ export default function ReviewWizard({
                                 </button>
                                 <button
                                     onClick={() => setStep(step + 1)}
-                                    disabled={!answers[currentMcq.id]}
+                                    disabled={!answers[currentQuestion.key]}
                                     style={{
                                         ...nextBtnStyle,
-                                        opacity: answers[currentMcq.id] ? 1 : 0.35,
-                                        cursor: answers[currentMcq.id] ? "pointer" : "not-allowed",
+                                        opacity: answers[currentQuestion.key] ? 1 : 0.35,
+                                        cursor: answers[currentQuestion.key] ? "pointer" : "not-allowed",
                                     }}>
                                     Next →
                                 </button>
@@ -297,41 +385,32 @@ export default function ReviewWizard({
                         </div>
                     )}
 
-                    {/* LAST STEP — text + submit */}
-                    {isTextStep && (
+                    {/* STEP 7 — Optional comment + submit */}
+                    {step === 7 && (
                         <div>
-                            <div style={stepLabel}>
-                                Step {String(totalSteps).padStart(2, "0")} · Optional
-                            </div>
+                            <div style={stepLabel}>Step 07 · Optional</div>
                             <h3 style={questionStyle}>
-                                {textQuestion?.question_text || "Any additional comments?"}
+                                Anything else you want to say?
                             </h3>
                             <textarea
-                                placeholder="Share your experience — this helps other students make better decisions…"
-                                value={textQuestion ? (answers[textQuestion.id] || "") : ""}
-                                onChange={(e) => {
-                                    if (textQuestion) {
-                                        setAnswers((prev) => ({
-                                            ...prev,
-                                            [textQuestion.id]: e.target.value,
-                                        }));
-                                    }
-                                }}
-                                rows={5}
+                                placeholder="Share your experience — the good, the bad, and the ugly…"
+                                value={answers["comment"] || ""}
+                                onChange={(e) => setAnswers((p) => ({ ...p, comment: e.target.value }))}
+                                rows={4}
                                 style={{
                                     width: "100%", fontFamily: "var(--font-mono)",
                                     fontSize: "13px", lineHeight: 1.7,
-                                    padding: "16px", border: "1.5px solid #0f0f0f",
-                                    background: "transparent", color: "#0f0f0f",
+                                    padding: "16px", border: "1.5px solid #2a2725",
+                                    background: "transparent", color: "#f5f2eb",
                                     outline: "none", resize: "vertical",
-                                    marginBottom: "32px",
+                                    marginBottom: "28px",
                                 }}
                             />
 
                             {/* Summary */}
                             <div style={{
-                                border: "1.5px solid #e8e3d9", padding: "20px",
-                                marginBottom: "24px", background: "#f5f2eb",
+                                border: "1.5px solid #2a2725", padding: "20px",
+                                marginBottom: "24px", background: "#1a1917",
                             }}>
                                 <div style={{
                                     fontFamily: "var(--font-mono)", fontSize: "11px",
@@ -340,25 +419,47 @@ export default function ReviewWizard({
                                 }}>
                                     Your answers
                                 </div>
-                                {mcqQuestions.map((q) => (
-                                    <div key={q.id} style={{
+                                {QUESTIONS.map((q) => (
+                                    <div key={q.key} style={{
                                         display: "flex", justifyContent: "space-between",
-                                        padding: "6px 0", borderBottom: "1px solid #e8e3d9",
+                                        padding: "6px 0", borderBottom: "1px solid #2a2725",
                                     }}>
                                         <span style={{
                                             fontFamily: "var(--font-mono)", fontSize: "11px",
                                             opacity: 0.5, maxWidth: "60%",
                                         }}>
-                                            {q.question_text}
+                                            {q.label}
                                         </span>
                                         <span style={{
                                             fontFamily: "var(--font-mono)", fontSize: "11px",
                                             fontWeight: 500,
+                                            color: q.type === "yn"
+                                                ? answers[q.key] === "Yes" ? "#1a7a3a" : answers[q.key] === "No" ? "#d4401a" : "#f5f2eb"
+                                                : "#0f0f0f",
                                         }}>
-                                            {answers[q.id] || "—"}
+                                            {answers[q.key] || "—"}
                                         </span>
                                     </div>
                                 ))}
+                                {answers["comment"] && (
+                                    <div style={{
+                                        marginTop: "10px", padding: "10px 0 0",
+                                    }}>
+                                        <div style={{
+                                            fontFamily: "var(--font-mono)", fontSize: "10px",
+                                            letterSpacing: "0.1em", textTransform: "uppercase",
+                                            opacity: 0.35, marginBottom: "4px",
+                                        }}>
+                                            Comment
+                                        </div>
+                                        <div style={{
+                                            fontFamily: "var(--font-mono)", fontSize: "12px",
+                                            opacity: 0.65, lineHeight: 1.6,
+                                        }}>
+                                            {answers["comment"]}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
                             {error && (
@@ -372,7 +473,7 @@ export default function ReviewWizard({
                             )}
 
                             <div style={{ display: "flex", gap: "12px" }}>
-                                <button onClick={() => setStep(step - 1)} style={backBtnStyle}>
+                                <button onClick={() => setStep(6)} style={backBtnStyle}>
                                     ← Back
                                 </button>
                                 <button
@@ -403,11 +504,9 @@ export default function ReviewWizard({
           .wizard-grid { display: flex !important; flex-direction: column !important; min-height: 100svh !important; }
           .wizard-left { display: contents !important; }
           
-          .wizard-header { order: 1; padding: 72px 24px 16px !important; background: #0f0f0f; }
+          .wizard-header { order: 1; padding: 72px 24px 16px !important; background: #0f0f0f; border-bottom: 1.5px solid #d4401a; }
           .wizard-right { order: 2; flex: 1; padding: 32px 24px !important; justify-content: center !important; }
-          .wizard-warning-wrapper { order: 3; padding: 0 24px !important; background: #0f0f0f; }
-          .wizard-warning-wrapper > div { margin-bottom: 0 !important; }
-          .wizard-progress { order: 4; padding: 16px 24px 32px !important; background: #0f0f0f; }
+          .wizard-progress { order: 4; padding: 16px 24px 32px !important; background: #0f0f0f; border-top: 1.5px solid #d4401a; }
           .step-list { display: none !important; }
         }
       `}</style>
@@ -429,7 +528,7 @@ const questionStyle: React.CSSProperties = {
 
 const optionStyle: React.CSSProperties = {
     width: "100%", textAlign: "left", padding: "14px 18px",
-    border: "1.5px solid #0f0f0f", cursor: "pointer",
+    border: "1.5px solid #2a2725", cursor: "pointer",
     fontFamily: "var(--font-mono)", fontSize: "13px",
     letterSpacing: "0.04em", transition: "background 0.12s, color 0.12s",
     display: "flex", alignItems: "center",
@@ -438,14 +537,14 @@ const optionStyle: React.CSSProperties = {
 const nextBtnStyle: React.CSSProperties = {
     fontFamily: "var(--font-mono)", fontSize: "13px",
     fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase",
-    padding: "14px 28px", background: "#0f0f0f", color: "#f5f2eb",
-    border: "1.5px solid #0f0f0f", cursor: "pointer",
+    padding: "14px 28px", background: "#d4401a", color: "#f5f2eb",
+    border: "1.5px solid #d4401a", cursor: "pointer",
     transition: "background 0.15s",
 };
 
 const backBtnStyle: React.CSSProperties = {
     fontFamily: "var(--font-mono)", fontSize: "13px",
     fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase",
-    padding: "14px 28px", background: "transparent", color: "#0f0f0f",
-    border: "1.5px solid #0f0f0f", cursor: "pointer",
+    padding: "14px 28px", background: "transparent", color: "#f5f2eb",
+    border: "1.5px solid #f5f2eb", cursor: "pointer",
 };

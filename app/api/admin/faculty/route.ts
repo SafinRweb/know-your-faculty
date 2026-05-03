@@ -26,3 +26,29 @@ export async function POST(req: NextRequest) {
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ success: true });
 }
+
+export async function PATCH(req: NextRequest) {
+    const session = await auth();
+    const user = session?.user as any;
+    if (!session || user?.role !== "admin") {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id, name, department, initial } = await req.json();
+    if (!id) {
+        return NextResponse.json({ error: "Faculty ID required." }, { status: 400 });
+    }
+
+    const updates: Record<string, any> = {};
+    if (name?.trim()) updates.name = name.trim();
+    if (department?.trim()) updates.department = department.trim().toUpperCase();
+    if (typeof initial === "string") updates.initial = initial.trim().toUpperCase() || null;
+
+    if (Object.keys(updates).length === 0) {
+        return NextResponse.json({ error: "No fields to update." }, { status: 400 });
+    }
+
+    const { error } = await supabase.from("faculty").update(updates).eq("id", id);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ success: true });
+}

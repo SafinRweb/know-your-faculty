@@ -55,7 +55,7 @@ export default async function FacultyProfilePage({
             {/* HEADER */}
             <div style={{
                 padding: "56px 32px 40px",
-                borderBottom: "1.5px solid #0f0f0f",
+                borderBottom: "1.5px solid #f5f2eb",
                 display: "grid", gridTemplateColumns: "1fr auto",
                 alignItems: "start", gap: "32px",
             }} className="profile-header">
@@ -89,7 +89,7 @@ export default async function FacultyProfilePage({
                         <span style={{
                             fontFamily: "var(--font-mono)", fontSize: "12px",
                             letterSpacing: "0.08em", textTransform: "uppercase",
-                            background: "#e8e3d9", padding: "5px 10px",
+                            background: "#2a2725", padding: "5px 10px",
                         }}>
                             {faculty.department}
                         </span>
@@ -97,7 +97,7 @@ export default async function FacultyProfilePage({
                             <span style={{
                                 fontFamily: "var(--font-mono)", fontSize: "12px",
                                 letterSpacing: "0.08em", textTransform: "uppercase",
-                                background: "#0f0f0f", color: "#f5f2eb",
+                                background: "#f5f2eb", color: "#0f0f0f",
                                 padding: "4px 10px",
                             }}>
                                 {faculty.initial}
@@ -115,15 +115,15 @@ export default async function FacultyProfilePage({
                 {/* Review CTA */}
                 <div style={{ textAlign: "right" }}>
                     {!session ? (
-                        <Link href={`/login?callbackUrl=/faculty/${faculty.id}/review`} style={ctaButtonStyle("#0f0f0f", "#f5f2eb")}>
+                        <Link href={`/login?callbackUrl=/faculty/${faculty.id}/review`} style={ctaButtonStyle("#f5f2eb", "#0f0f0f")}>
                             Log in to review
                         </Link>
                     ) : userReview ? (
-                        <Link href={`/faculty/${faculty.id}/review`} style={ctaButtonStyle("#1a4fd4", "#f5f2eb")}>
+                        <Link href={`/faculty/${faculty.id}/review`} style={ctaButtonStyle("#1a4fd4", "#0f0f0f")}>
                             Edit your review →
                         </Link>
                     ) : (
-                        <Link href={`/faculty/${faculty.id}/review`} style={ctaButtonStyle("#0f0f0f", "#f5f2eb")}>
+                        <Link href={`/faculty/${faculty.id}/review`} style={ctaButtonStyle("#f5f2eb", "#0f0f0f")}>
                             Write a review →
                         </Link>
                     )}
@@ -134,15 +134,15 @@ export default async function FacultyProfilePage({
             {semesters.length > 0 && (
                 <div style={{
                     display: "flex", gap: "0",
-                    borderBottom: "1.5px solid #0f0f0f",
+                    borderBottom: "1.5px solid #f5f2eb",
                     overflowX: "auto", padding: "0 32px",
                 }}>
                     <Link
                         href={`/faculty/${faculty.id}`}
                         style={{
                             ...tabStyle,
-                            background: !selectedSemesterId ? "#0f0f0f" : "transparent",
-                            color: !selectedSemesterId ? "#f5f2eb" : "#0f0f0f",
+                            background: !selectedSemesterId ? "#f5f2eb" : "transparent",
+                            color: !selectedSemesterId ? "#0f0f0f" : "#f5f2eb",
                         }}>
                         All time
                     </Link>
@@ -152,8 +152,8 @@ export default async function FacultyProfilePage({
                             href={`/faculty/${faculty.id}?semester=${s.id}`}
                             style={{
                                 ...tabStyle,
-                                background: selectedSemesterId === s.id ? "#0f0f0f" : "transparent",
-                                color: selectedSemesterId === s.id ? "#f5f2eb" : "#0f0f0f",
+                                background: selectedSemesterId === s.id ? "#f5f2eb" : "transparent",
+                                color: selectedSemesterId === s.id ? "#0f0f0f" : "#f5f2eb",
                             }}>
                             {s.label}
                             {s.is_active && (
@@ -173,10 +173,10 @@ export default async function FacultyProfilePage({
             }} className="profile-body">
 
                 {/* MAIN COLUMN */}
-                <div style={{ borderRight: "1.5px solid #0f0f0f" }}>
+                <div style={{ borderRight: "1.5px solid #f5f2eb" }}>
 
                     {/* ANALYTICS */}
-                    <div style={{ padding: "48px 32px", borderBottom: "1.5px solid #0f0f0f" }}>
+                    <div style={{ padding: "48px 32px", borderBottom: "1.5px solid #f5f2eb" }}>
                         <div style={{
                             fontFamily: "var(--font-mono)", fontSize: "11px",
                             letterSpacing: "0.14em", textTransform: "uppercase",
@@ -221,7 +221,7 @@ export default async function FacultyProfilePage({
                         }}>
                             Student comments
                             {textReviews.length > 0 && (
-                                <span style={{ marginLeft: "8px", color: "#0f0f0f", opacity: 1 }}>
+                                <span style={{ marginLeft: "8px", color: "#f5f2eb", opacity: 1 }}>
                                     ({textReviews.length})
                                 </span>
                             )}
@@ -245,7 +245,7 @@ export default async function FacultyProfilePage({
                                         <div key={review.id} style={{
                                             padding: "28px 0",
                                             borderBottom: i < textReviews.length - 1
-                                                ? "1px solid #e8e3d9" : "none",
+                                                ? "1px solid #2a2725" : "none",
                                         }}>
                                             <div style={{
                                                 display: "flex", alignItems: "center",
@@ -253,11 +253,11 @@ export default async function FacultyProfilePage({
                                             }}>
                                                 <div style={{
                                                     width: "28px", height: "28px",
-                                                    background: "#0f0f0f", borderRadius: "50%",
+                                                    background: "#f5f2eb", borderRadius: "50%",
                                                     display: "flex", alignItems: "center",
                                                     justifyContent: "center",
                                                     fontFamily: "var(--font-mono)", fontSize: "11px",
-                                                    color: "#f5f2eb", flexShrink: 0,
+                                                    color: "#0f0f0f", flexShrink: 0,
                                                 }}>
                                                     {review.user?.alias?.[0]?.toUpperCase() || "S"}
                                                 </div>
@@ -315,7 +315,7 @@ export default async function FacultyProfilePage({
                                 <div key={s.id} style={{
                                     padding: "16px 0",
                                     borderBottom: i < sections.length - 1
-                                        ? "1px solid #e8e3d9" : "none",
+                                        ? "1px solid #2a2725" : "none",
                                 }}>
                                     <div style={{
                                         display: "flex", justifyContent: "space-between",
@@ -374,7 +374,7 @@ export default async function FacultyProfilePage({
         @media (max-width: 768px) {
           .profile-header { grid-template-columns: 1fr !important; }
           .profile-body { grid-template-columns: 1fr !important; }
-          .profile-body > div:last-child { border-right: none !important; border-top: 1.5px solid #0f0f0f; }
+          .profile-body > div:last-child { border-right: none !important; border-top: 1.5px solid #f5f2eb; }
         }
       `}</style>
         </div>
@@ -395,7 +395,7 @@ const tabStyle: React.CSSProperties = {
     fontFamily: "var(--font-mono)", fontSize: "11px",
     letterSpacing: "0.08em", textTransform: "uppercase",
     padding: "14px 20px", textDecoration: "none",
-    borderRight: "1px solid #e8e3d9", whiteSpace: "nowrap",
+    borderRight: "1px solid #2a2725", whiteSpace: "nowrap",
     display: "flex", alignItems: "center",
     transition: "background 0.12s",
 };

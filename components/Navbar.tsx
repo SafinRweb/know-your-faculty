@@ -16,13 +16,13 @@ export default function Navbar() {
                 position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
                 display: "flex", alignItems: "center", justifyContent: "space-between",
                 padding: "18px 32px",
-                background: "#f5f2eb",
-                borderBottom: "1.5px solid #0f0f0f",
+                background: "#0f0f0f",
+                borderBottom: "1.5px solid #f5f2eb",
             }}>
                 <Link href="/" style={{
                     fontFamily: "var(--font-mono)", fontSize: "13px", fontWeight: 500,
                     letterSpacing: "0.08em", textTransform: "uppercase",
-                    color: "#0f0f0f", textDecoration: "none",
+                    color: "#f5f2eb", textDecoration: "none",
                 }}>
                     Know Your <span style={{ color: "#d4401a" }}>Faculty</span>
                 </Link>
@@ -43,9 +43,9 @@ export default function Navbar() {
                                     style={{
                                         fontFamily: "var(--font-mono)", fontSize: "12px",
                                         fontWeight: 500, letterSpacing: "0.06em",
-                                        textTransform: "uppercase", background: "#0f0f0f",
-                                        color: "#f5f2eb", padding: "9px 18px",
-                                        border: "1.5px solid #0f0f0f", cursor: "pointer",
+                                        textTransform: "uppercase", background: "#f5f2eb",
+                                        color: "#0f0f0f", padding: "9px 18px",
+                                        border: "1.5px solid #f5f2eb", cursor: "pointer",
                                         display: "flex", alignItems: "center", gap: "8px",
                                     }}>
                                     {user?.alias || user?.email?.split("@")[0] || "Student"}
@@ -55,7 +55,7 @@ export default function Navbar() {
                                 {dropdownOpen && (
                                     <div style={{
                                         position: "absolute", top: "calc(100% + 8px)", right: 0,
-                                        background: "#0f0f0f", border: "1.5px solid #0f0f0f",
+                                        background: "#f5f2eb", border: "1.5px solid #f5f2eb",
                                         minWidth: "180px", zIndex: 200,
                                     }}>
                                         <div style={{
@@ -65,13 +65,13 @@ export default function Navbar() {
                                             <div style={{
                                                 fontFamily: "var(--font-mono)", fontSize: "10px",
                                                 letterSpacing: "0.1em", textTransform: "uppercase",
-                                                color: "#f5f2eb", opacity: 0.4, marginBottom: "4px",
+                                                color: "#0f0f0f", opacity: 0.4, marginBottom: "4px",
                                             }}>
                                                 Signed in as
                                             </div>
                                             <div style={{
                                                 fontFamily: "var(--font-mono)", fontSize: "12px",
-                                                color: "#f5f2eb", opacity: 0.8,
+                                                color: "#0f0f0f", opacity: 0.8,
                                                 overflow: "hidden", textOverflow: "ellipsis",
                                                 whiteSpace: "nowrap",
                                             }}>
@@ -102,7 +102,7 @@ export default function Navbar() {
                         ) : (
                             <Link href="/login" style={{
                                 ...navLinkStyle, opacity: 1,
-                                background: "#0f0f0f", color: "#f5f2eb",
+                                background: "#f5f2eb", color: "#0f0f0f",
                                 padding: "9px 18px",
                             }}>
                                 Sign in
@@ -119,8 +119,8 @@ export default function Navbar() {
                         display: "none", flexDirection: "column", gap: "5px",
                         background: "none", border: "none", cursor: "pointer", padding: "4px",
                     }}>
-                    <span style={{ display: "block", width: "22px", height: "1.5px", background: "#0f0f0f" }} />
-                    <span style={{ display: "block", width: "22px", height: "1.5px", background: "#0f0f0f" }} />
+                    <span style={{ display: "block", width: "22px", height: "1.5px", background: "#f5f2eb" }} />
+                    <span style={{ display: "block", width: "22px", height: "1.5px", background: "#f5f2eb" }} />
                 </button>
             </nav>
 
@@ -139,6 +139,7 @@ export default function Navbar() {
                     zIndex: 200, display: "flex", flexDirection: "column",
                     justifyContent: "center", alignItems: "flex-start",
                     padding: "48px 32px", gap: "8px",
+                    animation: "slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
                 }}>
                     <button
                         onClick={() => setMobileOpen(false)}
@@ -194,6 +195,10 @@ export default function Navbar() {
             )}
 
             <style>{`
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
         @media (max-width: 900px) {
           .desktop-nav { display: none !important; }
           .burger-btn { display: flex !important; }
@@ -206,13 +211,13 @@ export default function Navbar() {
 const navLinkStyle: React.CSSProperties = {
     fontFamily: "var(--font-mono)", fontSize: "12px", fontWeight: 500,
     letterSpacing: "0.06em", textTransform: "uppercase",
-    color: "#0f0f0f", textDecoration: "none", opacity: 0.55,
+    color: "#f5f2eb", textDecoration: "none", opacity: 0.55,
 };
 
 const dropdownItemStyle: React.CSSProperties = {
     display: "block", padding: "12px 16px",
     fontFamily: "var(--font-mono)", fontSize: "12px",
     letterSpacing: "0.06em", textTransform: "uppercase",
-    color: "#f5f2eb", textDecoration: "none",
+    color: "#0f0f0f", textDecoration: "none",
     opacity: 0.7, transition: "opacity 0.15s",
 };

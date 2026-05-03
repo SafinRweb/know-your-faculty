@@ -21,7 +21,7 @@ export default function HeroSearch() {
       onSubmit={handleSearch}
       style={{
         display: "flex", alignItems: "stretch",
-        border: "1.5px solid #0f0f0f", marginBottom: "48px",
+        border: "1.5px solid #f5f2eb", marginBottom: "48px",
       }}
     >
       <input
@@ -32,7 +32,7 @@ export default function HeroSearch() {
         style={{
           flex: 1, fontFamily: "var(--font-mono)", fontSize: "13px",
           padding: "13px 16px", border: "none", background: "transparent",
-          color: "#0f0f0f", outline: "none",
+          color: "#f5f2eb", outline: "none",
         }}
       />
       <button 
@@ -40,8 +40,8 @@ export default function HeroSearch() {
         style={{
           fontFamily: "var(--font-mono)", fontSize: "11px",
           letterSpacing: "0.1em", textTransform: "uppercase",
-          padding: "13px 18px", background: "#0f0f0f",
-          color: "#f5f2eb", border: "none", cursor: "pointer",
+          padding: "13px 18px", background: "#f5f2eb",
+          color: "#0f0f0f", border: "none", cursor: "pointer",
           display: "flex", alignItems: "center",
         }}
       >

@@ -27,7 +27,7 @@ export default async function HomePage() {
         minHeight: "100svh", padding: "100px 32px 64px",
         display: "grid", gridTemplateColumns: "1fr 1fr",
         gap: "64px", alignItems: "center",
-        borderBottom: "1.5px solid #0f0f0f",
+        borderBottom: "1.5px solid #f5f2eb",
       }}>
         {/* LEFT */}
         <div>
@@ -64,8 +64,8 @@ export default async function HomePage() {
                 <Link href="/faculty" style={{
                   fontFamily: "var(--font-mono)", fontSize: "13px", fontWeight: 500,
                   letterSpacing: "0.06em", textTransform: "uppercase",
-                  color: "#f5f2eb", background: "#0f0f0f",
-                  padding: "14px 28px", border: "1.5px solid #0f0f0f",
+                  color: "#0f0f0f", background: "#f5f2eb",
+                  padding: "14px 28px", border: "1.5px solid #f5f2eb",
                   textDecoration: "none", display: "inline-flex",
                   alignItems: "center", gap: "10px",
                 }}>
@@ -74,8 +74,8 @@ export default async function HomePage() {
                 <Link href="/schedule" style={{
                   fontFamily: "var(--font-mono)", fontSize: "13px", fontWeight: 500,
                   letterSpacing: "0.06em", textTransform: "uppercase",
-                  color: "#0f0f0f", background: "transparent",
-                  padding: "14px 28px", border: "1.5px solid #0f0f0f",
+                  color: "#f5f2eb", background: "transparent",
+                  padding: "14px 28px", border: "1.5px solid #f5f2eb",
                   textDecoration: "none",
                 }}>
                   View schedule
@@ -86,8 +86,8 @@ export default async function HomePage() {
                 <Link href="/login" style={{
                   fontFamily: "var(--font-mono)", fontSize: "13px", fontWeight: 500,
                   letterSpacing: "0.06em", textTransform: "uppercase",
-                  color: "#f5f2eb", background: "#0f0f0f",
-                  padding: "14px 28px", border: "1.5px solid #0f0f0f",
+                  color: "#0f0f0f", background: "#f5f2eb",
+                  padding: "14px 28px", border: "1.5px solid #f5f2eb",
                   textDecoration: "none", display: "inline-flex",
                   alignItems: "center", gap: "10px",
                 }}>
@@ -96,8 +96,8 @@ export default async function HomePage() {
                 <Link href="/faculty" style={{
                   fontFamily: "var(--font-mono)", fontSize: "13px", fontWeight: 500,
                   letterSpacing: "0.06em", textTransform: "uppercase",
-                  color: "#0f0f0f", background: "transparent",
-                  padding: "14px 28px", border: "1.5px solid #0f0f0f",
+                  color: "#f5f2eb", background: "transparent",
+                  padding: "14px 28px", border: "1.5px solid #f5f2eb",
                   textDecoration: "none",
                 }}>
                   Browse faculty
@@ -109,7 +109,7 @@ export default async function HomePage() {
 
         {/* RIGHT — search + quick stats */}
         <div style={{
-          borderLeft: "1.5px solid #0f0f0f", paddingLeft: "64px",
+          borderLeft: "1.5px solid #f5f2eb", paddingLeft: "64px",
           display: "flex", flexDirection: "column", gap: "0",
         }} className="hero-right">
           <div style={{
@@ -129,8 +129,8 @@ export default async function HomePage() {
             ].map((s, i) => (
               <div key={i} style={{
                 padding: "28px 24px",
-                borderTop: "1.5px solid #0f0f0f",
-                borderRight: i % 2 === 0 ? "1.5px solid #0f0f0f" : "none",
+                borderTop: "1.5px solid #f5f2eb",
+                borderRight: i % 2 === 0 ? "1.5px solid #f5f2eb" : "none",
               }}>
                 <div style={{
                   fontFamily: "var(--font-sans)", fontSize: "36px",
@@ -160,8 +160,8 @@ export default async function HomePage() {
 
       {/* TICKER */}
       <div style={{
-        borderBottom: "1.5px solid #0f0f0f", overflow: "hidden",
-        background: "#0f0f0f", padding: "13px 0", whiteSpace: "nowrap",
+        borderBottom: "1.5px solid #d4401a", overflow: "hidden",
+        background: "#d4401a", padding: "13px 0", whiteSpace: "nowrap",
       }}>
         <div style={{ display: "inline-flex", width: "max-content", animation: "ticker 22s linear infinite" }}>
           {[0, 1].map((groupIndex) => (
@@ -174,13 +174,13 @@ export default async function HomePage() {
                   <span style={{
                     fontFamily: "var(--font-mono)", fontSize: "11px",
                     letterSpacing: "0.14em", textTransform: "uppercase",
-                    color: "#f5f2eb", padding: "0 40px", opacity: 0.7,
+                    color: "#f5f2eb", padding: "0 40px", opacity: 0.9,
                   }}>
                     {item}
                   </span>
                   <span style={{
                     fontFamily: "var(--font-mono)", fontSize: "11px",
-                    color: "#d4401a",
+                    color: "#0f0f0f",
                   }}>
                     ★
                   </span>
@@ -194,7 +194,7 @@ export default async function HomePage() {
 
 
       {/* FEATURES */}
-      <section style={{ padding: "96px 32px", borderBottom: "1.5px solid #0f0f0f" }}>
+      <section style={{ padding: "96px 32px", borderBottom: "1.5px solid #f5f2eb" }}>
         <div style={{
           fontFamily: "var(--font-mono)", fontSize: "11px",
           letterSpacing: "0.14em", textTransform: "uppercase",
@@ -204,7 +204,7 @@ export default async function HomePage() {
         </div>
         <div style={{
           display: "grid", gridTemplateColumns: "repeat(3,1fr)",
-          border: "1.5px solid #0f0f0f",
+          border: "1.5px solid #f5f2eb",
         }} className="features-grid">
           {[
             { n: "01", title: "Faculty Analytics", text: "Per-semester breakdown of attendance strictness, grading patterns, and teaching clarity. Data — not star ratings." },
@@ -216,8 +216,8 @@ export default async function HomePage() {
           ].map((f, i) => (
             <div key={i} className="feature-card" style={{
               padding: "48px 36px",
-              borderRight: (i + 1) % 3 !== 0 ? "1.5px solid #0f0f0f" : "none",
-              borderBottom: i < 3 ? "1.5px solid #0f0f0f" : "none",
+              borderRight: (i + 1) % 3 !== 0 ? "1.5px solid #f5f2eb" : "none",
+              borderBottom: i < 3 ? "1.5px solid #f5f2eb" : "none",
             }}>
               <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", opacity: 0.35, marginBottom: "36px" }}>{f.n}</div>
               <div style={{ fontFamily: "var(--font-sans)", fontSize: "22px", fontWeight: 700, letterSpacing: "-0.02em", marginBottom: "16px" }}>{f.title}</div>
@@ -228,7 +228,7 @@ export default async function HomePage() {
       </section>
 
       {/* FACULTY PREVIEW */}
-      <section style={{ padding: "96px 32px", borderBottom: "1.5px solid #0f0f0f" }}>
+      <section style={{ padding: "96px 32px", borderBottom: "1.5px solid #f5f2eb" }}>
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "48px", flexWrap: "wrap", gap: "24px" }}>
           <h2 style={{ fontFamily: "var(--font-sans)", fontSize: "clamp(28px, 3.5vw, 44px)", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.05 }}>
             Browse <em style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 400 }}>faculty</em>
@@ -236,7 +236,7 @@ export default async function HomePage() {
           <Link href="/faculty" style={{
             fontFamily: "var(--font-mono)", fontSize: "13px", fontWeight: 500,
             letterSpacing: "0.06em", textTransform: "uppercase",
-            color: "#0f0f0f", border: "1.5px solid #0f0f0f",
+            color: "#f5f2eb", border: "1.5px solid #f5f2eb",
             padding: "14px 28px", textDecoration: "none",
           }}>
             View all →
@@ -248,9 +248,9 @@ export default async function HomePage() {
             <Link key={f.id} href={`/faculty/${f.id}`} style={{
               display: "grid", gridTemplateColumns: "48px 1fr auto",
               alignItems: "center", gap: "24px", padding: "22px 0",
-              borderBottom: i === preview.length - 1 ? "1.5px solid #0f0f0f" : "1px solid #e8e3d9",
-              borderTop: i === 0 ? "1.5px solid #0f0f0f" : undefined,
-              textDecoration: "none", color: "#0f0f0f",
+              borderBottom: i === preview.length - 1 ? "1.5px solid #f5f2eb" : "1px solid #2a2725",
+              borderTop: i === 0 ? "1.5px solid #f5f2eb" : undefined,
+              textDecoration: "none", color: "#f5f2eb",
             }}>
               <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", opacity: 0.3 }}>
                 {String(i + 1).padStart(2, "0")}
@@ -270,13 +270,13 @@ export default async function HomePage() {
       {/* CTA */}
       {!isLoggedIn && (
         <section style={{
-          padding: "96px 32px", background: "#0f0f0f",
+          padding: "96px 32px", background: "#f5f2eb",
           display: "grid", gridTemplateColumns: "1fr auto",
           alignItems: "center", gap: "48px",
         }} className="cta-band">
           <h2 style={{
             fontFamily: "var(--font-sans)", fontSize: "clamp(32px, 5vw, 64px)",
-            fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1, color: "#f5f2eb",
+            fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1, color: "#0f0f0f",
           }}>
             Your next semester<br />
             starts with the{" "}
@@ -288,8 +288,8 @@ export default async function HomePage() {
           <Link href="/login" style={{
             fontFamily: "var(--font-mono)", fontSize: "13px", fontWeight: 500,
             letterSpacing: "0.06em", textTransform: "uppercase",
-            color: "#0f0f0f", background: "#f5f2eb",
-            padding: "14px 28px", border: "1.5px solid #f5f2eb",
+            color: "#f5f2eb", background: "#0f0f0f",
+            padding: "14px 28px", border: "1.5px solid #0f0f0f",
             textDecoration: "none", whiteSpace: "nowrap",
           }}>
             Sign in with EWU email →

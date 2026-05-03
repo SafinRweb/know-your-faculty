@@ -18,12 +18,12 @@ export default async function FeedPage() {
             }} className="feed-layout">
 
                 {/* MAIN */}
-                <div style={{ borderRight: "1.5px solid #0f0f0f" }}>
+                <div style={{ borderRight: "1.5px solid #f5f2eb" }}>
 
                     {/* Header */}
                     <div style={{
                         padding: "56px 32px 40px",
-                        borderBottom: "1.5px solid #0f0f0f",
+                        borderBottom: "1.5px solid #f5f2eb",
                     }}>
                         <div style={{
                             fontFamily: "var(--font-mono)", fontSize: "11px",
@@ -69,7 +69,7 @@ export default async function FeedPage() {
                     ].map((g, i) => (
                         <div key={i} style={{
                             paddingBottom: "20px", marginBottom: "20px",
-                            borderBottom: i < 3 ? "1px solid #e8e3d9" : "none",
+                            borderBottom: i < 3 ? "1px solid #2a2725" : "none",
                         }}>
                             <div style={{
                                 fontFamily: "var(--font-sans)", fontSize: "14px",
@@ -88,7 +88,7 @@ export default async function FeedPage() {
 
                     <div style={{
                         marginTop: "32px", padding: "16px",
-                        background: "#e8e3d9", border: "1px solid #c8c2b4",
+                        background: "#2a2725", border: "1px solid #c8c2b4",
                     }}>
                         <div style={{
                             fontFamily: "var(--font-mono)", fontSize: "11px",

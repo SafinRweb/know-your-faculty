@@ -27,22 +27,22 @@ function LoginContent() {
 
     return (
         <div style={{
-            minHeight: "100svh", background: "#f5f2eb",
+            minHeight: "100svh", background: "#0f0f0f",
             display: "grid", gridTemplateColumns: "1fr 1fr",
         }} className="login-grid">
 
             {/* LEFT — branding panel */}
             <div style={{
-                background: "#0f0f0f", padding: "48px",
+                background: "#f5f2eb", padding: "48px",
                 display: "flex", flexDirection: "column",
                 justifyContent: "space-between",
-                borderRight: "1.5px solid #0f0f0f",
+                borderRight: "1.5px solid #f5f2eb",
             }} className="login-left">
 
                 <Link href="/" style={{
                     fontFamily: "var(--font-mono)", fontSize: "13px",
                     fontWeight: 500, letterSpacing: "0.08em",
-                    textTransform: "uppercase", color: "#f5f2eb",
+                    textTransform: "uppercase", color: "#0f0f0f",
                     textDecoration: "none", opacity: 0.6,
                 }}>
                     ← Know Your <span style={{ color: "#d4401a" }}>Faculty</span>
@@ -53,7 +53,7 @@ function LoginContent() {
                         fontFamily: "var(--font-sans)",
                         fontSize: "clamp(40px, 5vw, 72px)",
                         fontWeight: 800, lineHeight: 0.92,
-                        letterSpacing: "-0.03em", color: "#f5f2eb",
+                        letterSpacing: "-0.03em", color: "#0f0f0f",
                         marginBottom: "32px",
                     }}>
                         Your voice<br />
@@ -65,7 +65,7 @@ function LoginContent() {
                     </h1>
                     <p style={{
                         fontFamily: "var(--font-mono)", fontSize: "13px",
-                        lineHeight: 1.7, color: "#f5f2eb", opacity: 0.5,
+                        lineHeight: 1.7, color: "#0f0f0f", opacity: 0.5,
                         maxWidth: "360px",
                     }}>
                         Sign in with your EWU student email to submit reviews,
@@ -91,7 +91,7 @@ function LoginContent() {
                             }} />
                             <span style={{
                                 fontFamily: "var(--font-mono)", fontSize: "11px",
-                                letterSpacing: "0.06em", color: "#f5f2eb", opacity: 0.45,
+                                letterSpacing: "0.06em", color: "#0f0f0f", opacity: 0.45,
                                 lineHeight: 1.6,
                             }}>
                                 {note}
@@ -152,9 +152,9 @@ function LoginContent() {
                             width: "100%", display: "flex",
                             alignItems: "center", justifyContent: "center", gap: "12px",
                             padding: "16px 24px",
-                            background: loading ? "#e8e3d9" : "#0f0f0f",
-                            color: loading ? "#0f0f0f" : "#f5f2eb",
-                            border: "1.5px solid #0f0f0f",
+                            background: loading ? "#2a2725" : "#f5f2eb",
+                            color: loading ? "#f5f2eb" : "#0f0f0f",
+                            border: "1.5px solid #f5f2eb",
                             fontFamily: "var(--font-mono)", fontSize: "13px",
                             fontWeight: 500, letterSpacing: "0.06em",
                             textTransform: "uppercase", cursor: loading ? "not-allowed" : "pointer",
@@ -192,8 +192,8 @@ function LoginContent() {
                     {/* Email hint */}
                     <div style={{
                         padding: "14px 16px",
-                        border: "1px solid #e8e3d9",
-                        background: "#e8e3d9",
+                        border: "1px solid #2a2725",
+                        background: "#2a2725",
                     }}>
                         <div style={{
                             fontFamily: "var(--font-mono)", fontSize: "11px",
@@ -215,7 +215,7 @@ function LoginContent() {
                         <Link href="/" style={{
                             fontFamily: "var(--font-mono)", fontSize: "11px",
                             letterSpacing: "0.08em", textTransform: "uppercase",
-                            color: "#0f0f0f", opacity: 0.4, textDecoration: "none",
+                            color: "#f5f2eb", opacity: 0.4, textDecoration: "none",
                         }}>
                             ← Back to home
                         </Link>
@@ -235,7 +235,7 @@ function LoginContent() {
 
 export default function LoginPage() {
     return (
-        <Suspense fallback={<div style={{ minHeight: "100svh", background: "#f5f2eb" }} />}>
+        <Suspense fallback={<div style={{ minHeight: "100svh", background: "#0f0f0f" }} />}>
             <LoginContent />
         </Suspense>
     );

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-type Tab = "overview" | "faculty" | "users" | "reports" | "admins" | "contributors" | "schedule";
+type Tab = "overview" | "faculty" | "users" | "reports" | "admins" | "contributors" | "schedule" | "reviews";
 
 interface Props {
     stats: {
@@ -51,6 +51,17 @@ export default function AdminClient({
     const [contributorMsg, setContributorMsg] = useState<string | null>(null);
     const [newVersion, setNewVersion] = useState(siteConfig.version || "1.0");
     const [versionMsg, setVersionMsg] = useState<string | null>(null);
+
+    // Faculty editing
+    const [editingFaculty, setEditingFaculty] = useState<string | null>(null);
+    const [editForm, setEditForm] = useState({ name: "", department: "", initial: "" });
+    const [editMsg, setEditMsg] = useState<string | null>(null);
+
+    // Reviews management
+    const [adminReviews, setAdminReviews] = useState<any[]>([]);
+    const [reviewsLoading, setReviewsLoading] = useState(false);
+    const [reviewFilter, setReviewFilter] = useState("");
+    const [reviewsLoaded, setReviewsLoaded] = useState(false);
 
     async function handleDeptAction(action: string, id?: string, name?: string) {
         setSaving("dept");
@@ -190,14 +201,49 @@ export default function AdminClient({
         setSaving(null);
     }
 
-    const TABS: Tab[] = ["overview", "faculty", "users", "reports", "admins", "contributors", "schedule"];
+    async function handleEditFaculty(facultyId: string) {
+        setSaving("edit-faculty");
+        setEditMsg(null);
+        const res = await fetch("/api/admin/faculty", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: facultyId, ...editForm }),
+        });
+        const data = await res.json();
+        if (!res.ok) { setEditMsg(data.error || "Failed."); }
+        else { setEditMsg("✓ Updated."); setEditingFaculty(null); router.refresh(); }
+        setSaving(null);
+    }
+
+    async function loadReviews() {
+        setReviewsLoading(true);
+        const res = await fetch("/api/admin/reviews");
+        const data = await res.json();
+        if (res.ok) { setAdminReviews(data.reviews || []); setReviewsLoaded(true); }
+        setReviewsLoading(false);
+    }
+
+    async function handleReviewAdminAction(reviewId: string, action: "delete" | "hide" | "show") {
+        if (action === "delete" && !confirm("Permanently delete this review and all its answers?")) return;
+        setSaving(reviewId);
+        await fetch("/api/admin/reviews", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ reviewId, action }),
+        });
+        setSaving(null);
+        loadReviews();
+        router.refresh();
+    }
+
+    const TABS: Tab[] = ["overview", "faculty", "reviews", "users", "reports", "admins", "contributors", "schedule"];
 
     return (
         <div>
             {/* Header */}
             <div style={{
                 padding: "48px 32px 0",
-                borderBottom: "1.5px solid #0f0f0f",
+                borderBottom: "1.5px solid #f5f2eb",
             }}>
                 <div style={{
                     fontFamily: "var(--font-mono)", fontSize: "11px",
@@ -221,16 +267,16 @@ export default function AdminClient({
                             fontFamily: "var(--font-mono)", fontSize: "11px",
                             letterSpacing: "0.08em", textTransform: "uppercase",
                             padding: "14px 20px",
-                            background: tab === t ? "#0f0f0f" : "transparent",
-                            color: tab === t ? "#f5f2eb" : "#0f0f0f",
-                            border: "none", borderRight: "1px solid #e8e3d9",
+                            background: tab === t ? "#f5f2eb" : "transparent",
+                            color: tab === t ? "#0f0f0f" : "#f5f2eb",
+                            border: "none", borderRight: "1px solid #2a2725",
                             cursor: "pointer", whiteSpace: "nowrap",
                             display: "inline-flex", alignItems: "center", gap: "6px",
                         }}>
                             {t}
                             {t === "reports" && stats.pendingReports > 0 && (
                                 <span style={{
-                                    background: "#d4401a", color: "#f5f2eb",
+                                    background: "#d4401a", color: "#0f0f0f",
                                     borderRadius: "50%", width: "16px", height: "16px",
                                     fontSize: "10px", display: "inline-flex",
                                     alignItems: "center", justifyContent: "center",
@@ -251,7 +297,7 @@ export default function AdminClient({
                         <div style={{
                             display: "grid",
                             gridTemplateColumns: "repeat(5,1fr)",
-                            border: "1.5px solid #0f0f0f",
+                            border: "1.5px solid #f5f2eb",
                             marginBottom: "48px",
                         }} className="stats-overview">
                             {[
@@ -266,12 +312,12 @@ export default function AdminClient({
                             ].map((s, i) => (
                                 <div key={i} style={{
                                     padding: "32px 24px",
-                                    borderRight: i < 4 ? "1.5px solid #0f0f0f" : "none",
+                                    borderRight: i < 4 ? "1.5px solid #f5f2eb" : "none",
                                 }}>
                                     <div style={{
                                         fontFamily: "var(--font-sans)", fontSize: "40px",
                                         fontWeight: 800, letterSpacing: "-0.04em",
-                                        color: s.alert ? "#d4401a" : "#0f0f0f",
+                                        color: s.alert ? "#d4401a" : "#f5f2eb",
                                         marginBottom: "6px",
                                     }}>
                                         {s.val}
@@ -341,48 +387,102 @@ export default function AdminClient({
 
                         <div>
                             <div style={sectionLabel}>{faculty.length} faculty listed</div>
-                            <div style={{ maxHeight: "500px", overflowY: "auto" }}>
+                            {editMsg && (
+                                <div style={{
+                                    fontFamily: "var(--font-mono)", fontSize: "12px",
+                                    color: editMsg.startsWith("✓") ? "#1a4fd4" : "#d4401a",
+                                    marginBottom: "12px",
+                                }}>
+                                    {editMsg}
+                                </div>
+                            )}
+                            <div style={{ maxHeight: "600px", overflowY: "auto" }}>
                                 {faculty.map((f) => (
   <div key={f.id} style={{
-    display: "flex", justifyContent: "space-between",
-    alignItems: "center", padding: "14px 0",
-    borderBottom: "1px solid #e8e3d9", gap: "12px",
+    padding: "14px 0",
+    borderBottom: "1px solid #2a2725",
   }}>
-    <div>
-      <div style={{
-        fontFamily: "var(--font-sans)", fontSize: "14px",
-        fontWeight: 700, letterSpacing: "-0.01em",
-      }}>
-        {f.name}
+    {editingFaculty === f.id ? (
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
+          <div>
+            <div style={fieldLabel}>Name</div>
+            <input value={editForm.name} onChange={(e) => setEditForm(p => ({ ...p, name: e.target.value }))} placeholder={f.name} style={inputStyle} />
+          </div>
+          <div>
+            <div style={fieldLabel}>Department</div>
+            <input value={editForm.department} onChange={(e) => setEditForm(p => ({ ...p, department: e.target.value }))} placeholder={f.department} style={inputStyle} />
+          </div>
+          <div>
+            <div style={fieldLabel}>Initial</div>
+            <input value={editForm.initial} onChange={(e) => setEditForm(p => ({ ...p, initial: e.target.value }))} placeholder={f.initial || "—"} style={inputStyle} />
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button onClick={() => handleEditFaculty(f.id)} disabled={saving === "edit-faculty"} style={primaryBtn}>
+            {saving === "edit-faculty" ? "Saving…" : "Save"}
+          </button>
+          <button onClick={() => { setEditingFaculty(null); setEditMsg(null); }} style={{ ...primaryBtn, background: "transparent", color: "#f5f2eb" }}>
+            Cancel
+          </button>
+        </div>
       </div>
-      <div style={{
-        fontFamily: "var(--font-mono)", fontSize: "11px",
-        opacity: 0.4, textTransform: "uppercase",
-        letterSpacing: "0.06em", marginTop: "2px",
-      }}>
-        {f.department}{f.initial && ` · ${f.initial}`}
+    ) : (
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px" }}>
+        <div>
+          <div style={{
+            fontFamily: "var(--font-sans)", fontSize: "14px",
+            fontWeight: 700, letterSpacing: "-0.01em",
+          }}>
+            {f.name}
+          </div>
+          <div style={{
+            fontFamily: "var(--font-mono)", fontSize: "11px",
+            opacity: 0.4, textTransform: "uppercase",
+            letterSpacing: "0.06em", marginTop: "2px",
+          }}>
+            {f.department}{f.initial && ` · ${f.initial}`}
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
+          <button
+            onClick={() => {
+              setEditingFaculty(f.id);
+              setEditForm({ name: f.name, department: f.department, initial: f.initial || "" });
+              setEditMsg(null);
+            }}
+            style={{
+              fontFamily: "var(--font-mono)", fontSize: "11px",
+              letterSpacing: "0.06em", textTransform: "uppercase",
+              padding: "6px 12px", background: "transparent",
+              color: "#1a4fd4", border: "1px solid #1a4fd4",
+              cursor: "pointer",
+            }}>
+            Edit
+          </button>
+          <button
+            onClick={() => {
+              if (confirm(`Remove ${f.name} from the directory?`)) {
+                setSaving(f.id);
+                fetch("/api/admin/faculty/delete", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ facultyId: f.id }),
+                }).then(() => { setSaving(null); router.refresh(); });
+              }
+            }}
+            style={{
+              fontFamily: "var(--font-mono)", fontSize: "11px",
+              letterSpacing: "0.06em", textTransform: "uppercase",
+              padding: "6px 12px", background: "transparent",
+              color: "#d4401a", border: "1px solid #d4401a",
+              cursor: "pointer",
+            }}>
+            {saving === f.id ? "…" : "Remove"}
+          </button>
+        </div>
       </div>
-    </div>
-    <button
-      onClick={() => {
-        if (confirm(`Remove ${f.name} from the directory?`)) {
-          setSaving(f.id);
-          fetch("/api/admin/faculty/delete", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ facultyId: f.id }),
-          }).then(() => { setSaving(null); router.refresh(); });
-        }
-      }}
-      style={{
-        fontFamily: "var(--font-mono)", fontSize: "11px",
-        letterSpacing: "0.06em", textTransform: "uppercase",
-        padding: "6px 12px", background: "transparent",
-        color: "#d4401a", border: "1px solid #d4401a",
-        cursor: "pointer", flexShrink: 0,
-      }}>
-      {saving === f.id ? "…" : "Remove"}
-    </button>
+    )}
   </div>
 ))}
                             </div>
@@ -392,7 +492,7 @@ export default function AdminClient({
                         {/* Departments manager */}
                         <div style={{
                             marginTop: "48px", paddingTop: "48px",
-                            borderTop: "1.5px solid #0f0f0f",
+                            borderTop: "1.5px solid #f5f2eb",
                         }}>
                             <div style={sectionLabel}>Manage departments</div>
                             <div style={{
@@ -431,7 +531,7 @@ export default function AdminClient({
                                         {departments.map((d: any) => (
                                             <div key={d.id} style={{
                                                 display: "flex", alignItems: "center", gap: "0",
-                                                border: "1.5px solid #0f0f0f",
+                                                border: "1.5px solid #f5f2eb",
                                             }}>
                                                 <span style={{
                                                     fontFamily: "var(--font-mono)", fontSize: "12px",
@@ -444,7 +544,7 @@ export default function AdminClient({
                                                     style={{
                                                         fontFamily: "var(--font-mono)", fontSize: "11px",
                                                         padding: "7px 10px", background: "none",
-                                                        border: "none", borderLeft: "1.5px solid #0f0f0f",
+                                                        border: "none", borderLeft: "1.5px solid #f5f2eb",
                                                         cursor: "pointer", color: "#d4401a",
                                                     }}>
                                                     ×
@@ -467,7 +567,7 @@ export default function AdminClient({
                                 display: "grid",
                                 gridTemplateColumns: "1fr auto auto auto",
                                 alignItems: "center", gap: "16px",
-                                padding: "16px 0", borderBottom: "1px solid #e8e3d9",
+                                padding: "16px 0", borderBottom: "1px solid #2a2725",
                             }} className="user-row">
                                 <div>
                                     <div style={{
@@ -484,15 +584,15 @@ export default function AdminClient({
                                 </div>
                                 <span style={{
                                     ...badge,
-                                    background: u.role === "admin" ? "#0f0f0f" : "#e8e3d9",
-                                    color: u.role === "admin" ? "#f5f2eb" : "#0f0f0f",
+                                    background: u.role === "admin" ? "#f5f2eb" : "#2a2725",
+                                    color: u.role === "admin" ? "#0f0f0f" : "#f5f2eb",
                                 }}>
                                     {u.role}
                                 </span>
                                 <span style={{
                                     ...badge,
-                                    background: u.is_banned ? "#d4401a" : "#e8e3d9",
-                                    color: u.is_banned ? "#f5f2eb" : "#0f0f0f",
+                                    background: u.is_banned ? "#d4401a" : "#2a2725",
+                                    color: u.is_banned ? "#0f0f0f" : "#f5f2eb",
                                 }}>
                                     {u.is_banned ? "Banned" : "Active"}
                                 </span>
@@ -531,7 +631,7 @@ export default function AdminClient({
                         ) : (
                             reports.map((r) => (
                                 <div key={r.id} style={{
-                                    padding: "24px", border: "1.5px solid #0f0f0f",
+                                    padding: "24px", border: "1.5px solid #f5f2eb",
                                     marginBottom: "16px",
                                 }}>
                                     <div style={{
@@ -544,7 +644,7 @@ export default function AdminClient({
                                     <div style={{
                                         fontFamily: "var(--font-mono)", fontSize: "13px",
                                         lineHeight: 1.7, padding: "14px",
-                                        background: "#e8e3d9", marginBottom: "16px",
+                                        background: "#2a2725", marginBottom: "16px",
                                     }}>
                                         {r.post?.body}
                                     </div>
@@ -631,7 +731,7 @@ export default function AdminClient({
                             </div>
                             {adminAccounts.map((a) => (
   <div key={a.id} style={{
-    padding: "16px 0", borderBottom: "1px solid #e8e3d9",
+    padding: "16px 0", borderBottom: "1px solid #2a2725",
   }}>
     <div style={{
       display: "flex", justifyContent: "space-between",
@@ -708,7 +808,7 @@ export default function AdminClient({
                     {/* Version control */}
                     <div style={{
                       marginBottom: "48px", paddingBottom: "48px",
-                      borderBottom: "1.5px solid #0f0f0f",
+                      borderBottom: "1.5px solid #f5f2eb",
                     }}>
                       <div style={sectionLabel}>Site version</div>
                       <div style={{ display: "flex", gap: "12px", alignItems: "flex-end", maxWidth: "360px" }}>
@@ -779,7 +879,7 @@ export default function AdminClient({
                         <div style={sectionLabel}>{contributors.length} contributors</div>
                         {contributors.map((c) => (
                           <div key={c.id} style={{
-                            padding: "16px 0", borderBottom: "1px solid #e8e3d9",
+                            padding: "16px 0", borderBottom: "1px solid #2a2725",
                             display: "flex", justifyContent: "space-between",
                             alignItems: "flex-start", gap: "12px",
                           }}>
@@ -827,6 +927,108 @@ export default function AdminClient({
                   </div>
                 )}
 
+                {/* ── REVIEWS ── */}
+                {tab === "reviews" && (
+                    <div>
+                        {!reviewsLoaded ? (
+                            <div>
+                                <div style={sectionLabel}>Review management</div>
+                                <p style={{ fontFamily: "var(--font-mono)", fontSize: "13px", opacity: 0.5, marginBottom: "20px" }}>
+                                    Load all reviews to search, hide, or delete them.
+                                </p>
+                                <button onClick={loadReviews} disabled={reviewsLoading} style={primaryBtn}>
+                                    {reviewsLoading ? "Loading…" : "Load reviews →"}
+                                </button>
+                            </div>
+                        ) : (
+                            <div>
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
+                                    <div style={sectionLabel}>{adminReviews.length} reviews total</div>
+                                    <input
+                                        value={reviewFilter}
+                                        onChange={(e) => setReviewFilter(e.target.value)}
+                                        placeholder="Filter by faculty name, student alias…"
+                                        style={{ ...inputStyle, maxWidth: "360px" }}
+                                    />
+                                </div>
+                                <div style={{ maxHeight: "700px", overflowY: "auto" }}>
+                                    {adminReviews
+                                        .filter((r) => {
+                                            if (!reviewFilter.trim()) return true;
+                                            const q = reviewFilter.toLowerCase();
+                                            return (
+                                                r.faculty?.name?.toLowerCase().includes(q) ||
+                                                r.user?.alias?.toLowerCase().includes(q) ||
+                                                r.user?.email?.toLowerCase().includes(q)
+                                            );
+                                        })
+                                        .map((r) => (
+                                            <div key={r.id} style={{
+                                                padding: "20px", border: "1.5px solid #2a2725",
+                                                marginBottom: "12px",
+                                                opacity: r.is_visible ? 1 : 0.5,
+                                            }}>
+                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "16px", marginBottom: "12px" }}>
+                                                    <div>
+                                                        <div style={{ fontFamily: "var(--font-sans)", fontSize: "15px", fontWeight: 700, marginBottom: "4px" }}>
+                                                            {r.faculty?.name || "Unknown faculty"}
+                                                        </div>
+                                                        <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", opacity: 0.5, display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                                                            <span>by {r.user?.alias || "anon"}</span>
+                                                            <span>{r.semester?.label || "No semester"}</span>
+                                                            <span>{new Date(r.created_at).toLocaleDateString("en-GB")}</span>
+                                                            {!r.is_visible && <span style={{ color: "#d4401a" }}>HIDDEN</span>}
+                                                        </div>
+                                                    </div>
+                                                    <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
+                                                        <button
+                                                            onClick={() => handleReviewAdminAction(r.id, r.is_visible ? "hide" : "show")}
+                                                            disabled={saving === r.id}
+                                                            style={{
+                                                                fontFamily: "var(--font-mono)", fontSize: "11px",
+                                                                letterSpacing: "0.06em", textTransform: "uppercase",
+                                                                padding: "6px 12px", background: "transparent",
+                                                                color: "#1a4fd4", border: "1px solid #1a4fd4",
+                                                                cursor: "pointer",
+                                                            }}>
+                                                            {r.is_visible ? "Hide" : "Show"}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleReviewAdminAction(r.id, "delete")}
+                                                            disabled={saving === r.id}
+                                                            style={{
+                                                                fontFamily: "var(--font-mono)", fontSize: "11px",
+                                                                letterSpacing: "0.06em", textTransform: "uppercase",
+                                                                padding: "6px 12px", background: "transparent",
+                                                                color: "#d4401a", border: "1px solid #d4401a",
+                                                                cursor: "pointer",
+                                                            }}>
+                                                            {saving === r.id ? "…" : "Delete"}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                {r.answers && r.answers.length > 0 && (
+                                                    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                                        {r.answers.map((a: any) => (
+                                                            <div key={a.id} style={{
+                                                                fontFamily: "var(--font-mono)", fontSize: "12px",
+                                                                lineHeight: 1.6, padding: "8px 12px",
+                                                                background: "#0f0f0f", border: "1px solid #2a2725",
+                                                            }}>
+                                                                <span style={{ opacity: 0.45 }}>{a.question?.question_text}: </span>
+                                                                <span style={{ fontWeight: 500 }}>{a.answer_value}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {/* ── SCHEDULE ── */}
                 {tab === "schedule" && (
                     <div style={{ maxWidth: "600px" }}>
@@ -866,16 +1068,16 @@ const fieldLabel: React.CSSProperties = {
 const inputStyle: React.CSSProperties = {
     width: "100%", fontFamily: "var(--font-mono)",
     fontSize: "13px", padding: "12px 14px",
-    border: "1.5px solid #0f0f0f", background: "transparent",
-    color: "#0f0f0f", outline: "none",
+    border: "1.5px solid #f5f2eb", background: "transparent",
+    color: "#f5f2eb", outline: "none",
 };
 
 const primaryBtn: React.CSSProperties = {
     fontFamily: "var(--font-mono)", fontSize: "12px",
     fontWeight: 500, letterSpacing: "0.06em",
     textTransform: "uppercase", padding: "12px 24px",
-    background: "#0f0f0f", color: "#f5f2eb",
-    border: "1.5px solid #0f0f0f", cursor: "pointer",
+    background: "#f5f2eb", color: "#0f0f0f",
+    border: "1.5px solid #f5f2eb", cursor: "pointer",
 };
 
 const badge: React.CSSProperties = {
@@ -948,7 +1150,7 @@ function ScheduleUploader({ semesters }: { semesters: any[] }) {
             <div key={s.id} style={{
               display: "flex", justifyContent: "space-between",
               alignItems: "center", padding: "14px 0",
-              borderBottom: "1px solid #e8e3d9",
+              borderBottom: "1px solid #2a2725",
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                 <span style={{
@@ -988,7 +1190,7 @@ function ScheduleUploader({ semesters }: { semesters: any[] }) {
       <div style={sectionLabel}>Upload new schedule PDF</div>
 
       <div style={{
-        padding: "16px", background: "#e8e3d9",
+        padding: "16px", background: "#2a2725",
         marginBottom: "24px",
       }}>
         <div style={{
@@ -1024,8 +1226,8 @@ function ScheduleUploader({ semesters }: { semesters: any[] }) {
           <span style={{
             fontFamily: "var(--font-mono)", fontSize: "11px",
             letterSpacing: "0.08em", textTransform: "uppercase",
-            padding: "8px 14px", background: "#0f0f0f",
-            color: "#f5f2eb", flexShrink: 0,
+            padding: "8px 14px", background: "#f5f2eb",
+            color: "#0f0f0f", flexShrink: 0,
           }}>
             Choose PDF
           </span>
@@ -1082,7 +1284,7 @@ function ScheduleUploader({ semesters }: { semesters: any[] }) {
             <div key={label as string} style={{
               display: "flex", justifyContent: "space-between",
               fontFamily: "var(--font-mono)", fontSize: "12px",
-              padding: "6px 0", borderBottom: "1px solid #e8e3d9",
+              padding: "6px 0", borderBottom: "1px solid #2a2725",
             }}>
               <span style={{ opacity: 0.5 }}>{label}</span>
               <span style={{ fontWeight: 500 }}>{val}</span>

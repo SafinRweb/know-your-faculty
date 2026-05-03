@@ -58,7 +58,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
         body: body.trim(),
         status: "active",
         created_at: new Date().toISOString(),
-        user: { alias: session?.alias || "Student", avatar_color: "#0f0f0f" },
+        user: { alias: session?.alias || "Student", avatar_color: "#f5f2eb" },
         replies: [],
       };
 
@@ -93,7 +93,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
         created_at: new Date().toISOString(),
         user: isAdmin
           ? undefined
-          : { alias: session?.alias || "Student", avatar_color: "#0f0f0f" },
+          : { alias: session?.alias || "Student", avatar_color: "#f5f2eb" },
       };
 
       setPosts((prev) =>
@@ -128,14 +128,14 @@ export default function FeedClient({ initialPosts, session }: Props) {
     <div>
       {/* Compose box */}
       {session ? (
-        <div style={{ padding: "28px 32px", borderBottom: "1.5px solid #0f0f0f" }}>
+        <div style={{ padding: "28px 32px", borderBottom: "1.5px solid #f5f2eb" }}>
           <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
             <div style={{
               width: "36px", height: "36px", borderRadius: "50%",
-              background: "#0f0f0f", display: "flex",
+              background: "#f5f2eb", display: "flex",
               alignItems: "center", justifyContent: "center",
               fontFamily: "var(--font-mono)", fontSize: "13px",
-              color: "#f5f2eb", flexShrink: 0,
+              color: "#0f0f0f", flexShrink: 0,
             }}>
               {session.role === "admin" ? "K" : session.alias?.[0]?.toUpperCase() || "S"}
             </div>
@@ -149,8 +149,8 @@ export default function FeedClient({ initialPosts, session }: Props) {
                 style={{
                   width: "100%", fontFamily: "var(--font-mono)",
                   fontSize: "13px", lineHeight: 1.7,
-                  padding: "12px 14px", border: "1.5px solid #0f0f0f",
-                  background: "transparent", color: "#0f0f0f",
+                  padding: "12px 14px", border: "1.5px solid #f5f2eb",
+                  background: "transparent", color: "#f5f2eb",
                   outline: "none", resize: "vertical", marginBottom: "10px",
                 }}
               />
@@ -165,8 +165,8 @@ export default function FeedClient({ initialPosts, session }: Props) {
                     fontFamily: "var(--font-mono)", fontSize: "12px",
                     fontWeight: 500, letterSpacing: "0.06em",
                     textTransform: "uppercase", padding: "10px 20px",
-                    background: posting || body.trim().length < 10 ? "#c8c2b4" : "#0f0f0f",
-                    color: "#f5f2eb", border: "none",
+                    background: posting || body.trim().length < 10 ? "#c8c2b4" : "#f5f2eb",
+                    color: "#0f0f0f", border: "none",
                     cursor: posting || body.trim().length < 10 ? "not-allowed" : "pointer",
                   }}>
                   {posting ? "Posting…" : "Post"}
@@ -182,7 +182,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
         </div>
       ) : (
         <div style={{
-          padding: "24px 32px", borderBottom: "1.5px solid #0f0f0f",
+          padding: "24px 32px", borderBottom: "1.5px solid #f5f2eb",
           display: "flex", alignItems: "center",
           justifyContent: "space-between", gap: "16px", flexWrap: "wrap",
         }}>
@@ -192,7 +192,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
           <a href="/login" style={{
             fontFamily: "var(--font-mono)", fontSize: "12px",
             fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase",
-            color: "#f5f2eb", background: "#0f0f0f",
+            color: "#0f0f0f", background: "#f5f2eb",
             padding: "10px 20px", textDecoration: "none",
           }}>
             Sign in →
@@ -212,17 +212,17 @@ export default function FeedClient({ initialPosts, session }: Props) {
         ) : (
           posts.map((post) => (
             <div key={post.id} style={{
-              borderBottom: "1.5px solid #e8e3d9",
+              borderBottom: "1.5px solid #2a2725",
             }}>
               {/* Post */}
               <div style={{ padding: "28px 32px" }}>
                 <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
                   <div style={{
                     width: "36px", height: "36px", borderRadius: "50%",
-                    background: post.admin ? post.admin.avatar_color : (post.user?.avatar_color || "#0f0f0f"),
+                    background: post.admin ? post.admin.avatar_color : (post.user?.avatar_color || "#f5f2eb"),
                     display: "flex", alignItems: "center", justifyContent: "center",
                     fontFamily: "var(--font-mono)", fontSize: "13px",
-                    color: "#f5f2eb", flexShrink: 0,
+                    color: "#0f0f0f", flexShrink: 0,
                   }}>
                     {post.admin ? "K" : (post.user?.alias?.[0]?.toUpperCase() || "S")}
                   </div>
@@ -272,7 +272,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
                             fontFamily: "var(--font-mono)", fontSize: "11px",
                             letterSpacing: "0.06em", textTransform: "uppercase",
                             background: "none", border: "none", cursor: "pointer",
-                            opacity: 0.45, color: "#0f0f0f", padding: "0",
+                            opacity: 0.45, color: "#f5f2eb", padding: "0",
                           }}>
                           {replyingTo === post.id ? "Cancel" : `Reply${(post.replies?.length ?? 0) > 0 ? ` (${post.replies?.length})` : ""}`}
                         </button>
@@ -286,7 +286,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
                             letterSpacing: "0.06em", textTransform: "uppercase",
                             background: "none", border: "none", cursor: "pointer",
                             opacity: reportedIds.has(post.id) ? 0.2 : 0.3,
-                            color: "#0f0f0f", padding: "0",
+                            color: "#f5f2eb", padding: "0",
                           }}>
                           {reportedIds.has(post.id) ? "Reported" : "Report"}
                         </button>
@@ -300,7 +300,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
               {(post.replies?.length ?? 0) > 0 && (
                 <div style={{
                   marginLeft: "80px", marginRight: "32px",
-                  borderLeft: "2px solid #e8e3d9",
+                  borderLeft: "2px solid #2a2725",
                   marginBottom: "16px",
                 }}>
                   {post.replies?.map((reply) => (
@@ -311,10 +311,10 @@ export default function FeedClient({ initialPosts, session }: Props) {
                       <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
                         <div style={{
                           width: "28px", height: "28px", borderRadius: "50%",
-                          background: reply.is_admin ? "#d4401a" : (reply.user?.avatar_color || "#0f0f0f"),
+                          background: reply.is_admin ? "#d4401a" : (reply.user?.avatar_color || "#f5f2eb"),
                           display: "flex", alignItems: "center", justifyContent: "center",
                           fontFamily: "var(--font-mono)", fontSize: "11px",
-                          color: "#f5f2eb", flexShrink: 0,
+                          color: "#0f0f0f", flexShrink: 0,
                         }}>
                           {reply.is_admin ? "K" : reply.user?.alias?.[0]?.toUpperCase() || "S"}
                         </div>
@@ -326,7 +326,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
                             <span style={{
                               fontFamily: "var(--font-mono)", fontSize: "12px",
                               fontWeight: 500,
-                              color: reply.is_admin ? "#d4401a" : "#0f0f0f",
+                              color: reply.is_admin ? "#d4401a" : "#f5f2eb",
                             }}>
                               {reply.is_admin ? (reply.admin?.display_name || "Know_Your_Faculty") : (reply.user?.alias || "Student")}
                             </span>
@@ -334,7 +334,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
                               <span style={{
                                 fontFamily: "var(--font-mono)", fontSize: "9px",
                                 letterSpacing: "0.1em", textTransform: "uppercase",
-                                background: "#d4401a", color: "#f5f2eb",
+                                background: "#d4401a", color: "#0f0f0f",
                                 padding: "2px 6px",
                               }}>
                                 Admin
@@ -383,8 +383,8 @@ export default function FeedClient({ initialPosts, session }: Props) {
                     }
                     style={{
                       flex: 1, fontFamily: "var(--font-mono)", fontSize: "13px",
-                      padding: "10px 14px", border: "1.5px solid #0f0f0f",
-                      background: "transparent", color: "#0f0f0f", outline: "none",
+                      padding: "10px 14px", border: "1.5px solid #f5f2eb",
+                      background: "transparent", color: "#f5f2eb", outline: "none",
                     }}
                   />
                   <button
@@ -394,8 +394,8 @@ export default function FeedClient({ initialPosts, session }: Props) {
                       fontFamily: "var(--font-mono)", fontSize: "11px",
                       letterSpacing: "0.06em", textTransform: "uppercase",
                       padding: "10px 16px",
-                      background: replyingLoading ? "#c8c2b4" : "#0f0f0f",
-                      color: "#f5f2eb", border: "none", cursor: "pointer",
+                      background: replyingLoading ? "#c8c2b4" : "#f5f2eb",
+                      color: "#0f0f0f", border: "none", cursor: "pointer",
                     }}>
                     {replyingLoading ? "…" : "Send"}
                   </button>

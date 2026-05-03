@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 const AVATAR_COLORS = [
-  "#0f0f0f", "#d4401a", "#1a4fd4", "#2a7a4f",
+  "#f5f2eb", "#d4401a", "#1a4fd4", "#2a7a4f",
   "#8b2fc9", "#c4841a", "#1a8bc4", "#c41a6b",
 ];
 
@@ -59,20 +59,20 @@ export default function OnboardingPage() {
 
   return (
     <div style={{
-      minHeight: "100svh", background: "#f5f2eb",
+      minHeight: "100svh", background: "#0f0f0f",
       display: "grid", gridTemplateColumns: "1fr 1fr",
     }} className="onboard-grid">
 
       {/* LEFT */}
       <div style={{
-        background: "#0f0f0f", padding: "56px 48px",
+        background: "#f5f2eb", padding: "56px 48px",
         display: "flex", flexDirection: "column",
         justifyContent: "space-between",
       }} className="onboard-left">
         <div style={{
           fontFamily: "var(--font-mono)", fontSize: "13px",
           fontWeight: 500, letterSpacing: "0.08em",
-          textTransform: "uppercase", color: "#f5f2eb", opacity: 0.4,
+          textTransform: "uppercase", color: "#0f0f0f", opacity: 0.4,
         }}>
           Know Your <span style={{ color: "#d4401a" }}>Faculty</span>
         </div>
@@ -82,7 +82,7 @@ export default function OnboardingPage() {
             fontFamily: "var(--font-sans)",
             fontSize: "clamp(36px, 4.5vw, 60px)",
             fontWeight: 800, letterSpacing: "-0.03em",
-            lineHeight: 0.95, color: "#f5f2eb", marginBottom: "24px",
+            lineHeight: 0.95, color: "#0f0f0f", marginBottom: "24px",
           }}>
             One last<br />
             <em style={{
@@ -92,7 +92,7 @@ export default function OnboardingPage() {
           </h1>
           <p style={{
             fontFamily: "var(--font-mono)", fontSize: "13px",
-            lineHeight: 1.7, color: "#f5f2eb", opacity: 0.5,
+            lineHeight: 1.7, color: "#0f0f0f", opacity: 0.5,
             maxWidth: "340px",
           }}>
             Set a display name that will appear on your reviews.
@@ -114,7 +114,7 @@ export default function OnboardingPage() {
               }} />
               <span style={{
                 fontFamily: "var(--font-mono)", fontSize: "11px",
-                color: "#f5f2eb", opacity: 0.4, lineHeight: 1.6,
+                color: "#0f0f0f", opacity: 0.4, lineHeight: 1.6,
               }}>
                 {note}
               </span>
@@ -148,7 +148,7 @@ export default function OnboardingPage() {
               background: color, display: "flex",
               alignItems: "center", justifyContent: "center",
               fontFamily: "var(--font-sans)", fontSize: "24px",
-              fontWeight: 800, color: "#f5f2eb",
+              fontWeight: 800, color: "#0f0f0f",
               transition: "background 0.2s",
               flexShrink: 0,
             }}>
@@ -189,8 +189,8 @@ export default function OnboardingPage() {
               style={{
                 width: "100%", fontFamily: "var(--font-mono)",
                 fontSize: "14px", padding: "13px 16px",
-                border: "1.5px solid #0f0f0f", background: "transparent",
-                color: "#0f0f0f", outline: "none", letterSpacing: "0.02em",
+                border: "1.5px solid #f5f2eb", background: "transparent",
+                color: "#f5f2eb", outline: "none", letterSpacing: "0.02em",
               }}
             />
             <div style={{
@@ -218,9 +218,9 @@ export default function OnboardingPage() {
                   style={{
                     width: "36px", height: "36px", borderRadius: "50%",
                     background: c, border: color === c
-                      ? "3px solid #0f0f0f" : "3px solid transparent",
+                      ? "3px solid #f5f2eb" : "3px solid transparent",
                     cursor: "pointer", outline: color === c
-                      ? "2px solid #f5f2eb" : "none",
+                      ? "2px solid #0f0f0f" : "none",
                     outlineOffset: "1px",
                     transition: "border 0.15s",
                   }}
@@ -246,8 +246,8 @@ export default function OnboardingPage() {
               width: "100%", fontFamily: "var(--font-mono)",
               fontSize: "13px", fontWeight: 500,
               letterSpacing: "0.06em", textTransform: "uppercase",
-              padding: "16px", background: saving ? "#c8c2b4" : "#0f0f0f",
-              color: "#f5f2eb", border: "none",
+              padding: "16px", background: saving ? "#c8c2b4" : "#f5f2eb",
+              color: "#0f0f0f", border: "none",
               cursor: saving ? "not-allowed" : "pointer",
             }}>
             {saving ? "Saving…" : "Save & continue →"}

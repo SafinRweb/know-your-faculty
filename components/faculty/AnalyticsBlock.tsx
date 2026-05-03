@@ -11,19 +11,12 @@ interface Props {
 }
 
 const COLORS: Record<string, string> = {
-  "Strict":        "#0f0f0f",
-  "Moderate":      "#4a7fd4",
-  "Lenient":       "#1a4fd4",
-  "Very Fair":     "#1a4fd4",
-  "Fair":          "#4a7fd4",
-  "Very Clear":    "#1a4fd4",
-  "Clear":         "#4a7fd4",
-  "Hard to Follow":"#d4401a",
-  "Don't Know":    "#c8c2b4",
+  "Yes":           "#1a7a3a",
+  "No":            "#d4401a",
 };
 
 const FALLBACK_COLORS = [
-  "#0f0f0f", "#d4401a", "#1a4fd4",
+  "#f5f2eb", "#d4401a", "#1a4fd4",
   "#4a7fd4", "#c8c2b4", "#2a7a4f",
 ];
 
@@ -36,9 +29,9 @@ const CustomTooltip = ({ active, payload }: any) => {
   const d = payload[0];
   return (
     <div style={{
-      background: "#0f0f0f", padding: "10px 14px",
+      background: "#f5f2eb", padding: "10px 14px",
       fontFamily: "var(--font-mono)", fontSize: "12px",
-      color: "#f5f2eb", border: "none",
+      color: "#0f0f0f", border: "none",
     }}>
       <div style={{ fontWeight: 500, marginBottom: "2px" }}>{d.name}</div>
       <div style={{ opacity: 0.6 }}>
@@ -102,7 +95,7 @@ export default function AnalyticsBlock({ analytics }: Props) {
       display: "grid",
       gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
       gap: "0",
-      border: "1.5px solid #0f0f0f",
+      border: "1.5px solid #f5f2eb",
     }}>
       {groups.map((group, gi) => {
         const pieData = group.rows.map((r) => ({
@@ -119,7 +112,7 @@ export default function AnalyticsBlock({ analytics }: Props) {
           <div key={gi} style={{
             padding: "32px 28px",
             borderRight: gi < groups.length - 1
-              ? "1.5px solid #0f0f0f" : "none",
+              ? "1.5px solid #f5f2eb" : "none",
           }}>
             {/* Question */}
             <div style={{
@@ -165,7 +158,7 @@ export default function AnalyticsBlock({ analytics }: Props) {
             {/* Top answer callout */}
             <div style={{
               marginTop: "20px", padding: "12px 14px",
-              background: "#e8e3d9",
+              background: "#2a2725",
               display: "flex", justifyContent: "space-between",
               alignItems: "center",
             }}>
@@ -211,7 +204,7 @@ export default function AnalyticsBlock({ analytics }: Props) {
                       </span>
                     </div>
                     <div style={{
-                      height: "4px", background: "#e8e3d9",
+                      height: "4px", background: "#2a2725",
                       position: "relative",
                     }}>
                       <div style={{

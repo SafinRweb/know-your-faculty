@@ -38,7 +38,7 @@ export default function AdminLoginPage() {
 
     return (
         <div style={{
-            minHeight: "100svh", background: "#0f0f0f",
+            minHeight: "100svh", background: "#f5f2eb",
             display: "flex", alignItems: "center", justifyContent: "center",
             padding: "32px",
         }}>
@@ -48,14 +48,14 @@ export default function AdminLoginPage() {
                 <div style={{
                     fontFamily: "var(--font-mono)", fontSize: "13px",
                     fontWeight: 500, letterSpacing: "0.08em",
-                    textTransform: "uppercase", color: "#f5f2eb",
+                    textTransform: "uppercase", color: "#0f0f0f",
                     marginBottom: "48px",
                 }}>
                     Know Your <span style={{ color: "#d4401a" }}>Faculty</span>
                     <span style={{
                         marginLeft: "12px", fontFamily: "var(--font-mono)",
                         fontSize: "10px", letterSpacing: "0.1em",
-                        background: "#d4401a", color: "#f5f2eb",
+                        background: "#d4401a", color: "#0f0f0f",
                         padding: "2px 8px",
                     }}>
                         ADMIN
@@ -65,13 +65,13 @@ export default function AdminLoginPage() {
                 <h1 style={{
                     fontFamily: "var(--font-sans)", fontSize: "36px",
                     fontWeight: 800, letterSpacing: "-0.03em",
-                    lineHeight: 1, color: "#f5f2eb", marginBottom: "8px",
+                    lineHeight: 1, color: "#0f0f0f", marginBottom: "8px",
                 }}>
                     Admin login
                 </h1>
                 <p style={{
                     fontFamily: "var(--font-mono)", fontSize: "13px",
-                    color: "#f5f2eb", opacity: 0.4,
+                    color: "#0f0f0f", opacity: 0.4,
                     lineHeight: 1.6, marginBottom: "40px",
                 }}>
                     Restricted access. Admin credentials only.
@@ -82,7 +82,7 @@ export default function AdminLoginPage() {
                     <div style={{
                         fontFamily: "var(--font-mono)", fontSize: "11px",
                         letterSpacing: "0.1em", textTransform: "uppercase",
-                        color: "#f5f2eb", opacity: 0.4, marginBottom: "8px",
+                        color: "#0f0f0f", opacity: 0.4, marginBottom: "8px",
                     }}>
                         Email
                     </div>
@@ -97,7 +97,7 @@ export default function AdminLoginPage() {
                             fontSize: "13px", padding: "13px 16px",
                             border: "1.5px solid rgba(255,255,255,0.15)",
                             background: "rgba(255,255,255,0.05)",
-                            color: "#f5f2eb", outline: "none",
+                            color: "#0f0f0f", outline: "none",
                             letterSpacing: "0.02em",
                         }}
                     />
@@ -108,7 +108,7 @@ export default function AdminLoginPage() {
                     <div style={{
                         fontFamily: "var(--font-mono)", fontSize: "11px",
                         letterSpacing: "0.1em", textTransform: "uppercase",
-                        color: "#f5f2eb", opacity: 0.4, marginBottom: "8px",
+                        color: "#0f0f0f", opacity: 0.4, marginBottom: "8px",
                     }}>
                         Password
                     </div>
@@ -123,7 +123,7 @@ export default function AdminLoginPage() {
                             fontSize: "13px", padding: "13px 16px",
                             border: "1.5px solid rgba(255,255,255,0.15)",
                             background: "rgba(255,255,255,0.05)",
-                            color: "#f5f2eb", outline: "none",
+                            color: "#0f0f0f", outline: "none",
                         }}
                     />
                 </div>
@@ -145,8 +145,8 @@ export default function AdminLoginPage() {
                         width: "100%", fontFamily: "var(--font-mono)",
                         fontSize: "13px", fontWeight: 500,
                         letterSpacing: "0.06em", textTransform: "uppercase",
-                        padding: "15px", background: loading ? "#333" : "#f5f2eb",
-                        color: "#0f0f0f", border: "none",
+                        padding: "15px", background: loading ? "#333" : "#0f0f0f",
+                        color: "#f5f2eb", border: "none",
                         cursor: loading ? "not-allowed" : "pointer",
                         transition: "background 0.15s",
                     }}>
@@ -157,7 +157,7 @@ export default function AdminLoginPage() {
                     <a href="/" style={{
                         fontFamily: "var(--font-mono)", fontSize: "11px",
                         letterSpacing: "0.08em", textTransform: "uppercase",
-                        color: "#f5f2eb", opacity: 0.25, textDecoration: "none",
+                        color: "#0f0f0f", opacity: 0.25, textDecoration: "none",
                     }}>
                         ← Back to site
                     </a>
