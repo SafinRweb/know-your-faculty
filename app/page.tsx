@@ -300,6 +300,7 @@ export default async function HomePage() {
       <Footer />
 
       <style>{`
+        @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
         .feature-card { border-right: 1.5px solid #f5f2eb; border-bottom: 1.5px solid #f5f2eb; }
         .feature-card:nth-child(3n) { border-right: none; }
         .feature-card:nth-last-child(-n+3) { border-bottom: none; }
