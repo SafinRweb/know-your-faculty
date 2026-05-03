@@ -189,7 +189,7 @@ export default async function SchedulePage({
       {/* TABLE HEADER */}
       <div style={{
         display: "grid",
-        gridTemplateColumns: "90px 50px 1fr 170px 130px 70px",
+        gridTemplateColumns: "90px 70px 1fr 170px 130px 70px",
         gap: "16px", padding: "12px 32px",
         borderBottom: "1.5px solid #2a2725",
         background: "#0f0f0f",
@@ -218,7 +218,7 @@ export default async function SchedulePage({
           sections.map((s: any, i: number) => (
             <div key={s.id} style={{
               display: "grid",
-              gridTemplateColumns: "90px 50px 1fr 170px 130px 70px",
+              gridTemplateColumns: "90px 70px 1fr 170px 130px 70px",
               gap: "16px", padding: "14px 32px",
               borderBottom: "1px solid #2a2725",
               background: i % 2 === 0 ? "transparent" : "#1a1917",
@@ -238,7 +238,7 @@ export default async function SchedulePage({
                 fontFamily: "var(--font-mono)", fontSize: "12px",
                 opacity: 0.5,
               }}>
-                {s.section_no}
+                Sec: {s.section_no}
               </div>
 
               {/* Faculty */}
@@ -360,11 +360,11 @@ export default async function SchedulePage({
 
         /* Desktop table */
         .table-header { 
-          grid-template-columns: 90px 50px 1fr 170px 130px 70px; 
+          grid-template-columns: 90px 70px 1fr 170px 130px 70px; 
           position: sticky; top: 57px; z-index: 10;
         }
         .section-row { 
-          grid-template-columns: 90px 50px 1fr 170px 130px 70px; 
+          grid-template-columns: 90px 70px 1fr 170px 130px 70px; 
         }
 
         /* Mobile — card style instead of table */
