@@ -435,7 +435,7 @@ export default function ReviewWizard({
                                             fontWeight: 500,
                                             color: q.type === "yn"
                                                 ? answers[q.key] === "Yes" ? "#1a7a3a" : answers[q.key] === "No" ? "#d4401a" : "#f5f2eb"
-                                                : "#0f0f0f",
+                                                : "#f5f2eb",
                                         }}>
                                             {answers[q.key] || "—"}
                                         </span>

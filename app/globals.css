@@ -20,12 +20,12 @@ html {
 }
 
 body {
-    background: #f5f2eb;
-    color: #0f0f0f;
+    background: #0f0f0f;
+    color: #f5f2eb;
     font-family: var(--font-sans);
 }
 
 ::selection {
-    background: #0f0f0f;
+    background: #d4401a;
     color: #f5f2eb;
 }

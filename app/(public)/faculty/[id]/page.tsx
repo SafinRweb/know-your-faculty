@@ -55,7 +55,7 @@ export default async function FacultyProfilePage({
             {/* HEADER */}
             <div style={{
                 padding: "56px 32px 40px",
-                borderBottom: "1.5px solid #f5f2eb",
+                borderBottom: "1.5px solid #d4401a",
                 display: "grid", gridTemplateColumns: "1fr auto",
                 alignItems: "start", gap: "32px",
             }} className="profile-header">
@@ -97,7 +97,7 @@ export default async function FacultyProfilePage({
                             <span style={{
                                 fontFamily: "var(--font-mono)", fontSize: "12px",
                                 letterSpacing: "0.08em", textTransform: "uppercase",
-                                background: "#f5f2eb", color: "#0f0f0f",
+                                background: "#d4401a", color: "#f5f2eb",
                                 padding: "4px 10px",
                             }}>
                                 {faculty.initial}

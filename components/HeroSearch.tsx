@@ -21,7 +21,7 @@ export default function HeroSearch() {
       onSubmit={handleSearch}
       style={{
         display: "flex", alignItems: "stretch",
-        border: "1.5px solid #f5f2eb", marginBottom: "48px",
+        border: "1.5px solid #d4401a", marginBottom: "48px",
       }}
     >
       <input
@@ -40,7 +40,7 @@ export default function HeroSearch() {
         style={{
           fontFamily: "var(--font-mono)", fontSize: "11px",
           letterSpacing: "0.1em", textTransform: "uppercase",
-          padding: "13px 18px", background: "#f5f2eb",
+          padding: "13px 18px", background: "#d4401a",
           color: "#0f0f0f", border: "none", cursor: "pointer",
           display: "flex", alignItems: "center",
         }}

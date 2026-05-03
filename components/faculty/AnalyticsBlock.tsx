@@ -16,8 +16,8 @@ const COLORS: Record<string, string> = {
 };
 
 const FALLBACK_COLORS = [
-  "#f5f2eb", "#d4401a", "#1a4fd4",
-  "#4a7fd4", "#c8c2b4", "#2a7a4f",
+  "#d4401a", "#f5f2eb", "#2a7a4f",
+  "#4a7fd4", "#1a4fd4", "#c8c2b4",
 ];
 
 function getColor(value: string, index: number) {
@@ -29,9 +29,9 @@ const CustomTooltip = ({ active, payload }: any) => {
   const d = payload[0];
   return (
     <div style={{
-      background: "#f5f2eb", padding: "10px 14px",
+      background: "#1a1917", padding: "10px 14px",
       fontFamily: "var(--font-mono)", fontSize: "12px",
-      color: "#0f0f0f", border: "none",
+      color: "#f5f2eb", border: "1.5px solid #2a2725",
     }}>
       <div style={{ fontWeight: 500, marginBottom: "2px" }}>{d.name}</div>
       <div style={{ opacity: 0.6 }}>
@@ -95,7 +95,7 @@ export default function AnalyticsBlock({ analytics }: Props) {
       display: "grid",
       gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
       gap: "0",
-      border: "1.5px solid #f5f2eb",
+      border: "1.5px solid #d4401a",
     }}>
       {groups.map((group, gi) => {
         const pieData = group.rows.map((r) => ({

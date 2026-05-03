@@ -37,7 +37,7 @@ export default async function FacultyDirectoryPage({
       {/* PAGE HEADER */}
       <div style={{
         padding: "64px 32px 48px",
-        borderBottom: "1.5px solid #f5f2eb",
+        borderBottom: "1.5px solid #d4401a",
         display: "grid", gridTemplateColumns: "1fr 1fr",
         gap: "48px", alignItems: "end",
       }} className="faculty-header">
@@ -78,8 +78,8 @@ export default async function FacultyDirectoryPage({
               {q && (
                 <span style={{
                   fontFamily: "var(--font-mono)", fontSize: "11px",
-                  letterSpacing: "0.06em", background: "#f5f2eb",
-                  color: "#0f0f0f", padding: "4px 10px",
+                  letterSpacing: "0.06em", background: "#d4401a",
+                  color: "#f5f2eb", padding: "4px 10px",
                   display: "flex", alignItems: "center", gap: "8px",
                 }}>
                   "{params.q}"
@@ -92,8 +92,8 @@ export default async function FacultyDirectoryPage({
               {dept !== "All" && (
                 <span style={{
                   fontFamily: "var(--font-mono)", fontSize: "11px",
-                  letterSpacing: "0.06em", background: "#f5f2eb",
-                  color: "#0f0f0f", padding: "4px 10px",
+                  letterSpacing: "0.06em", background: "#d4401a",
+                  color: "#f5f2eb", padding: "4px 10px",
                   display: "flex", alignItems: "center", gap: "8px",
                 }}>
                   {dept}
@@ -116,7 +116,7 @@ export default async function FacultyDirectoryPage({
 
         <form method="GET" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           {dept !== "All" && <input type="hidden" name="dept" value={dept} />}
-          <div style={{ display: "flex", border: "1.5px solid #f5f2eb" }}>
+          <div style={{ display: "flex", border: "1.5px solid #d4401a" }}>
             <input
               name="q"
               defaultValue={params.q || ""}
@@ -130,7 +130,7 @@ export default async function FacultyDirectoryPage({
             <button type="submit" style={{
               fontFamily: "var(--font-mono)", fontSize: "11px",
               letterSpacing: "0.1em", textTransform: "uppercase",
-              padding: "13px 18px", background: "#f5f2eb",
+              padding: "13px 18px", background: "#d4401a",
               color: "#0f0f0f", border: "none", cursor: "pointer",
             }}>
               Search
@@ -147,8 +147,8 @@ export default async function FacultyDirectoryPage({
                   fontFamily: "var(--font-mono)", fontSize: "11px",
                   letterSpacing: "0.08em", textTransform: "uppercase",
                   padding: "6px 12px", textDecoration: "none",
-                  border: "1.5px solid #f5f2eb",
-                  background: dept === d ? "#f5f2eb" : "transparent",
+                  border: "1.5px solid #2a2725",
+                  background: dept === d ? "#d4401a" : "transparent",
                   color: dept === d ? "#0f0f0f" : "#f5f2eb",
                 }}>
                 {d}
@@ -173,7 +173,7 @@ export default async function FacultyDirectoryPage({
             <Link href="/faculty" style={{
               fontFamily: "var(--font-mono)", fontSize: "12px",
               letterSpacing: "0.06em", textTransform: "uppercase",
-              color: "#f5f2eb", border: "1.5px solid #f5f2eb",
+              color: "#f5f2eb", border: "1.5px solid #2a2725",
               padding: "10px 20px", textDecoration: "none",
             }}>
               Clear search
@@ -217,7 +217,7 @@ export default async function FacultyDirectoryPage({
                     {f.department}
                     {f.initial && (
                       <span style={{
-                        background: "#f5f2eb", color: "#0f0f0f",
+                        background: "#d4401a", color: "#f5f2eb",
                         padding: "2px 7px", fontSize: "10px",
                       }}>
                         {f.initial}
@@ -249,7 +249,7 @@ export default async function FacultyDirectoryPage({
 
       <style>{`
         .faculty-header { grid-template-columns: 1fr 1fr; }
-        .faculty-row:hover { background: #f0ece3; padding-left: 8px !important; }
+        .faculty-row:hover { background: #1a1917; padding-left: 8px !important; }
         @media (max-width: 768px) {
           .faculty-header { grid-template-columns: 1fr !important; }
           .faculty-row { grid-template-columns: 40px 1fr auto !important; }
