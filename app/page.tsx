@@ -125,7 +125,7 @@ export default async function HomePage() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0" }}>
             {[
               { num: faculty.length + "+", label: "Faculty listed" },
-              { num: studentCount + "+", label: "Students enrolled" },
+              { num: studentCount + "+", label: "Student helped" },
             ].map((s, i) => (
               <div key={i} style={{
                 padding: "28px 24px",
@@ -150,12 +150,6 @@ export default async function HomePage() {
           </div>
         </div>
 
-        <style>{`
-    @media (max-width: 900px) {
-      section:first-of-type { grid-template-columns: 1fr !important; }
-      section:first-of-type > div:last-of-type { border-left: none !important; padding-left: 0 !important; padding-top: 40px; }
-    }
-  `}</style>
       </section>
 
       {/* TICKER */}
@@ -196,9 +190,9 @@ export default async function HomePage() {
       {/* FEATURES */}
       <section style={{ padding: "96px 32px", borderBottom: "1.5px solid #f5f2eb" }}>
         <div style={{
-          fontFamily: "var(--font-mono)", fontSize: "11px",
+          fontFamily: "var(--font-mono)", fontSize: "16px",
           letterSpacing: "0.14em", textTransform: "uppercase",
-          opacity: 0.45, marginBottom: "64px",
+          opacity: 0.6, marginBottom: "64px", fontWeight: 500,
         }}>
           What you get
         </div>
@@ -306,7 +300,7 @@ export default async function HomePage() {
         .feature-card:nth-last-child(-n+3) { border-bottom: none; }
 
         @media (max-width: 900px) {
-          .hero-section { grid-template-columns: 1fr !important; gap: 40px !important; padding-top: 120px !important; }
+          .hero-section { grid-template-columns: 1fr !important; gap: 24px !important; padding-top: 100px !important; }
           .hero-right { border-left: none !important; padding-left: 0 !important; }
           .hero-bottom { grid-template-columns: 1fr !important; }
           .stats-grid { grid-template-columns: repeat(2,1fr) !important; }

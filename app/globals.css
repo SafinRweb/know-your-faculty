@@ -19,6 +19,20 @@ html {
     scroll-behavior: smooth;
 }
 
+button {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+button:active:not(:disabled) {
+    transform: translateY(1px);
+    filter: brightness(0.95);
+}
+
 body {
     background: #0f0f0f;
     color: #f5f2eb;

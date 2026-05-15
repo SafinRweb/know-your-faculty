@@ -155,6 +155,25 @@ export default function AdminClient({
         router.refresh();
     }
 
+    async function handleDeleteUser(userId: string, email: string) {
+        if (!confirm(`Are you sure you want to completely delete the user ${email}? This cannot be undone.`)) return;
+        setSaving(userId);
+        try {
+            const res = await fetch("/api/admin/users/delete", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId }),
+            });
+            const data = await res.json();
+            if (!res.ok) alert(data.error || "Failed to delete user");
+            router.refresh();
+        } catch (e: any) {
+            alert(e.message);
+        } finally {
+            setSaving(null);
+        }
+    }
+
     async function handleAddContributor() {
         if (!newContributor.role.trim() || !newContributor.name.trim()) {
             setContributorMsg("Role and name are required.");
@@ -596,20 +615,35 @@ export default function AdminClient({
                                 }}>
                                     {u.is_banned ? "Banned" : "Active"}
                                 </span>
-                                <button
-                                    onClick={() => handleToggleBan(u.id, u.is_banned)}
-                                    disabled={saving === u.id || u.role === "admin"}
-                                    style={{
-                                        fontFamily: "var(--font-mono)", fontSize: "11px",
-                                        letterSpacing: "0.06em", textTransform: "uppercase",
-                                        padding: "7px 14px", background: "transparent",
-                                        color: u.is_banned ? "#1a4fd4" : "#e8622c",
-                                        border: `1px solid ${u.is_banned ? "#1a4fd4" : "#e8622c"}`,
-                                        cursor: u.role === "admin" ? "not-allowed" : "pointer",
-                                        opacity: u.role === "admin" ? 0.3 : 1,
-                                    }}>
-                                    {saving === u.id ? "…" : u.is_banned ? "Unban" : "Ban"}
-                                </button>
+                                <div style={{ display: "flex", gap: "8px" }}>
+                                    <button
+                                        onClick={() => handleToggleBan(u.id, u.is_banned)}
+                                        disabled={saving === u.id || u.role === "admin"}
+                                        style={{
+                                            fontFamily: "var(--font-mono)", fontSize: "11px",
+                                            letterSpacing: "0.06em", textTransform: "uppercase",
+                                            padding: "7px 14px", background: "transparent",
+                                            color: u.is_banned ? "#1a4fd4" : "#e8622c",
+                                            border: `1px solid ${u.is_banned ? "#1a4fd4" : "#e8622c"}`,
+                                            cursor: u.role === "admin" ? "not-allowed" : "pointer",
+                                            opacity: u.role === "admin" ? 0.3 : 1,
+                                        }}>
+                                        {saving === u.id ? "…" : u.is_banned ? "Unban" : "Ban"}
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeleteUser(u.id, u.email)}
+                                        disabled={saving === u.id || u.role === "admin"}
+                                        style={{
+                                            fontFamily: "var(--font-mono)", fontSize: "11px",
+                                            letterSpacing: "0.06em", textTransform: "uppercase",
+                                            padding: "7px 14px", background: "transparent",
+                                            color: "#f87171", border: "1px solid rgba(248,113,113,0.4)",
+                                            cursor: u.role === "admin" ? "not-allowed" : "pointer",
+                                            opacity: u.role === "admin" ? 0.3 : 1,
+                                        }}>
+                                        Remove
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>
@@ -843,7 +877,7 @@ export default function AdminClient({
                       <div>
                         <div style={sectionLabel}>Add contributor</div>
                         {[
-                          { label: "Role / Title", key: "role", placeholder: "e.g. Developer" },
+                          { label: "Role / Title", key: "role", type: "select" },
                           { label: "Full name", key: "name", placeholder: "e.g. MD. Safin Rahman" },
                           { label: "Student ID", key: "student_id", placeholder: "e.g. 2023-3-60-072" },
                           { label: "Email (optional)", key: "email", placeholder: "e.g. name@gmail.com" },
@@ -852,12 +886,24 @@ export default function AdminClient({
                         ].map((f) => (
                           <div key={f.key} style={{ marginBottom: "12px" }}>
                             <div style={fieldLabel}>{f.label}</div>
-                            <input
-                              value={(newContributor as any)[f.key]}
-                              onChange={(e) => setNewContributor((p) => ({ ...p, [f.key]: e.target.value }))}
-                              placeholder={f.placeholder}
-                              style={inputStyle}
-                            />
+                            {f.type === "select" ? (
+                              <select
+                                value={(newContributor as any)[f.key]}
+                                onChange={(e) => setNewContributor((p) => ({ ...p, [f.key]: e.target.value }))}
+                                style={inputStyle}
+                              >
+                                <option value="" disabled>Select a role...</option>
+                                <option value="Idea and Marketing">Idea and Marketing</option>
+                                <option value="Data Collector">Data Collector</option>
+                              </select>
+                            ) : (
+                              <input
+                                value={(newContributor as any)[f.key]}
+                                onChange={(e) => setNewContributor((p) => ({ ...p, [f.key]: e.target.value }))}
+                                placeholder={f.placeholder}
+                                style={inputStyle}
+                              />
+                            )}
                           </div>
                         ))}
                         {contributorMsg && (
@@ -1319,6 +1365,7 @@ function ReviewImporter({ faculty }: { faculty: any[] }) {
   const [importing, setImporting] = useState(false);
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [deletingAll, setDeletingAll] = useState(false);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] || null;
@@ -1376,18 +1423,63 @@ function ReviewImporter({ faculty }: { faculty: any[] }) {
     }
   }
 
+  async function handleDeleteAllReviews() {
+    if (!window.confirm("WARNING: This will delete ALL reviews in the database, including all imported reviews. This action cannot be undone. Are you sure?")) return;
+    
+    setDeletingAll(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      const res = await fetch("/api/admin/delete-all-reviews", {
+        method: "POST",
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to delete reviews.");
+      
+      setResult({ deletedAll: true });
+      setFile(null);
+      setCsvPreview(null);
+      router.refresh();
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setDeletingAll(false);
+    }
+  }
+
   return (
     <div>
-      <div style={sectionLabel}>Import reviews from CSV</div>
-      <p style={{
-        fontFamily: "var(--font-mono)", fontSize: "13px",
-        lineHeight: 1.7, opacity: 0.5, marginBottom: "24px",
-        maxWidth: "520px",
-      }}>
-        Upload a CSV file with columns for Faculty Name, Initial, Attendance, Grading,
-        Teaching, Recommended, and Comments. Reviews will be matched to existing faculty
-        by initial or name.
-      </p>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px" }}>
+        <div>
+          <div style={sectionLabel}>Import reviews from CSV</div>
+          <p style={{
+            fontFamily: "var(--font-mono)", fontSize: "13px",
+            lineHeight: 1.7, opacity: 0.5,
+            maxWidth: "520px",
+          }}>
+            Upload a CSV file to seed reviews. Reviews will be matched to existing faculty
+            by initial or name.
+          </p>
+        </div>
+        
+        <button
+          onClick={handleDeleteAllReviews}
+          disabled={deletingAll}
+          style={{
+            fontFamily: "var(--font-mono)", fontSize: "12px",
+            fontWeight: 500, letterSpacing: "0.06em",
+            textTransform: "uppercase", padding: "12px 24px",
+            border: "1.5px solid rgba(248,113,113,0.3)",
+            color: "#f87171",
+            opacity: deletingAll ? 0.5 : 1,
+            cursor: deletingAll ? "not-allowed" : "pointer",
+            background: "rgba(248,113,113,0.05)",
+          }}>
+          {deletingAll ? "Deleting..." : "Delete all reviews"}
+        </button>
+      </div>
 
       {/* Expected format */}
       <div style={{
@@ -1539,7 +1631,22 @@ function ReviewImporter({ faculty }: { faculty: any[] }) {
       </button>
 
       {/* Result */}
-      {result && (
+      {result && result.deletedAll && (
+        <div style={{
+          marginTop: "24px", padding: "16px 24px",
+          border: "1.5px solid #f87171",
+          background: "rgba(248,113,113,0.06)",
+        }}>
+          <div style={{
+            fontFamily: "var(--font-mono)", fontSize: "12px",
+            color: "#f87171", fontWeight: 600,
+          }}>
+            ✓ All reviews have been deleted successfully.
+          </div>
+        </div>
+      )}
+
+      {result && !result.deletedAll && (
         <div style={{
           marginTop: "24px", padding: "24px",
           border: `1.5px solid ${result.skipped > 0 ? "#fbbf24" : "#34d399"}`,

@@ -188,8 +188,8 @@ function mapHeaders(headers: string[]): Record<string, string> {
     const teachIdx = lower.findIndex((h) => h.includes("teaching"));
     if (teachIdx >= 0) map["teaching"] = headers[teachIdx];
 
-    // Recommended
-    const recIdx = lower.findIndex((h) => h.includes("recommend"));
+    // Recommended (allow typo 'recomend')
+    const recIdx = lower.findIndex((h) => h.includes("recommend") || h.includes("recomend"));
     if (recIdx >= 0) map["recommend"] = headers[recIdx];
 
     // Comment

@@ -4,6 +4,7 @@ import { FacultyAnalytics } from "@/types";
 import {
   PieChart, Pie, Cell, Tooltip,
   ResponsiveContainer, Legend,
+  BarChart, Bar, XAxis, YAxis, CartesianGrid
 } from "recharts";
 
 interface Props {
@@ -103,6 +104,54 @@ export default function AnalyticsBlock({ analytics }: Props) {
 
   return (
     <div>
+      {/* ── SUMMARY TABLE ── */}
+      <div style={{ marginBottom: "32px", border: "1.5px solid #2a2725" }}>
+        <div style={{
+          padding: "12px 16px", background: "#1a1917",
+          fontFamily: "var(--font-mono)", fontSize: "11px",
+          letterSpacing: "0.08em", textTransform: "uppercase",
+          opacity: 0.7, borderBottom: "1.5px solid #2a2725"
+        }}>
+          Quick Summary
+        </div>
+        <div>
+          {recommendGroup && (
+            <div style={{
+              display: "grid", gridTemplateColumns: "1fr 1fr",
+              padding: "16px", borderBottom: otherGroups.length ? "1px solid #2a2725" : "none",
+              background: "rgba(232,98,44,0.05)",
+            }}>
+              <div style={{ fontFamily: "var(--font-sans)", fontWeight: 700, fontSize: "15px", color: "#e8622c" }}>
+                {recommendGroup.question}
+              </div>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: "13px", fontWeight: 600, color: "#e8622c", textAlign: "right" }}>
+                {(() => {
+                  const yesRow = recommendGroup.rows.find((r) => r.answer_value === "Yes");
+                  return yesRow ? `${yesRow.percentage}% say Yes` : "No data";
+                })()}
+              </div>
+            </div>
+          )}
+          {otherGroups.map((group, idx) => {
+            const topAnswer = [...group.rows].sort((a, b) => b.vote_count - a.vote_count)[0];
+            return (
+              <div key={idx} style={{
+                display: "grid", gridTemplateColumns: "1fr 1fr",
+                padding: "14px 16px",
+                borderBottom: idx < otherGroups.length - 1 ? "1px solid #2a2725" : "none",
+              }}>
+                <div style={{ fontFamily: "var(--font-sans)", fontSize: "14px", opacity: 0.8 }}>
+                  {group.question}
+                </div>
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", opacity: 0.6, textAlign: "right" }}>
+                  {topAnswer ? `Most say ${topAnswer.answer_value} (${topAnswer.percentage}%)` : "No data"}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* ── RECOMMENDATION HIGHLIGHT ── */}
       {recommendGroup && (
         <RecommendationCard group={recommendGroup} />
@@ -122,6 +171,17 @@ export default function AnalyticsBlock({ analytics }: Props) {
           ))}
         </div>
       )}
+
+      {/* ── WARNING TEXT ── */}
+      <div style={{
+        marginTop: "24px",
+        fontFamily: "var(--font-mono)", fontSize: "11px",
+        lineHeight: 1.6, opacity: 0.4, fontStyle: "italic",
+        textAlign: "center", borderTop: "1px solid #2a2725",
+        paddingTop: "24px",
+      }}>
+        *Please note: These reviews are human-written based on subjective experiences. Proceed with your own judgement.
+      </div>
     </div>
   );
 }
@@ -314,29 +374,19 @@ function QuestionCard({ group, index, totalCount }: {
         {group.question}
       </div>
 
-      {/* Pie chart */}
+      {/* Bar chart */}
       <ResponsiveContainer width="100%" height={180}>
-        <PieChart>
-          <Pie
-            data={pieData}
-            cx="50%"
-            cy="50%"
-            innerRadius={50}
-            outerRadius={75}
-            paddingAngle={2}
-            dataKey="value"
-            strokeWidth={0}
-          >
+        <BarChart data={pieData} margin={{ top: 10, right: 0, left: -25, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#2a2725" vertical={false} />
+          <XAxis dataKey="name" tick={{ fill: "#f5f2eb", opacity: 0.5, fontSize: 11, fontFamily: "var(--font-mono)" }} axisLine={false} tickLine={false} />
+          <YAxis tick={{ fill: "#f5f2eb", opacity: 0.5, fontSize: 11, fontFamily: "var(--font-mono)" }} axisLine={false} tickLine={false} />
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(255,255,255,0.05)" }} />
+          <Bar dataKey="value" radius={[2, 2, 0, 0]} maxBarSize={40}>
             {pieData.map((entry, i) => (
-              <Cell
-                key={i}
-                fill={getColor(entry.name ?? "", i)}
-              />
+              <Cell key={`cell-${i}`} fill={getColor(entry.name ?? "", i)} />
             ))}
-          </Pie>
-          <Tooltip content={<CustomTooltip />} />
-          <Legend content={<CustomLegend />} />
-        </PieChart>
+          </Bar>
+        </BarChart>
       </ResponsiveContainer>
 
       {/* Top answer callout */}
