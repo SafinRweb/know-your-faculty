@@ -1146,6 +1146,7 @@ function ScheduleUploader({ semesters }: { semesters: any[] }) {
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [deletingSem, setDeletingSem] = useState<string | null>(null);
+  const [progress, setProgress] = useState<string | null>(null);
 
   async function handleUpload() {
     if (!file) {
@@ -1156,6 +1157,7 @@ function ScheduleUploader({ semesters }: { semesters: any[] }) {
     setUploading(true);
     setError(null);
     setResult(null);
+    setProgress("Parsing PDF and setting up database...");
 
     const formData = new FormData();
     formData.append("pdf", file);
@@ -1168,12 +1170,41 @@ function ScheduleUploader({ semesters }: { semesters: any[] }) {
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      setResult(data);
+      
+      const sectionRows = data.sections || [];
+      const batchSize = 500;
+      let imported = 0;
+      
+      if (sectionRows.length > 0) {
+        for (let i = 0; i < sectionRows.length; i += batchSize) {
+          const batch = sectionRows.slice(i, i + batchSize);
+          setProgress(`Importing sections ${i + 1} to ${Math.min(i + batchSize, sectionRows.length)} of ${sectionRows.length}... (${Math.round((i / sectionRows.length) * 100)}%)`);
+          
+          const batchRes = await fetch("/api/admin/upload-schedule-batch", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ sections: batch })
+          });
+          
+          const batchData = await batchRes.json();
+          if (!batchRes.ok) throw new Error(batchData.error || "Batch insertion failed.");
+          imported += batch.length;
+        }
+      }
+
+      setResult({
+        semester: data.semester,
+        sections_imported: imported,
+        faculty_created: data.faculty_created,
+        courses_created: data.courses_created,
+        total_parsed: data.total_parsed,
+      });
       router.refresh();
     } catch (e: any) {
       setError(e.message);
     } finally {
       setUploading(false);
+      setProgress(null);
     }
   }
 
@@ -1302,6 +1333,17 @@ function ScheduleUploader({ semesters }: { semesters: any[] }) {
         </div>
       )}
 
+      {progress && (
+        <div style={{
+          fontFamily: "var(--font-mono)", fontSize: "12px",
+          color: "#34d399", border: "1px solid #34d399",
+          padding: "12px 16px", marginBottom: "16px",
+          background: "rgba(52,211,153,0.06)",
+        }}>
+          {progress}
+        </div>
+      )}
+
       <button
         onClick={handleUpload}
         disabled={uploading || !file}
@@ -1366,6 +1408,7 @@ function ReviewImporter({ faculty }: { faculty: any[] }) {
   const [result, setResult] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [deletingAll, setDeletingAll] = useState(false);
+  const [progress, setProgress] = useState<string | null>(null);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0] || null;
@@ -1403,23 +1446,56 @@ function ReviewImporter({ faculty }: { faculty: any[] }) {
     setImporting(true);
     setError(null);
     setResult(null);
+    setProgress(null);
 
     try {
       const text = await file.text();
-      const res = await fetch("/api/admin/import-reviews", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ csvContent: text }),
-      });
+      const lines = text.split(/\r?\n/).filter((l) => l.trim());
+      if (lines.length < 2) throw new Error("CSV file is empty or missing data.");
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Import failed.");
-      setResult(data);
+      const header = lines[0];
+      const dataLines = lines.slice(1);
+      
+      let totalImported = 0;
+      let totalSkipped = 0;
+      let allSkippedReasons: string[] = [];
+      const batchSize = 25; // Process 25 rows at a time to stay well within timeout
+      
+      for (let i = 0; i < dataLines.length; i += batchSize) {
+        const chunk = dataLines.slice(i, i + batchSize);
+        const csvChunk = [header, ...chunk].join("\n");
+        
+        setProgress(`Importing rows ${i + 1} to ${Math.min(i + batchSize, dataLines.length)} of ${dataLines.length} (${Math.round((i / dataLines.length) * 100)}%)`);
+
+        const res = await fetch("/api/admin/import-reviews", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ csvContent: csvChunk }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Import failed.");
+        
+        totalImported += data.imported || 0;
+        totalSkipped += data.skipped || 0;
+        if (data.skippedReasons) {
+          allSkippedReasons = [...allSkippedReasons, ...data.skippedReasons];
+        }
+      }
+
+      setResult({ 
+        success: true, 
+        imported: totalImported, 
+        skipped: totalSkipped, 
+        total: dataLines.length,
+        skippedReasons: allSkippedReasons.slice(0, 20)
+      });
       router.refresh();
     } catch (e: any) {
       setError(e.message);
     } finally {
       setImporting(false);
+      setProgress(null);
     }
   }
 
@@ -1612,6 +1688,17 @@ function ReviewImporter({ faculty }: { faculty: any[] }) {
           padding: "12px 16px", marginBottom: "16px",
         }}>
           {error}
+        </div>
+      )}
+
+      {progress && (
+        <div style={{
+          fontFamily: "var(--font-mono)", fontSize: "12px",
+          color: "#34d399", border: "1px solid #34d399",
+          padding: "12px 16px", marginBottom: "16px",
+          background: "rgba(52,211,153,0.06)",
+        }}>
+          {progress}
         </div>
       )}
 

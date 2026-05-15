@@ -171,7 +171,7 @@ export async function POST(req: NextRequest) {
       .delete()
       .eq("semester_id", semesterId);
 
-    // 8. Insert all rows in batches of 500
+    // 8. Prepare rows for batch insertion on the client side
     const sectionRows = parsed.sections
       .filter(
         (s) =>
@@ -188,20 +188,11 @@ export async function POST(req: NextRequest) {
         faculty_id: facultyByInitial[s.faculty_initial.toUpperCase()],
       }));
 
-    // Batch insert 500 at a time
-    const BATCH_SIZE = 500;
-    for (let i = 0; i < sectionRows.length; i += BATCH_SIZE) {
-      const batch = sectionRows.slice(i, i + BATCH_SIZE);
-      const { error: insertError } = await supabase
-        .from("sections")
-        .insert(batch);
-      if (insertError) throw new Error(insertError.message);
-    }
-
     return NextResponse.json({
       success: true,
       semester: semesterLabel,
-      sections_imported: sectionRows.length,
+      sections: sectionRows,
+      sections_imported: 0,
       faculty_created: missingInitials.length,
       courses_created: missingCodes.length,
       total_parsed: parsed.sections.length,
