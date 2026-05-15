@@ -24,7 +24,7 @@ export default function Navbar() {
                     letterSpacing: "0.08em", textTransform: "uppercase",
                     color: "#f5f2eb", textDecoration: "none",
                 }}>
-                    Know Your <span style={{ color: "#d4401a" }}>Faculty</span>
+                    Know Your <span style={{ color: "#e8622c" }}>Faculty</span>
                 </Link>
 
                 {/* Desktop links */}
@@ -92,7 +92,7 @@ export default function Navbar() {
                                                 ...dropdownItemStyle, width: "100%",
                                                 textAlign: "left", background: "none",
                                                 border: "none", cursor: "pointer",
-                                                color: "#d4401a",
+                                                color: "#e8622c",
                                             }}>
                                             Sign out
                                         </button>
@@ -176,7 +176,7 @@ export default function Navbar() {
                             style={{
                                 fontFamily: "var(--font-sans)", fontSize: "36px",
                                 fontWeight: 800, letterSpacing: "-0.03em",
-                                color: "#d4401a", background: "none",
+                                color: "#e8622c", background: "none",
                                 border: "none", cursor: "pointer", padding: "8px 0",
                             }}>
                             Sign out
@@ -186,7 +186,7 @@ export default function Navbar() {
                             style={{
                                 fontFamily: "var(--font-sans)", fontSize: "36px",
                                 fontWeight: 800, letterSpacing: "-0.03em",
-                                color: "#d4401a", textDecoration: "none", padding: "8px 0",
+                                color: "#e8622c", textDecoration: "none", padding: "8px 0",
                             }}>
                             Sign in →
                         </Link>

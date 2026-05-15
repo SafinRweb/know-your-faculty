@@ -58,7 +58,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
         body: body.trim(),
         status: "active",
         created_at: new Date().toISOString(),
-        user: { alias: session?.alias || "Student", avatar_color: "#d4401a" },
+        user: { alias: session?.alias || "Student", avatar_color: "#e8622c" },
         replies: [],
       };
 
@@ -93,7 +93,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
         created_at: new Date().toISOString(),
         user: isAdmin
           ? undefined
-          : { alias: session?.alias || "Student", avatar_color: "#d4401a" },
+          : { alias: session?.alias || "Student", avatar_color: "#e8622c" },
       };
 
       setPosts((prev) =>
@@ -124,18 +124,36 @@ export default function FeedClient({ initialPosts, session }: Props) {
     } catch {}
   }
 
+  function getTimeAgo(dateStr: string) {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return "just now";
+    if (mins < 60) return `${mins}m ago`;
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return `${hrs}h ago`;
+    const days = Math.floor(hrs / 24);
+    if (days < 7) return `${days}d ago`;
+    return new Date(dateStr).toLocaleDateString("en-GB", {
+      day: "numeric", month: "short", year: "numeric",
+    });
+  }
+
   return (
     <div>
       {/* Compose box */}
       {session ? (
-        <div style={{ padding: "28px 32px", borderBottom: "1.5px solid #2a2725" }}>
+        <div style={{
+          padding: "28px 32px",
+          borderBottom: "1.5px solid #1e1c1a",
+          background: "#141312",
+        }}>
           <div style={{ display: "flex", gap: "16px", alignItems: "flex-start" }}>
             <div style={{
-              width: "36px", height: "36px", borderRadius: "50%",
-              background: "#d4401a", display: "flex",
-              alignItems: "center", justifyContent: "center",
+              width: "38px", height: "38px", borderRadius: "50%",
+              background: "linear-gradient(135deg, #e8622c, #c4501e)",
+              display: "flex", alignItems: "center", justifyContent: "center",
               fontFamily: "var(--font-mono)", fontSize: "13px",
-              color: "#0f0f0f", flexShrink: 0,
+              color: "#f5f2eb", fontWeight: 600, flexShrink: 0,
             }}>
               {session.role === "admin" ? "K" : session.alias?.[0]?.toUpperCase() || "S"}
             </div>
@@ -146,34 +164,50 @@ export default function FeedClient({ initialPosts, session }: Props) {
                 placeholder="Ask a question or share an update…"
                 rows={3}
                 maxLength={500}
+                className="feed-textarea"
                 style={{
                   width: "100%", fontFamily: "var(--font-mono)",
                   fontSize: "13px", lineHeight: 1.7,
-                  padding: "12px 14px", border: "1.5px solid #2a2725",
-                  background: "transparent", color: "#f5f2eb",
-                  outline: "none", resize: "vertical", marginBottom: "10px",
+                  padding: "14px 16px", border: "1.5px solid #2a2725",
+                  background: "rgba(255,255,255,0.02)", color: "#f5f2eb",
+                  outline: "none", resize: "vertical", marginBottom: "12px",
+                  borderRadius: "2px",
+                  transition: "border-color 0.2s",
                 }}
               />
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", opacity: 0.35 }}>
+                <span style={{
+                  fontFamily: "var(--font-mono)", fontSize: "11px",
+                  opacity: body.length > 400 ? 0.7 : 0.3,
+                  color: body.length > 450 ? "#e8622c" : "#f5f2eb",
+                  transition: "color 0.2s, opacity 0.2s",
+                }}>
                   {body.length}/500
                 </span>
                 <button
                   onClick={handlePost}
                   disabled={posting || body.trim().length < 10}
+                  className="feed-post-btn"
                   style={{
                     fontFamily: "var(--font-mono)", fontSize: "12px",
                     fontWeight: 500, letterSpacing: "0.06em",
-                    textTransform: "uppercase", padding: "10px 20px",
-                    background: posting || body.trim().length < 10 ? "#1a1917" : "#d4401a",
-                    color: "#0f0f0f", border: "none",
+                    textTransform: "uppercase", padding: "10px 22px",
+                    background: posting || body.trim().length < 10 ? "#1e1c1a" : "#e8622c",
+                    color: posting || body.trim().length < 10 ? "#555" : "#f5f2eb",
+                    border: "none", borderRadius: "2px",
                     cursor: posting || body.trim().length < 10 ? "not-allowed" : "pointer",
+                    transition: "background 0.2s, color 0.2s, transform 0.1s",
                   }}>
-                  {posting ? "Posting…" : "Post"}
+                  {posting ? "Posting…" : "Post →"}
                 </button>
               </div>
               {postError && (
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", color: "#d4401a", marginTop: "8px" }}>
+                <div style={{
+                  fontFamily: "var(--font-mono)", fontSize: "12px",
+                  color: "#f87171", marginTop: "10px",
+                  padding: "8px 12px", background: "rgba(248,113,113,0.08)",
+                  border: "1px solid rgba(248,113,113,0.2)", borderRadius: "2px",
+                }}>
                   {postError}
                 </div>
               )}
@@ -182,18 +216,23 @@ export default function FeedClient({ initialPosts, session }: Props) {
         </div>
       ) : (
         <div style={{
-          padding: "24px 32px", borderBottom: "1.5px solid #2a2725",
+          padding: "24px 32px", borderBottom: "1.5px solid #1e1c1a",
           display: "flex", alignItems: "center",
           justifyContent: "space-between", gap: "16px", flexWrap: "wrap",
+          background: "#141312",
         }}>
-          <div style={{ fontFamily: "var(--font-mono)", fontSize: "13px", opacity: 0.5 }}>
+          <div style={{
+            fontFamily: "var(--font-mono)", fontSize: "13px", opacity: 0.5,
+            display: "flex", alignItems: "center", gap: "8px",
+          }}>
+            <span style={{ fontSize: "14px", opacity: 0.4 }}>💬</span>
             Sign in with your EWU email to post.
           </div>
           <a href="/login" style={{
             fontFamily: "var(--font-mono)", fontSize: "12px",
             fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase",
-            color: "#0f0f0f", background: "#d4401a",
-            padding: "10px 20px", textDecoration: "none",
+            color: "#f5f2eb", background: "#e8622c",
+            padding: "10px 20px", textDecoration: "none", borderRadius: "2px",
           }}>
             Sign in →
           </a>
@@ -205,59 +244,90 @@ export default function FeedClient({ initialPosts, session }: Props) {
         {posts.length === 0 ? (
           <div style={{
             padding: "96px 32px", textAlign: "center",
-            fontFamily: "var(--font-mono)", fontSize: "13px", opacity: 0.4,
           }}>
-            No posts yet. Be the first to post.
+            <div style={{
+              fontFamily: "var(--font-sans)", fontSize: "28px",
+              fontWeight: 800, letterSpacing: "-0.02em",
+              opacity: 0.15, marginBottom: "12px",
+            }}>
+              No posts yet
+            </div>
+            <div style={{
+              fontFamily: "var(--font-mono)", fontSize: "13px",
+              opacity: 0.35, lineHeight: 1.6,
+            }}>
+              Be the first to start a conversation.<br />
+              Ask a question or share something useful.
+            </div>
           </div>
         ) : (
           posts.map((post) => (
-            <div key={post.id} style={{
-              borderBottom: "1.5px solid #2a2725",
+            <div key={post.id} className="feed-post" style={{
+              borderBottom: "1px solid #1e1c1a",
+              transition: "background 0.15s",
             }}>
               {/* Post */}
               <div style={{ padding: "28px 32px" }}>
                 <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
                   <div style={{
-                    width: "36px", height: "36px", borderRadius: "50%",
-                    background: post.admin ? post.admin.avatar_color : (post.user?.avatar_color || "#d4401a"),
+                    width: "38px", height: "38px", borderRadius: "50%",
+                    background: post.admin
+                      ? "linear-gradient(135deg, #e8622c, #c4501e)"
+                      : (post.user?.avatar_color || "#e8622c"),
                     display: "flex", alignItems: "center", justifyContent: "center",
                     fontFamily: "var(--font-mono)", fontSize: "13px",
-                    color: "#0f0f0f", flexShrink: 0,
+                    color: post.admin ? "#f5f2eb" : "#0f0f0f",
+                    fontWeight: 600, flexShrink: 0,
                   }}>
                     {post.admin ? "K" : (post.user?.alias?.[0]?.toUpperCase() || "S")}
                   </div>
 
-                  <div style={{ flex: 1 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{
                       display: "flex", alignItems: "center",
                       gap: "10px", marginBottom: "8px", flexWrap: "wrap",
                     }}>
                       <span style={{
-                        fontFamily: "var(--font-mono)", fontSize: "12px",
-                        fontWeight: 500, letterSpacing: "0.04em",
+                        fontFamily: "var(--font-mono)", fontSize: "13px",
+                        fontWeight: 600, letterSpacing: "0.02em",
                       }}>
                         {post.admin ? post.admin.display_name : (post.user?.alias || "Student")}
                       </span>
-                      <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", opacity: 0.35 }}>
-                        {new Date(post.created_at).toLocaleDateString("en-GB", {
-                          day: "numeric", month: "short", year: "numeric",
-                        })}
+                      {post.admin && (
+                        <span style={{
+                          fontFamily: "var(--font-mono)", fontSize: "9px",
+                          letterSpacing: "0.1em", textTransform: "uppercase",
+                          background: "rgba(232,98,44,0.15)", color: "#e8622c",
+                          padding: "3px 8px", borderRadius: "2px",
+                          border: "1px solid rgba(232,98,44,0.2)",
+                        }}>
+                          Admin
+                        </span>
+                      )}
+                      <span style={{
+                        fontFamily: "var(--font-mono)", fontSize: "11px",
+                        opacity: 0.3,
+                      }}>
+                        {getTimeAgo(post.created_at)}
                       </span>
                       {post.status === "resolved" && (
                         <span style={{
                           fontFamily: "var(--font-mono)", fontSize: "10px",
                           letterSpacing: "0.08em", textTransform: "uppercase",
-                          color: "#1a4fd4", border: "1px solid #1a4fd4",
-                          padding: "2px 7px",
+                          color: "#34d399",
+                          background: "rgba(52,211,153,0.1)",
+                          border: "1px solid rgba(52,211,153,0.2)",
+                          padding: "2px 8px", borderRadius: "2px",
                         }}>
-                          Resolved
+                          ✓ Resolved
                         </span>
                       )}
                     </div>
 
                     <p style={{
                       fontFamily: "var(--font-mono)", fontSize: "13px",
-                      lineHeight: 1.7, opacity: 0.8, marginBottom: "12px",
+                      lineHeight: 1.75, opacity: 0.8, marginBottom: "14px",
+                      wordBreak: "break-word",
                     }}>
                       {post.body}
                     </p>
@@ -268,27 +338,33 @@ export default function FeedClient({ initialPosts, session }: Props) {
                           onClick={() => setReplyingTo(
                             replyingTo === post.id ? null : post.id
                           )}
+                          className="feed-action-btn"
                           style={{
                             fontFamily: "var(--font-mono)", fontSize: "11px",
                             letterSpacing: "0.06em", textTransform: "uppercase",
                             background: "none", border: "none", cursor: "pointer",
-                            opacity: 0.45, color: "#f5f2eb", padding: "0",
+                            opacity: 0.4, color: "#f5f2eb", padding: "4px 0",
+                            transition: "opacity 0.15s",
                           }}>
-                          {replyingTo === post.id ? "Cancel" : `Reply${(post.replies?.length ?? 0) > 0 ? ` (${post.replies?.length})` : ""}`}
+                          {replyingTo === post.id
+                            ? "Cancel"
+                            : `Reply${(post.replies?.length ?? 0) > 0 ? ` · ${post.replies?.length}` : ""}`}
                         </button>
                       )}
                       {session && session.id !== post.user?.alias && (
                         <button
                           onClick={() => handleReport(post.id)}
                           disabled={reportedIds.has(post.id)}
+                          className="feed-action-btn"
                           style={{
                             fontFamily: "var(--font-mono)", fontSize: "11px",
                             letterSpacing: "0.06em", textTransform: "uppercase",
                             background: "none", border: "none", cursor: "pointer",
-                            opacity: reportedIds.has(post.id) ? 0.2 : 0.3,
-                            color: "#f5f2eb", padding: "0",
+                            opacity: reportedIds.has(post.id) ? 0.2 : 0.25,
+                            color: "#f5f2eb", padding: "4px 0",
+                            transition: "opacity 0.15s",
                           }}>
-                          {reportedIds.has(post.id) ? "Reported" : "Report"}
+                          {reportedIds.has(post.id) ? "Reported ✓" : "Report"}
                         </button>
                       )}
                     </div>
@@ -299,34 +375,37 @@ export default function FeedClient({ initialPosts, session }: Props) {
               {/* Replies */}
               {(post.replies?.length ?? 0) > 0 && (
                 <div style={{
-                  marginLeft: "80px", marginRight: "32px",
-                  borderLeft: "2px solid #2a2725",
+                  marginLeft: "84px", marginRight: "32px",
+                  borderLeft: "2px solid rgba(232,98,44,0.2)",
                   marginBottom: "16px",
                 }}>
                   {post.replies?.map((reply) => (
                     <div key={reply.id} style={{
-                      padding: "16px 20px",
-                      borderBottom: "1px solid #1a1917",
+                      padding: "14px 20px",
+                      borderBottom: "1px solid #141312",
                     }}>
                       <div style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
                         <div style={{
                           width: "28px", height: "28px", borderRadius: "50%",
-                          background: reply.is_admin ? "#d4401a" : (reply.user?.avatar_color || "#d4401a"),
+                          background: reply.is_admin
+                            ? "linear-gradient(135deg, #e8622c, #c4501e)"
+                            : (reply.user?.avatar_color || "#e8622c"),
                           display: "flex", alignItems: "center", justifyContent: "center",
                           fontFamily: "var(--font-mono)", fontSize: "11px",
-                          color: "#0f0f0f", flexShrink: 0,
+                          color: reply.is_admin ? "#f5f2eb" : "#0f0f0f",
+                          fontWeight: 600, flexShrink: 0,
                         }}>
                           {reply.is_admin ? "K" : reply.user?.alias?.[0]?.toUpperCase() || "S"}
                         </div>
-                        <div style={{ flex: 1 }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{
                             display: "flex", alignItems: "center",
                             gap: "8px", marginBottom: "4px",
                           }}>
                             <span style={{
                               fontFamily: "var(--font-mono)", fontSize: "12px",
-                              fontWeight: 500,
-                              color: reply.is_admin ? "#d4401a" : "#f5f2eb",
+                              fontWeight: 600,
+                              color: reply.is_admin ? "#e8622c" : "#f5f2eb",
                             }}>
                               {reply.is_admin ? (reply.admin?.display_name || "Know_Your_Faculty") : (reply.user?.alias || "Student")}
                             </span>
@@ -334,23 +413,22 @@ export default function FeedClient({ initialPosts, session }: Props) {
                               <span style={{
                                 fontFamily: "var(--font-mono)", fontSize: "9px",
                                 letterSpacing: "0.1em", textTransform: "uppercase",
-                                background: "#d4401a", color: "#0f0f0f",
-                                padding: "2px 6px",
+                                background: "rgba(232,98,44,0.15)", color: "#e8622c",
+                                padding: "2px 6px", borderRadius: "2px",
                               }}>
                                 Admin
                               </span>
                             )}
                             <span style={{
-                              fontFamily: "var(--font-mono)", fontSize: "11px", opacity: 0.35,
+                              fontFamily: "var(--font-mono)", fontSize: "11px", opacity: 0.3,
                             }}>
-                              {new Date(reply.created_at).toLocaleDateString("en-GB", {
-                                day: "numeric", month: "short",
-                              })}
+                              {getTimeAgo(reply.created_at)}
                             </span>
                           </div>
                           <p style={{
                             fontFamily: "var(--font-mono)", fontSize: "12px",
-                            lineHeight: 1.6, opacity: 0.75,
+                            lineHeight: 1.65, opacity: 0.75,
+                            wordBreak: "break-word",
                           }}>
                             {reply.body}
                           </p>
@@ -364,7 +442,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
               {/* Reply box */}
               {replyingTo === post.id && session && (
                 <div style={{
-                  marginLeft: "80px", marginRight: "32px",
+                  marginLeft: "84px", marginRight: "32px",
                   marginBottom: "20px", display: "flex", gap: "10px",
                 }}>
                   <input
@@ -381,10 +459,13 @@ export default function FeedClient({ initialPosts, session }: Props) {
                         ? "Reply as Know_Your_Faculty…"
                         : "Write a reply…"
                     }
+                    className="feed-reply-input"
                     style={{
                       flex: 1, fontFamily: "var(--font-mono)", fontSize: "13px",
                       padding: "10px 14px", border: "1.5px solid #2a2725",
-                      background: "transparent", color: "#f5f2eb", outline: "none",
+                      background: "rgba(255,255,255,0.02)", color: "#f5f2eb",
+                      outline: "none", borderRadius: "2px",
+                      transition: "border-color 0.2s",
                     }}
                   />
                   <button
@@ -393,9 +474,11 @@ export default function FeedClient({ initialPosts, session }: Props) {
                     style={{
                       fontFamily: "var(--font-mono)", fontSize: "11px",
                       letterSpacing: "0.06em", textTransform: "uppercase",
-                      padding: "10px 16px",
-                      background: replyingLoading ? "#1a1917" : "#d4401a",
-                      color: "#0f0f0f", border: "none", cursor: "pointer",
+                      padding: "10px 18px", borderRadius: "2px",
+                      background: replyingLoading ? "#1e1c1a" : "#e8622c",
+                      color: replyingLoading ? "#555" : "#f5f2eb",
+                      border: "none", cursor: "pointer",
+                      transition: "background 0.2s",
                     }}>
                     {replyingLoading ? "…" : "Send"}
                   </button>
@@ -405,6 +488,24 @@ export default function FeedClient({ initialPosts, session }: Props) {
           ))
         )}
       </div>
+
+      <style>{`
+        .feed-textarea:focus {
+          border-color: #e8622c !important;
+        }
+        .feed-reply-input:focus {
+          border-color: #e8622c !important;
+        }
+        .feed-post:hover {
+          background: rgba(255,255,255,0.015);
+        }
+        .feed-action-btn:hover {
+          opacity: 0.7 !important;
+        }
+        .feed-post-btn:hover:not(:disabled) {
+          transform: translateY(-1px);
+        }
+      `}</style>
     </div>
   );
 }

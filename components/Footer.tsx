@@ -18,7 +18,7 @@ export default async function Footer() {
 
   return (
     <footer style={{
-      borderTop: "3px solid #d4401a",
+      borderTop: "3px solid #e8622c",
       background: "#0f0f0f",
     }}>
 
@@ -43,7 +43,7 @@ export default async function Footer() {
               marginBottom: "12px",
             }}>
               Know Your{" "}
-              <span style={{ color: "#d4401a" }}>Faculty</span>
+              <span style={{ color: "#e8622c" }}>Faculty</span>
             </div>
             <div style={{
               fontFamily: "var(--font-mono)", fontSize: "11px",
@@ -65,7 +65,7 @@ export default async function Footer() {
             }}>
               <span style={{
                 width: "6px", height: "6px", borderRadius: "50%",
-                background: "#d4401a", display: "inline-block",
+                background: "#e8622c", display: "inline-block",
               }} />
               Version {version}
             </div>
@@ -114,7 +114,7 @@ export default async function Footer() {
                     {person.email && (
                       <a href={`mailto:${person.email}`} style={{
                         fontFamily: "var(--font-mono)", fontSize: "11px",
-                        color: "#d4401a", opacity: 0.8,
+                        color: "#e8622c", opacity: 0.8,
                         textDecoration: "none", letterSpacing: "0.02em",
                       }}>
                         {person.email}

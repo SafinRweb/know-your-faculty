@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
 
     const user = session.user as any;
     const body = await req.json();
-    const { facultyId, semesterId, answers } = body;
+    const { facultyId, answers } = body;
 
     if (!facultyId || !answers || typeof answers !== "object") {
         return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
         // Update existing review
         const { error } = await supabaseAdmin
             .from("reviews")
-            .update({ semester_id: semesterId || null, updated_at: new Date().toISOString() })
+            .update({ updated_at: new Date().toISOString() })
             .eq("id", existing.id);
 
         if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -48,7 +48,6 @@ export async function POST(req: NextRequest) {
             .insert({
                 user_id: user.id,
                 faculty_id: facultyId,
-                semester_id: semesterId || null,
             })
             .select("id")
             .single();
@@ -66,7 +65,9 @@ export async function POST(req: NextRequest) {
 
         const questionText = getQuestionText(key);
         const questionType = key === "comment" ? "text" : key === "course" ? "text" : "mcq";
-        const options = questionType === "mcq" ? ["Yes", "No"] : null;
+        const options = questionType === "mcq"
+            ? (key === "recommend" ? ["Yes", "Drop"] : ["Yes", "No"])
+            : null;
 
         // Find or create the question row
         const { data: existingQ } = await supabaseAdmin

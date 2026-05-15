@@ -14,7 +14,7 @@ const config: Config = {
                 paper: "#f5f2eb",
                 faint: "#e8e3d9",
                 mid: "#c8c2b4",
-                accent: "#d4401a",
+                accent: "#e8622c",
                 accent2: "#1a4fd4",
             },
             fontFamily: {

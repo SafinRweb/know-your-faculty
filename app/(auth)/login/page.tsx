@@ -45,7 +45,7 @@ function LoginContent() {
                     textTransform: "uppercase", color: "#0f0f0f",
                     textDecoration: "none", opacity: 0.6,
                 }}>
-                    ← Know Your <span style={{ color: "#d4401a" }}>Faculty</span>
+                    ← Know Your <span style={{ color: "#e8622c" }}>Faculty</span>
                 </Link>
 
                 <div>
@@ -60,7 +60,7 @@ function LoginContent() {
                         shapes the<br />
                         <em style={{
                             fontFamily: "var(--font-serif)", fontStyle: "italic",
-                            fontWeight: 400, color: "#d4401a",
+                            fontWeight: 400, color: "#e8622c",
                         }}>next semester.</em>
                     </h1>
                     <p style={{
@@ -86,7 +86,7 @@ function LoginContent() {
                         }}>
                             <span style={{
                                 width: "5px", height: "5px", borderRadius: "50%",
-                                background: "#d4401a", marginTop: "5px", flexShrink: 0,
+                                background: "#e8622c", marginTop: "5px", flexShrink: 0,
                                 display: "inline-block",
                             }} />
                             <span style={{
@@ -136,7 +136,7 @@ function LoginContent() {
                     {error && (
                         <div style={{
                             fontFamily: "var(--font-mono)", fontSize: "12px",
-                            color: "#d4401a", border: "1px solid #d4401a",
+                            color: "#e8622c", border: "1px solid #e8622c",
                             padding: "12px 16px", marginBottom: "24px",
                             letterSpacing: "0.04em",
                         }}>

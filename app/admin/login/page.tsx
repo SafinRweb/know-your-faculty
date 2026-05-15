@@ -51,11 +51,11 @@ export default function AdminLoginPage() {
                     textTransform: "uppercase", color: "#0f0f0f",
                     marginBottom: "48px",
                 }}>
-                    Know Your <span style={{ color: "#d4401a" }}>Faculty</span>
+                    Know Your <span style={{ color: "#e8622c" }}>Faculty</span>
                     <span style={{
                         marginLeft: "12px", fontFamily: "var(--font-mono)",
                         fontSize: "10px", letterSpacing: "0.1em",
-                        background: "#d4401a", color: "#0f0f0f",
+                        background: "#e8622c", color: "#0f0f0f",
                         padding: "2px 8px",
                     }}>
                         ADMIN
@@ -131,7 +131,7 @@ export default function AdminLoginPage() {
                 {error && (
                     <div style={{
                         fontFamily: "var(--font-mono)", fontSize: "12px",
-                        color: "#d4401a", border: "1px solid #d4401a",
+                        color: "#e8622c", border: "1px solid #e8622c",
                         padding: "12px 16px", marginBottom: "20px",
                     }}>
                         {error}

@@ -102,7 +102,7 @@ export default async function SchedulePage({
       {/* HEADER */}
       <div style={{
         padding: "56px 32px 0",
-        borderBottom: "1.5px solid #d4401a",
+        borderBottom: "1.5px solid #e8622c",
       }}>
         <div style={{
           display: "grid", gridTemplateColumns: "1fr 1fr",
@@ -126,14 +126,14 @@ export default async function SchedulePage({
               Master<br />
               <em style={{
                 fontFamily: "var(--font-serif)", fontStyle: "italic",
-                fontWeight: 400, color: "#d4401a",
+                fontWeight: 400, color: "#e8622c",
               }}>Schedule</em>
             </h1>
           </div>
 
           <form method="GET" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {semesterId && <input type="hidden" name="semester" value={semesterId} />}
-            <div style={{ display: "flex", border: "1.5px solid #d4401a" }}>
+            <div style={{ display: "flex", border: "1.5px solid #e8622c" }}>
               <input
                 name="q"
                 defaultValue={params.q || ""}
@@ -147,7 +147,7 @@ export default async function SchedulePage({
               <button type="submit" style={{
                 fontFamily: "var(--font-mono)", fontSize: "11px",
                 letterSpacing: "0.1em", textTransform: "uppercase",
-                padding: "13px 18px", background: "#d4401a",
+                padding: "13px 18px", background: "#e8622c",
                 color: "#0f0f0f", border: "none", cursor: "pointer",
               }}>
                 Search
@@ -160,7 +160,7 @@ export default async function SchedulePage({
         <div style={{ display: "flex", overflowX: "auto" }}>
           <Link href={`/schedule${query ? `?q=${query}` : ""}`} style={{
             ...tabStyle,
-            background: !semesterId ? "#d4401a" : "transparent",
+            background: !semesterId ? "#e8622c" : "transparent",
             color: !semesterId ? "#0f0f0f" : "#f5f2eb",
           }}>
             All semesters
@@ -170,7 +170,7 @@ export default async function SchedulePage({
               href={`/schedule?semester=${s.id}${query ? `&q=${query}` : ""}`}
               style={{
                 ...tabStyle,
-                background: semesterId === s.id ? "#d4401a" : "transparent",
+                background: semesterId === s.id ? "#e8622c" : "transparent",
                 color: semesterId === s.id ? "#0f0f0f" : "#f5f2eb",
               }}>
               {s.label}
@@ -305,7 +305,7 @@ export default async function SchedulePage({
         <div style={{
           display: "flex", justifyContent: "center",
           alignItems: "center", gap: "8px",
-          padding: "32px", borderTop: "1.5px solid #d4401a",
+          padding: "32px", borderTop: "1.5px solid #e8622c",
         }}>
           {page > 1 && (
             <Link
@@ -432,7 +432,7 @@ function pageBtn(active: boolean): React.CSSProperties {
     fontFamily: "var(--font-mono)", fontSize: "12px",
     letterSpacing: "0.06em", padding: "8px 14px",
     border: "1.5px solid #2a2725",
-    background: active ? "#d4401a" : "transparent",
+    background: active ? "#e8622c" : "transparent",
     color: active ? "#0f0f0f" : "#f5f2eb",
     textDecoration: "none",
   };

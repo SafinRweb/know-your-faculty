@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 const AVATAR_COLORS = [
-  "#f5f2eb", "#d4401a", "#1a4fd4", "#2a7a4f",
+  "#f5f2eb", "#e8622c", "#1a4fd4", "#2a7a4f",
   "#8b2fc9", "#c4841a", "#1a8bc4", "#c41a6b",
 ];
 
@@ -74,7 +74,7 @@ export default function OnboardingPage() {
           fontWeight: 500, letterSpacing: "0.08em",
           textTransform: "uppercase", color: "#0f0f0f", opacity: 0.4,
         }}>
-          Know Your <span style={{ color: "#d4401a" }}>Faculty</span>
+          Know Your <span style={{ color: "#e8622c" }}>Faculty</span>
         </div>
 
         <div>
@@ -87,7 +87,7 @@ export default function OnboardingPage() {
             One last<br />
             <em style={{
               fontFamily: "var(--font-serif)", fontStyle: "italic",
-              fontWeight: 400, color: "#d4401a",
+              fontWeight: 400, color: "#e8622c",
             }}>step.</em>
           </h1>
           <p style={{
@@ -109,7 +109,7 @@ export default function OnboardingPage() {
             <div key={i} style={{ display: "flex", gap: "10px", alignItems: "flex-start" }}>
               <span style={{
                 width: "5px", height: "5px", borderRadius: "50%",
-                background: "#d4401a", marginTop: "5px", flexShrink: 0,
+                background: "#e8622c", marginTop: "5px", flexShrink: 0,
                 display: "inline-block",
               }} />
               <span style={{
@@ -232,7 +232,7 @@ export default function OnboardingPage() {
           {error && (
             <div style={{
               fontFamily: "var(--font-mono)", fontSize: "12px",
-              color: "#d4401a", border: "1px solid #d4401a",
+              color: "#e8622c", border: "1px solid #e8622c",
               padding: "12px 16px", marginBottom: "20px",
             }}>
               {error}

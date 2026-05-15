@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-type Tab = "overview" | "faculty" | "users" | "reports" | "admins" | "contributors" | "schedule" | "reviews";
+type Tab = "overview" | "faculty" | "users" | "reports" | "admins" | "contributors" | "schedule" | "reviews" | "import";
 
 interface Props {
     stats: {
@@ -236,7 +236,7 @@ export default function AdminClient({
         router.refresh();
     }
 
-    const TABS: Tab[] = ["overview", "faculty", "reviews", "users", "reports", "admins", "contributors", "schedule"];
+    const TABS: Tab[] = ["overview", "faculty", "reviews", "import", "users", "reports", "admins", "contributors", "schedule"];
 
     return (
         <div>
@@ -276,7 +276,7 @@ export default function AdminClient({
                             {t}
                             {t === "reports" && stats.pendingReports > 0 && (
                                 <span style={{
-                                    background: "#d4401a", color: "#0f0f0f",
+                                    background: "#e8622c", color: "#0f0f0f",
                                     borderRadius: "50%", width: "16px", height: "16px",
                                     fontSize: "10px", display: "inline-flex",
                                     alignItems: "center", justifyContent: "center",
@@ -317,7 +317,7 @@ export default function AdminClient({
                                     <div style={{
                                         fontFamily: "var(--font-sans)", fontSize: "40px",
                                         fontWeight: 800, letterSpacing: "-0.04em",
-                                        color: s.alert ? "#d4401a" : "#f5f2eb",
+                                        color: s.alert ? "#e8622c" : "#f5f2eb",
                                         marginBottom: "6px",
                                     }}>
                                         {s.val}
@@ -371,7 +371,7 @@ export default function AdminClient({
                             {facultyMsg && (
                                 <div style={{
                                     fontFamily: "var(--font-mono)", fontSize: "12px",
-                                    color: facultyMsg.startsWith("✓") ? "#1a4fd4" : "#d4401a",
+                                    color: facultyMsg.startsWith("✓") ? "#1a4fd4" : "#e8622c",
                                     marginBottom: "12px",
                                 }}>
                                     {facultyMsg}
@@ -390,7 +390,7 @@ export default function AdminClient({
                             {editMsg && (
                                 <div style={{
                                     fontFamily: "var(--font-mono)", fontSize: "12px",
-                                    color: editMsg.startsWith("✓") ? "#1a4fd4" : "#d4401a",
+                                    color: editMsg.startsWith("✓") ? "#1a4fd4" : "#e8622c",
                                     marginBottom: "12px",
                                 }}>
                                     {editMsg}
@@ -475,7 +475,7 @@ export default function AdminClient({
               fontFamily: "var(--font-mono)", fontSize: "11px",
               letterSpacing: "0.06em", textTransform: "uppercase",
               padding: "6px 12px", background: "transparent",
-              color: "#d4401a", border: "1px solid #d4401a",
+              color: "#e8622c", border: "1px solid #e8622c",
               cursor: "pointer",
             }}>
             {saving === f.id ? "…" : "Remove"}
@@ -517,7 +517,7 @@ export default function AdminClient({
                                     {deptMsg && (
                                         <div style={{
                                             fontFamily: "var(--font-mono)", fontSize: "12px",
-                                            color: deptMsg.startsWith("✓") ? "#1a4fd4" : "#d4401a",
+                                            color: deptMsg.startsWith("✓") ? "#1a4fd4" : "#e8622c",
                                             marginTop: "10px",
                                         }}>
                                             {deptMsg}
@@ -545,7 +545,7 @@ export default function AdminClient({
                                                         fontFamily: "var(--font-mono)", fontSize: "11px",
                                                         padding: "7px 10px", background: "none",
                                                         border: "none", borderLeft: "1.5px solid #f5f2eb",
-                                                        cursor: "pointer", color: "#d4401a",
+                                                        cursor: "pointer", color: "#e8622c",
                                                     }}>
                                                     ×
                                                 </button>
@@ -591,7 +591,7 @@ export default function AdminClient({
                                 </span>
                                 <span style={{
                                     ...badge,
-                                    background: u.is_banned ? "#d4401a" : "#2a2725",
+                                    background: u.is_banned ? "#e8622c" : "#2a2725",
                                     color: u.is_banned ? "#0f0f0f" : "#f5f2eb",
                                 }}>
                                     {u.is_banned ? "Banned" : "Active"}
@@ -603,8 +603,8 @@ export default function AdminClient({
                                         fontFamily: "var(--font-mono)", fontSize: "11px",
                                         letterSpacing: "0.06em", textTransform: "uppercase",
                                         padding: "7px 14px", background: "transparent",
-                                        color: u.is_banned ? "#1a4fd4" : "#d4401a",
-                                        border: `1px solid ${u.is_banned ? "#1a4fd4" : "#d4401a"}`,
+                                        color: u.is_banned ? "#1a4fd4" : "#e8622c",
+                                        border: `1px solid ${u.is_banned ? "#1a4fd4" : "#e8622c"}`,
                                         cursor: u.role === "admin" ? "not-allowed" : "pointer",
                                         opacity: u.role === "admin" ? 0.3 : 1,
                                     }}>
@@ -660,7 +660,7 @@ export default function AdminClient({
                                         <button
                                             onClick={() => handleReportAction(r.id, "actioned")}
                                             disabled={saving === r.id}
-                                            style={{ ...primaryBtn, background: "#d4401a", borderColor: "#d4401a" }}>
+                                            style={{ ...primaryBtn, background: "#e8622c", borderColor: "#e8622c" }}>
                                             Remove post
                                         </button>
                                         <button
@@ -711,7 +711,7 @@ export default function AdminClient({
                             {adminMsg && (
                                 <div style={{
                                     fontFamily: "var(--font-mono)", fontSize: "12px",
-                                    color: adminMsg.startsWith("✓") ? "#1a4fd4" : "#d4401a",
+                                    color: adminMsg.startsWith("✓") ? "#1a4fd4" : "#e8622c",
                                     marginBottom: "12px",
                                 }}>
                                     {adminMsg}
@@ -784,7 +784,7 @@ export default function AdminClient({
             fontFamily: "var(--font-mono)", fontSize: "11px",
             letterSpacing: "0.06em", textTransform: "uppercase",
             padding: "6px 12px", background: "transparent",
-            color: "#d4401a", border: "1px solid #d4401a",
+            color: "#e8622c", border: "1px solid #e8622c",
             cursor: "pointer",
           }}>
           {saving === a.id ? "…" : "Delete"}
@@ -828,7 +828,7 @@ export default function AdminClient({
                       {versionMsg && (
                         <div style={{
                           fontFamily: "var(--font-mono)", fontSize: "12px",
-                          color: versionMsg.startsWith("✓") ? "#1a4fd4" : "#d4401a",
+                          color: versionMsg.startsWith("✓") ? "#1a4fd4" : "#e8622c",
                           marginTop: "8px",
                         }}>
                           {versionMsg}
@@ -863,7 +863,7 @@ export default function AdminClient({
                         {contributorMsg && (
                           <div style={{
                             fontFamily: "var(--font-mono)", fontSize: "12px",
-                            color: contributorMsg.startsWith("✓") ? "#1a4fd4" : "#d4401a",
+                            color: contributorMsg.startsWith("✓") ? "#1a4fd4" : "#e8622c",
                             marginBottom: "12px",
                           }}>
                             {contributorMsg}
@@ -887,7 +887,7 @@ export default function AdminClient({
                               <div style={{
                                 fontFamily: "var(--font-mono)", fontSize: "10px",
                                 letterSpacing: "0.1em", textTransform: "uppercase",
-                                color: "#d4401a", opacity: 0.8, marginBottom: "4px",
+                                color: "#e8622c", opacity: 0.8, marginBottom: "4px",
                               }}>
                                 {c.role}
                               </div>
@@ -915,7 +915,7 @@ export default function AdminClient({
                                 fontFamily: "var(--font-mono)", fontSize: "11px",
                                 letterSpacing: "0.06em", textTransform: "uppercase",
                                 padding: "6px 12px", background: "transparent",
-                                color: "#d4401a", border: "1px solid #d4401a",
+                                color: "#e8622c", border: "1px solid #e8622c",
                                 cursor: "pointer", flexShrink: 0,
                               }}>
                               {saving === c.id ? "…" : "Remove"}
@@ -977,7 +977,7 @@ export default function AdminClient({
                                                             <span>by {r.user?.alias || "anon"}</span>
                                                             <span>{r.semester?.label || "No semester"}</span>
                                                             <span>{new Date(r.created_at).toLocaleDateString("en-GB")}</span>
-                                                            {!r.is_visible && <span style={{ color: "#d4401a" }}>HIDDEN</span>}
+                                                            {!r.is_visible && <span style={{ color: "#e8622c" }}>HIDDEN</span>}
                                                         </div>
                                                     </div>
                                                     <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
@@ -1000,7 +1000,7 @@ export default function AdminClient({
                                                                 fontFamily: "var(--font-mono)", fontSize: "11px",
                                                                 letterSpacing: "0.06em", textTransform: "uppercase",
                                                                 padding: "6px 12px", background: "transparent",
-                                                                color: "#d4401a", border: "1px solid #d4401a",
+                                                                color: "#e8622c", border: "1px solid #e8622c",
                                                                 cursor: "pointer",
                                                             }}>
                                                             {saving === r.id ? "…" : "Delete"}
@@ -1026,6 +1026,13 @@ export default function AdminClient({
                                 </div>
                             </div>
                         )}
+                    </div>
+                )}
+
+                {/* ── IMPORT ── */}
+                {tab === "import" && (
+                    <div style={{ maxWidth: "720px" }}>
+                        <ReviewImporter faculty={faculty} />
                     </div>
                 )}
 
@@ -1176,7 +1183,7 @@ function ScheduleUploader({ semesters }: { semesters: any[] }) {
                   fontFamily: "var(--font-mono)", fontSize: "11px",
                   letterSpacing: "0.06em", textTransform: "uppercase",
                   padding: "6px 12px", background: "transparent",
-                  color: "#d4401a", border: "1px solid #d4401a",
+                  color: "#e8622c", border: "1px solid #e8622c",
                   cursor: "pointer",
                 }}>
                 {deletingSem === s.id ? "…" : "Remove"}
@@ -1242,7 +1249,7 @@ function ScheduleUploader({ semesters }: { semesters: any[] }) {
       {error && (
         <div style={{
           fontFamily: "var(--font-mono)", fontSize: "12px",
-          color: "#d4401a", border: "1px solid #d4401a",
+          color: "#e8622c", border: "1px solid #e8622c",
           padding: "12px 16px", marginBottom: "16px",
         }}>
           {error}
@@ -1297,6 +1304,314 @@ function ScheduleUploader({ semesters }: { semesters: any[] }) {
             }}>
               {result.faculty_created} new faculty created with initials as placeholder names.
               Go to the Faculty tab to update their full names and departments.
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ReviewImporter({ faculty }: { faculty: any[] }) {
+  const router = useRouter();
+  const [file, setFile] = useState<File | null>(null);
+  const [csvPreview, setCsvPreview] = useState<string[][] | null>(null);
+  const [importing, setImporting] = useState(false);
+  const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0] || null;
+    setFile(f);
+    setResult(null);
+    setError(null);
+    setCsvPreview(null);
+
+    if (f) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const text = ev.target?.result as string;
+        const lines = text.split(/\r?\n/).filter((l) => l.trim());
+        const preview = lines.slice(0, 6).map((line) => {
+          const vals: string[] = [];
+          let current = "";
+          let inQ = false;
+          for (let i = 0; i < line.length; i++) {
+            const c = line[i];
+            if (c === '"') { inQ = !inQ; }
+            else if (c === ',' && !inQ) { vals.push(current.trim()); current = ""; }
+            else { current += c; }
+          }
+          vals.push(current.trim());
+          return vals;
+        });
+        setCsvPreview(preview);
+      };
+      reader.readAsText(f);
+    }
+  }
+
+  async function handleImport() {
+    if (!file) { setError("Please select a CSV file."); return; }
+    setImporting(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      const text = await file.text();
+      const res = await fetch("/api/admin/import-reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ csvContent: text }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Import failed.");
+      setResult(data);
+      router.refresh();
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setImporting(false);
+    }
+  }
+
+  return (
+    <div>
+      <div style={sectionLabel}>Import reviews from CSV</div>
+      <p style={{
+        fontFamily: "var(--font-mono)", fontSize: "13px",
+        lineHeight: 1.7, opacity: 0.5, marginBottom: "24px",
+        maxWidth: "520px",
+      }}>
+        Upload a CSV file with columns for Faculty Name, Initial, Attendance, Grading,
+        Teaching, Recommended, and Comments. Reviews will be matched to existing faculty
+        by initial or name.
+      </p>
+
+      {/* Expected format */}
+      <div style={{
+        padding: "18px", border: "1px solid #2a2725",
+        background: "#1a1917", marginBottom: "24px",
+      }}>
+        <div style={{
+          fontFamily: "var(--font-mono)", fontSize: "10px",
+          letterSpacing: "0.1em", textTransform: "uppercase",
+          opacity: 0.4, marginBottom: "10px",
+        }}>
+          Expected CSV columns
+        </div>
+        <div style={{
+          fontFamily: "var(--font-mono)", fontSize: "12px",
+          lineHeight: 1.8, opacity: 0.7,
+          display: "flex", flexWrap: "wrap", gap: "8px",
+        }}>
+          {["Department", "Course", "Faculty Name", "Initial",
+            "Strict about attendance?", "Fair Grading?", "Clear teaching?",
+            "Recommended?", "Comment(s)"].map((col) => (
+            <span key={col} style={{
+              padding: "3px 10px", border: "1px solid #2a2725",
+              fontSize: "11px", whiteSpace: "nowrap",
+            }}>
+              {col}
+            </span>
+          ))}
+        </div>
+        <div style={{
+          fontFamily: "var(--font-mono)", fontSize: "11px",
+          opacity: 0.35, marginTop: "10px", lineHeight: 1.6,
+        }}>
+          For "Recommended?" use <strong style={{ opacity: 0.8 }}>Yes</strong> or <strong style={{ opacity: 0.8 }}>Drop</strong>.
+          Other MCQ questions use Yes/No.
+        </div>
+      </div>
+
+      {/* File input */}
+      <div style={{ marginBottom: "20px" }}>
+        <div style={fieldLabel}>CSV file</div>
+        <input
+          type="file"
+          accept=".csv,text/csv"
+          onChange={handleFileChange}
+          style={{
+            fontFamily: "var(--font-mono)", fontSize: "13px",
+            color: "#f5f2eb", cursor: "pointer",
+          }}
+        />
+      </div>
+
+      {/* Preview */}
+      {csvPreview && csvPreview.length > 0 && (
+        <div style={{
+          marginBottom: "24px", border: "1px solid #2a2725",
+          overflow: "auto", maxHeight: "220px",
+        }}>
+          <div style={{
+            fontFamily: "var(--font-mono)", fontSize: "10px",
+            letterSpacing: "0.1em", textTransform: "uppercase",
+            opacity: 0.4, padding: "10px 14px",
+            borderBottom: "1px solid #2a2725",
+            background: "#1a1917", position: "sticky", top: 0,
+          }}>
+            Preview (first {Math.min(csvPreview.length - 1, 5)} rows)
+          </div>
+          <table style={{
+            width: "100%", borderCollapse: "collapse",
+            fontFamily: "var(--font-mono)", fontSize: "11px",
+          }}>
+            <thead>
+              <tr>
+                {csvPreview[0].map((h, i) => (
+                  <th key={i} style={{
+                    padding: "8px 10px", textAlign: "left",
+                    borderBottom: "1.5px solid #2a2725",
+                    background: "#1a1917", whiteSpace: "nowrap",
+                    fontWeight: 600, opacity: 0.7,
+                    letterSpacing: "0.04em",
+                  }}>
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {csvPreview.slice(1).map((row, ri) => (
+                <tr key={ri}>
+                  {row.map((cell, ci) => (
+                    <td key={ci} style={{
+                      padding: "6px 10px",
+                      borderBottom: "1px solid #1a1917",
+                      opacity: 0.6, whiteSpace: "nowrap",
+                      maxWidth: "160px", overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}>
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Faculty match info */}
+      {file && (
+        <div style={{
+          padding: "14px 18px", background: "rgba(232,98,44,0.06)",
+          border: "1px solid rgba(232,98,44,0.15)",
+          marginBottom: "20px",
+        }}>
+          <div style={{
+            fontFamily: "var(--font-mono)", fontSize: "11px",
+            opacity: 0.6, lineHeight: 1.6,
+          }}>
+            <span style={{ color: "#e8622c", fontWeight: 600 }}>{faculty.length}</span> faculty in database available for matching.
+            Rows with unmatched faculty will be skipped.
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <div style={{
+          fontFamily: "var(--font-mono)", fontSize: "12px",
+          color: "#f87171", border: "1px solid rgba(248,113,113,0.3)",
+          background: "rgba(248,113,113,0.06)",
+          padding: "12px 16px", marginBottom: "16px",
+        }}>
+          {error}
+        </div>
+      )}
+
+      <button
+        onClick={handleImport}
+        disabled={importing || !file}
+        style={{
+          ...primaryBtn,
+          opacity: importing || !file ? 0.5 : 1,
+          cursor: importing || !file ? "not-allowed" : "pointer",
+          width: "100%", textAlign: "center",
+          background: importing ? "#2a2725" : "#e8622c",
+          color: importing ? "#f5f2eb" : "#0f0f0f",
+          borderColor: importing ? "#2a2725" : "#e8622c",
+        }}>
+        {importing ? "Importing reviews…" : "Import reviews →"}
+      </button>
+
+      {/* Result */}
+      {result && (
+        <div style={{
+          marginTop: "24px", padding: "24px",
+          border: `1.5px solid ${result.skipped > 0 ? "#fbbf24" : "#34d399"}`,
+          background: result.skipped > 0
+            ? "rgba(251,191,36,0.04)"
+            : "rgba(52,211,153,0.04)",
+        }}>
+          <div style={{
+            fontFamily: "var(--font-mono)", fontSize: "11px",
+            letterSpacing: "0.1em", textTransform: "uppercase",
+            color: result.skipped > 0 ? "#fbbf24" : "#34d399",
+            marginBottom: "16px", fontWeight: 600,
+          }}>
+            ✓ Import complete
+          </div>
+
+          <div style={{
+            display: "grid", gridTemplateColumns: "1fr 1fr 1fr",
+            gap: "16px", marginBottom: "20px",
+          }}>
+            {[
+              { label: "Imported", val: result.imported, color: "#34d399" },
+              { label: "Skipped", val: result.skipped, color: result.skipped > 0 ? "#fbbf24" : "#34d399" },
+              { label: "Total rows", val: result.total, color: "#f5f2eb" },
+            ].map((s) => (
+              <div key={s.label} style={{
+                padding: "16px", border: "1px solid #2a2725",
+                textAlign: "center",
+              }}>
+                <div style={{
+                  fontFamily: "var(--font-sans)", fontSize: "28px",
+                  fontWeight: 800, letterSpacing: "-0.03em",
+                  color: s.color,
+                }}>
+                  {s.val}
+                </div>
+                <div style={{
+                  fontFamily: "var(--font-mono)", fontSize: "10px",
+                  letterSpacing: "0.08em", textTransform: "uppercase",
+                  opacity: 0.5, marginTop: "4px",
+                }}>
+                  {s.label}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Skipped reasons */}
+          {result.skippedReasons && result.skippedReasons.length > 0 && (
+            <div>
+              <div style={{
+                fontFamily: "var(--font-mono)", fontSize: "10px",
+                letterSpacing: "0.1em", textTransform: "uppercase",
+                opacity: 0.4, marginBottom: "8px",
+              }}>
+                Skipped details (first 20)
+              </div>
+              <div style={{
+                maxHeight: "200px", overflowY: "auto",
+                border: "1px solid #2a2725", padding: "4px 0",
+              }}>
+                {result.skippedReasons.map((r: string, i: number) => (
+                  <div key={i} style={{
+                    fontFamily: "var(--font-mono)", fontSize: "11px",
+                    padding: "6px 14px", opacity: 0.6,
+                    borderBottom: i < result.skippedReasons.length - 1
+                      ? "1px solid #1a1917" : "none",
+                  }}>
+                    {r}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

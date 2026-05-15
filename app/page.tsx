@@ -27,7 +27,7 @@ export default async function HomePage() {
         minHeight: "100svh", padding: "100px 32px 64px",
         display: "grid", gridTemplateColumns: "1fr 1fr",
         gap: "64px", alignItems: "center",
-        borderBottom: "1.5px solid #d4401a",
+        borderBottom: "1.5px solid #e8622c",
       }} className="hero-section">
         {/* LEFT */}
         <div>
@@ -41,7 +41,7 @@ export default async function HomePage() {
             faculty.<br />
             <em style={{
               fontFamily: "var(--font-serif)", fontStyle: "italic",
-              fontWeight: 400, color: "#d4401a",
+              fontWeight: 400, color: "#e8622c",
             }}>Before you enroll.</em>
           </h1>
 
@@ -64,8 +64,8 @@ export default async function HomePage() {
                 <Link href="/faculty" style={{
                   fontFamily: "var(--font-mono)", fontSize: "13px", fontWeight: 500,
                   letterSpacing: "0.06em", textTransform: "uppercase",
-                  color: "#0f0f0f", background: "#d4401a",
-                  padding: "14px 28px", border: "1.5px solid #d4401a",
+                  color: "#0f0f0f", background: "#e8622c",
+                  padding: "14px 28px", border: "1.5px solid #e8622c",
                   textDecoration: "none", display: "inline-flex",
                   alignItems: "center", gap: "10px",
                 }}>
@@ -86,8 +86,8 @@ export default async function HomePage() {
                 <Link href="/login" style={{
                   fontFamily: "var(--font-mono)", fontSize: "13px", fontWeight: 500,
                   letterSpacing: "0.06em", textTransform: "uppercase",
-                  color: "#f5f2eb", background: "#d4401a",
-                  padding: "14px 28px", border: "1.5px solid #d4401a",
+                  color: "#f5f2eb", background: "#e8622c",
+                  padding: "14px 28px", border: "1.5px solid #e8622c",
                   textDecoration: "none", display: "inline-flex",
                   alignItems: "center", gap: "10px",
                 }}>
@@ -160,8 +160,8 @@ export default async function HomePage() {
 
       {/* TICKER */}
       <div style={{
-        borderBottom: "1.5px solid #d4401a", overflow: "hidden",
-        background: "#d4401a", padding: "13px 0", whiteSpace: "nowrap",
+        borderBottom: "1.5px solid #e8622c", overflow: "hidden",
+        background: "#e8622c", padding: "13px 0", whiteSpace: "nowrap",
       }}>
         <div style={{ display: "inline-flex", width: "max-content", animation: "ticker 22s linear infinite" }}>
           {[0, 1].map((groupIndex) => (
@@ -229,7 +229,7 @@ export default async function HomePage() {
       <section style={{ padding: "96px 32px", borderBottom: "1.5px solid #f5f2eb" }}>
         <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "48px", flexWrap: "wrap", gap: "24px" }}>
           <h2 style={{ fontFamily: "var(--font-sans)", fontSize: "clamp(28px, 3.5vw, 44px)", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.05 }}>
-            Browse <em style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 400, color: "#d4401a" }}>faculty</em>
+            Browse <em style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 400, color: "#e8622c" }}>faculty</em>
           </h2>
           <Link href="/faculty" style={{
             fontFamily: "var(--font-mono)", fontSize: "13px", fontWeight: 500,
@@ -271,7 +271,7 @@ export default async function HomePage() {
           padding: "96px 32px", background: "#0f0f0f",
           display: "grid", gridTemplateColumns: "1fr auto",
           alignItems: "center", gap: "48px",
-          borderTop: "1.5px solid #d4401a",
+          borderTop: "1.5px solid #e8622c",
         }} className="cta-band">
           <h2 style={{
             fontFamily: "var(--font-sans)", fontSize: "clamp(32px, 5vw, 64px)",
@@ -281,14 +281,14 @@ export default async function HomePage() {
             starts with the{" "}
             <em style={{
               fontFamily: "var(--font-serif)", fontStyle: "italic",
-              fontWeight: 400, color: "#d4401a",
+              fontWeight: 400, color: "#e8622c",
             }}>right</em> info.
           </h2>
           <Link href="/login" style={{
             fontFamily: "var(--font-mono)", fontSize: "13px", fontWeight: 500,
             letterSpacing: "0.06em", textTransform: "uppercase",
-            color: "#0f0f0f", background: "#d4401a",
-            padding: "14px 28px", border: "1.5px solid #d4401a",
+            color: "#0f0f0f", background: "#e8622c",
+            padding: "14px 28px", border: "1.5px solid #e8622c",
             textDecoration: "none", whiteSpace: "nowrap",
           }}>
             Sign in with EWU email →
