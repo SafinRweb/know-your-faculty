@@ -14,7 +14,12 @@ export default auth((req) => {
     !pathname.startsWith("/onboarding") &&
     !pathname.startsWith("/api")
   ) {
-    return NextResponse.redirect(new URL("/onboarding", req.url));
+    const onboardingUrl = new URL("/onboarding", req.url);
+    // Preserve where the user was trying to go
+    if (pathname !== "/") {
+      onboardingUrl.searchParams.set("callbackUrl", pathname);
+    }
+    return NextResponse.redirect(onboardingUrl);
   }
 
   // Protect admin routes
@@ -29,8 +34,12 @@ export default auth((req) => {
 
 export const config = {
   matcher: [
-    "/admin/:path*",
-    "/faculty/:path*/review",
-    "/onboarding",
+    /*
+     * Run middleware on ALL routes except:
+     * - _next/static, _next/image (Next.js internals)
+     * - favicon.ico, icon.png, static assets
+     * - /api/auth (NextAuth endpoints must not be intercepted)
+     */
+    "/((?!_next/static|_next/image|favicon\\.ico|icon\\.png|api/auth).*)",
   ],
 };

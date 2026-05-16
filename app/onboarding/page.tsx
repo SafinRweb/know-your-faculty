@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 const AVATAR_COLORS = [
@@ -18,8 +18,10 @@ function generateAnonymousName() {
   return `${adj}_${noun}_${Math.floor(Math.random() * 100)}`;
 }
 
-export default function OnboardingPage() {
+function OnboardingContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
   const { data: session, update } = useSession();
   const user = session?.user as any;
 
@@ -42,7 +44,7 @@ export default function OnboardingPage() {
           const { isSetup, alias, avatarColor } = await res.json();
           if (isSetup) {
             await update({ isSetup: true, alias, avatarColor });
-            router.push("/");
+            router.push(callbackUrl);
           }
         }
       } catch (e) {
@@ -81,7 +83,7 @@ export default function OnboardingPage() {
 
       // Refresh session so isSetup updates
       await update({ isSetup: true, alias: alias.trim(), avatarColor: color });
-      router.push("/");
+      router.push(callbackUrl);
       router.refresh();
     } catch (e: any) {
       setError(e.message);
@@ -311,5 +313,13 @@ export default function OnboardingPage() {
         }
       `}</style>
     </div>
+  );
+}
+
+export default function OnboardingPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: "100svh", background: "#0f0f0f" }} />}>
+      <OnboardingContent />
+    </Suspense>
   );
 }

@@ -2,12 +2,15 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 
 export default function Navbar() {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const { data: session } = useSession();
+    const pathname = usePathname();
+    const loginHref = `/login?callbackUrl=${encodeURIComponent(pathname || "/")}`;
     const user = session?.user as any;
 
     return (
@@ -100,7 +103,7 @@ export default function Navbar() {
                                 )}
                             </div>
                         ) : (
-                            <Link href="/login" style={{
+                            <Link href={loginHref} style={{
                                 ...navLinkStyle, opacity: 1,
                                 background: "#f5f2eb", color: "#0f0f0f",
                                 padding: "9px 18px",
@@ -182,7 +185,7 @@ export default function Navbar() {
                             Sign out
                         </button>
                     ) : (
-                        <Link href="/login" onClick={() => setMobileOpen(false)}
+                        <Link href={loginHref} onClick={() => setMobileOpen(false)}
                             style={{
                                 fontFamily: "var(--font-sans)", fontSize: "36px",
                                 fontWeight: 800, letterSpacing: "-0.03em",

@@ -255,7 +255,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
             <span style={{ fontSize: "14px", opacity: 0.4 }}>💬</span>
             Sign in with your EWU email to post.
           </div>
-          <a href="/login" style={{
+          <a href="/login?callbackUrl=%2Ffeed" style={{
             fontFamily: "var(--font-mono)", fontSize: "12px",
             fontWeight: 500, letterSpacing: "0.06em", textTransform: "uppercase",
             color: "#f5f2eb", background: "#e8622c",
