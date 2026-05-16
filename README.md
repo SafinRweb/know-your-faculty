@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Know Your Faculty — EWU
 
-## Getting Started
+A premium, community-driven platform for East West University students to share faculty reviews, track course analytics, and discuss academic advising in real-time.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🌟 Key Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 1. Faculty Intelligence & Reviews
+*   **Searchable Directory:** Comprehensive list of EWU faculty members with quick search functionality.
+*   **Student Reviews:** Real, unfiltered feedback from students who have previously taken courses with specific professors.
+*   **Verified Data:** Reviews include semester details and course names for context and reliability.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 2. Advanced Analytics Dashboard
+Data-driven insights to help students make informed decisions during advising:
+*   **Drop Rate Visuals:** See the percentage of students who usually drop a course.
+*   **Grade Distribution:** Understand the fairness and consistency of grading.
+*   **Teaching Quality:** Metrics on teaching clarity and attendance strictness.
+*   **Quick Summary:** At-a-glance performance tables for mobile-first comparisons.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Community Feed
+An interactive space for academic discussions:
+*   **Advising Support:** Ask questions about course paths or professor selections.
+*   **Announcements:** Stay updated with community-driven academic news.
+*   **Moderated Environment:** Admin-moderated threads to ensure respectful and productive discussions.
+*   **Rich Interactions:** Support for threaded replies and long-form posts.
 
-## Learn More
+### 4. Privacy & Identity
+*   **Anonymous Aliases:** Auto-generated, fun anonymous names (e.g., *Mystic_Owl_42*) to protect student privacy while maintaining a sense of community.
+*   **Custom Avatars:** Personalized avatar colors that persist across the platform.
+*   **Secure Authentication:** Integrated Google OAuth for easy and secure access.
 
-To learn more about Next.js, take a look at the following resources:
+### 5. Master Schedule Viewer
+*   Integrated view of the university's master schedule to help plan your semester alongside faculty reviews.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 6. Admin Control Center
+A robust backend for platform integrity:
+*   **User Management:** Ability to manage roles, ban bad actors, or remove users.
+*   **Content Moderation:** Tools to hide or delete reviews and feed posts that violate guidelines.
+*   **Batch Importing:** Efficiently import large datasets of reviews and schedules via CSV/PDF.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🎨 Design Philosophy
+*   **Dark-Mode First:** A sleek, high-contrast dark aesthetic (#0f0f0f) with vibrant orange accents (#e8622c).
+*   **Modern Typography:** Using premium font pairings (Syne, DM Mono, Instrument Serif) for a sophisticated feel.
+*   **Responsive Excellence:** Fully optimized for mobile, tablet, and desktop experiences.
+*   **Micro-Animations:** Subtle transitions and hover effects for a premium, alive feel.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Created for the students of East West University.*
