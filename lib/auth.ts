@@ -130,6 +130,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         token.role = data.role;
                         token.alias = data.alias;
                         token.isSetup = data.is_setup;
+                        token.avatarColor = data.avatar_color;
                         token.isAdmin = false;
                     }
                 }
@@ -144,6 +145,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 (session.user as any).alias = token.alias;
                 (session.user as any).isSetup = token.isSetup;
                 (session.user as any).isAdmin = token.isAdmin;
+                (session.user as any).avatarColor = token.avatarColor;
 
                 // ── FOOLPROOF FALLBACK ──
                 // If the JWT cookie is stale and says isSetup is false,
@@ -158,6 +160,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     if (data && data.is_setup) {
                         (session.user as any).isSetup = true;
                         (session.user as any).alias = data.alias;
+                        (session.user as any).avatarColor = data.avatar_color;
                     }
                 }
             }

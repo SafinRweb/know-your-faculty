@@ -5,11 +5,11 @@ export async function getFeedPosts() {
     .from("feed_posts")
     .select(`
       *,
-      user:users(alias, avatar_color),
+      user:users!feed_posts_user_id_fkey(alias, avatar_color),
       admin:admins(display_name, avatar_color),
       replies:feed_replies(
         id, body, is_admin, created_at,
-        user:users(alias, avatar_color),
+        user:users!feed_replies_user_id_fkey(alias, avatar_color),
         admin:admins(display_name, avatar_color)
       )
     `)

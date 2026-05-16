@@ -46,7 +46,7 @@ export default function ReviewList({ textReviews }: Props) {
                         }}>
                             <div style={{
                                 width: "28px", height: "28px",
-                                background: "#f5f2eb", borderRadius: "50%",
+                                background: review.user?.avatar_color || "#e8622c", borderRadius: "50%",
                                 display: "flex", alignItems: "center",
                                 justifyContent: "center",
                                 fontFamily: "var(--font-mono)", fontSize: "11px",

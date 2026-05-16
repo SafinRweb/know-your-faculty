@@ -69,7 +69,7 @@ export async function getFacultyReviews(
         .from("reviews")
         .select(`
       *,
-      user:users(alias),
+      user:users(alias, avatar_color),
       answers:review_answers(
         *,
         question:review_questions(question_text, type)

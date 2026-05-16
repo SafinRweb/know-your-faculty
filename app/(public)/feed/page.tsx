@@ -11,9 +11,8 @@ export default async function FeedPage() {
     const user = session?.user as any;
 
     return (
-        <div style={{ paddingTop: "57px" }}>
+        <div style={{ paddingTop: "57px", overflowX: "hidden", width: "100%" }}>
             <div style={{
-                display: "grid", gridTemplateColumns: "1fr 340px",
                 alignItems: "start", minHeight: "calc(100svh - 57px)",
             }} className="feed-layout">
 
@@ -26,18 +25,7 @@ export default async function FeedPage() {
                         borderBottom: "1.5px solid #e8622c",
                         background: "linear-gradient(180deg, rgba(232,98,44,0.06) 0%, transparent 100%)",
                     }}>
-                        <div style={{
-                            fontFamily: "var(--font-mono)", fontSize: "11px",
-                            letterSpacing: "0.14em", textTransform: "uppercase",
-                            opacity: 0.4, marginBottom: "16px",
-                            display: "flex", alignItems: "center", gap: "8px",
-                        }}>
-                            <span style={{
-                                width: "6px", height: "6px", borderRadius: "50%",
-                                background: "#e8622c", display: "inline-block",
-                            }} />
-                            {posts.length} post{posts.length !== 1 ? "s" : ""} · Live
-                        </div>
+
                         <h1 style={{
                             fontFamily: "var(--font-sans)",
                             fontSize: "clamp(36px, 5vw, 64px)",
@@ -166,10 +154,18 @@ export default async function FeedPage() {
             </div>
 
             <style>{`
-        .feed-layout { grid-template-columns: 1fr 340px; }
+        .feed-layout { display: grid; grid-template-columns: minmax(0, 1fr) 340px; }
         @media (max-width: 900px) {
-          .feed-layout { grid-template-columns: 1fr !important; }
-          .feed-layout > div:last-child { display: none; }
+          .feed-layout { grid-template-columns: minmax(0, 1fr) !important; }
+          .feed-layout > div:last-child { 
+            border-top: 1.5px solid #1e1c1a; 
+            position: relative; 
+            top: 0; 
+            min-height: auto; 
+            background: #111110;
+            width: 100%;
+            overflow-x: hidden;
+          }
         }
       `}</style>
         </div>

@@ -63,6 +63,10 @@ export default function AdminClient({
     const [reviewFilter, setReviewFilter] = useState("");
     const [reviewsLoaded, setReviewsLoaded] = useState(false);
 
+    // Pagination
+    const [userLimit, setUserLimit] = useState(50);
+    const [reviewLimit, setReviewLimit] = useState(50);
+
     async function handleDeptAction(action: string, id?: string, name?: string) {
         setSaving("dept");
         const res = await fetch("/api/admin/departments", {
@@ -581,13 +585,22 @@ export default function AdminClient({
                 {tab === "users" && (
                     <div>
                         <div style={sectionLabel}>{users.length} registered students</div>
-                        {users.map((u) => (
+                        {users.slice(0, userLimit).map((u) => (
                             <div key={u.id} style={{
                                 display: "grid",
-                                gridTemplateColumns: "1fr auto auto auto",
+                                gridTemplateColumns: "40px 1fr auto auto auto",
                                 alignItems: "center", gap: "16px",
                                 padding: "16px 0", borderBottom: "1px solid #2a2725",
                             }} className="user-row">
+                                <div style={{
+                                    width: "32px", height: "32px", borderRadius: "50%",
+                                    background: u.avatar_color || "#2a2725",
+                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                    fontFamily: "var(--font-mono)", fontSize: "12px",
+                                    fontWeight: 700, color: u.avatar_color ? "#0f0f0f" : "#f5f2eb",
+                                }}>
+                                    {u.alias?.[0]?.toUpperCase() || "?"}
+                                </div>
                                 <div>
                                     <div style={{
                                         fontFamily: "var(--font-mono)", fontSize: "13px",
@@ -646,6 +659,19 @@ export default function AdminClient({
                                 </div>
                             </div>
                         ))}
+                        {users.length > userLimit && (
+                            <button
+                                onClick={() => setUserLimit(p => p + 50)}
+                                style={{
+                                    width: "100%", marginTop: "24px", padding: "14px",
+                                    background: "transparent", border: "1.5px solid #2a2725",
+                                    color: "#f5f2eb", fontFamily: "var(--font-mono)",
+                                    fontSize: "12px", letterSpacing: "0.06em",
+                                    textTransform: "uppercase", cursor: "pointer",
+                                }}>
+                                See more ({users.length - userLimit} left)
+                            </button>
+                        )}
                     </div>
                 )}
 
@@ -998,8 +1024,8 @@ export default function AdminClient({
                                     />
                                 </div>
                                 <div style={{ maxHeight: "700px", overflowY: "auto" }}>
-                                    {adminReviews
-                                        .filter((r) => {
+                                    {(() => {
+                                        const filtered = adminReviews.filter((r) => {
                                             if (!reviewFilter.trim()) return true;
                                             const q = reviewFilter.toLowerCase();
                                             return (
@@ -1007,68 +1033,102 @@ export default function AdminClient({
                                                 r.user?.alias?.toLowerCase().includes(q) ||
                                                 r.user?.email?.toLowerCase().includes(q)
                                             );
-                                        })
-                                        .map((r) => (
-                                            <div key={r.id} style={{
-                                                padding: "20px", border: "1.5px solid #2a2725",
-                                                marginBottom: "12px",
-                                                opacity: r.is_visible ? 1 : 0.5,
-                                            }}>
-                                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "16px", marginBottom: "12px" }}>
-                                                    <div>
-                                                        <div style={{ fontFamily: "var(--font-sans)", fontSize: "15px", fontWeight: 700, marginBottom: "4px" }}>
-                                                            {r.faculty?.name || "Unknown faculty"}
-                                                        </div>
-                                                        <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", opacity: 0.5, display: "flex", gap: "12px", flexWrap: "wrap" }}>
-                                                            <span>by {r.user?.alias || "anon"}</span>
-                                                            <span>{r.semester?.label || "No semester"}</span>
-                                                            <span>{new Date(r.created_at).toLocaleDateString("en-GB")}</span>
-                                                            {!r.is_visible && <span style={{ color: "#e8622c" }}>HIDDEN</span>}
-                                                        </div>
-                                                    </div>
-                                                    <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
-                                                        <button
-                                                            onClick={() => handleReviewAdminAction(r.id, r.is_visible ? "hide" : "show")}
-                                                            disabled={saving === r.id}
-                                                            style={{
-                                                                fontFamily: "var(--font-mono)", fontSize: "11px",
-                                                                letterSpacing: "0.06em", textTransform: "uppercase",
-                                                                padding: "6px 12px", background: "transparent",
-                                                                color: "#1a4fd4", border: "1px solid #1a4fd4",
-                                                                cursor: "pointer",
-                                                            }}>
-                                                            {r.is_visible ? "Hide" : "Show"}
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleReviewAdminAction(r.id, "delete")}
-                                                            disabled={saving === r.id}
-                                                            style={{
-                                                                fontFamily: "var(--font-mono)", fontSize: "11px",
-                                                                letterSpacing: "0.06em", textTransform: "uppercase",
-                                                                padding: "6px 12px", background: "transparent",
-                                                                color: "#e8622c", border: "1px solid #e8622c",
-                                                                cursor: "pointer",
-                                                            }}>
-                                                            {saving === r.id ? "…" : "Delete"}
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                {r.answers && r.answers.length > 0 && (
-                                                    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                                                        {r.answers.map((a: any) => (
-                                                            <div key={a.id} style={{
-                                                                fontFamily: "var(--font-mono)", fontSize: "12px",
-                                                                lineHeight: 1.6, padding: "8px 12px",
-                                                                background: "#0f0f0f", border: "1px solid #2a2725",
-                                                            }}>
-                                                                <span style={{ opacity: 0.45 }}>{a.question?.question_text}: </span>
-                                                                <span style={{ fontWeight: 500 }}>{a.answer_value}</span>
+                                        });
+                                        const visible = filtered.slice(0, reviewLimit);
+
+                                        return (
+                                            <>
+                                                {visible.map((r) => (
+                                                    <div key={r.id} style={{
+                                                        padding: "20px", border: "1.5px solid #2a2725",
+                                                        marginBottom: "12px",
+                                                        opacity: r.is_visible ? 1 : 0.5,
+                                                    }}>
+                                                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "16px", marginBottom: "12px" }}>
+                                                            <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                                                                <div style={{
+                                                                    width: "32px", height: "32px", borderRadius: "50%",
+                                                                    background: r.user?.avatar_color || "#2a2725",
+                                                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                                                    fontFamily: "var(--font-mono)", fontSize: "12px",
+                                                                    fontWeight: 700, color: r.user?.avatar_color ? "#0f0f0f" : "#f5f2eb",
+                                                                    flexShrink: 0,
+                                                                }}>
+                                                                    {r.user?.alias?.[0]?.toUpperCase() || "?"}
+                                                                </div>
+                                                                <div>
+                                                                    <div style={{ fontFamily: "var(--font-sans)", fontSize: "15px", fontWeight: 700, marginBottom: "4px" }}>
+                                                                        {r.faculty?.name || "Unknown faculty"}
+                                                                    </div>
+                                                                    <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", opacity: 0.5, display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                                                                        <span>by {r.user?.alias || "anon"}</span>
+                                                                        <span>{r.semester?.label || "No semester"}</span>
+                                                                        <span>{new Date(r.created_at).toLocaleDateString("en-GB")}</span>
+                                                                        {!r.is_visible && <span style={{ color: "#e8622c" }}>HIDDEN</span>}
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        ))}
+                                                            <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
+                                                                <button
+                                                                    onClick={() => handleReviewAdminAction(r.id, r.is_visible ? "hide" : "show")}
+                                                                    disabled={saving === r.id}
+                                                                    style={{
+                                                                        fontFamily: "var(--font-mono)", fontSize: "11px",
+                                                                        letterSpacing: "0.06em", textTransform: "uppercase",
+                                                                        padding: "6px 12px", background: "transparent",
+                                                                        color: "#1a4fd4", border: "1px solid #1a4fd4",
+                                                                        cursor: "pointer",
+                                                                    }}>
+                                                                    {r.is_visible ? "Hide" : "Show"}
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleReviewAdminAction(r.id, "delete")}
+                                                                    disabled={saving === r.id}
+                                                                    style={{
+                                                                        fontFamily: "var(--font-mono)", fontSize: "11px",
+                                                                        letterSpacing: "0.06em", textTransform: "uppercase",
+                                                                        padding: "6px 12px", background: "transparent",
+                                                                        color: "#e8622c", border: "1px solid #e8622c",
+                                                                        cursor: "pointer",
+                                                                    }}>
+                                                                    {saving === r.id ? "…" : "Delete"}
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Answers preview */}
+                                                        {r.answers && r.answers.length > 0 && (
+                                                            <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginTop: "12px" }}>
+                                                                {r.answers.map((a: any) => (
+                                                                    <div key={a.id} style={{
+                                                                        fontFamily: "var(--font-mono)", fontSize: "12px",
+                                                                        lineHeight: 1.6, padding: "8px 12px",
+                                                                        background: "#0f0f0f", border: "1px solid #2a2725",
+                                                                    }}>
+                                                                        <span style={{ opacity: 0.45 }}>{a.question?.question_text}: </span>
+                                                                        <span style={{ fontWeight: 500 }}>{a.answer_value}</span>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
                                                     </div>
+                                                ))}
+                                                {filtered.length > reviewLimit && (
+                                                    <button
+                                                        onClick={() => setReviewLimit(p => p + 50)}
+                                                        style={{
+                                                            width: "100%", marginTop: "12px", padding: "14px",
+                                                            background: "transparent", border: "1.5px solid #2a2725",
+                                                            color: "#f5f2eb", fontFamily: "var(--font-mono)",
+                                                            fontSize: "12px", letterSpacing: "0.06em",
+                                                            textTransform: "uppercase", cursor: "pointer",
+                                                        }}>
+                                                        See more ({filtered.length - reviewLimit} left)
+                                                    </button>
                                                 )}
-                                            </div>
-                                        ))}
+                                            </>
+                                        );
+                                    })()}
                                 </div>
                             </div>
                         )}
@@ -1092,13 +1152,13 @@ export default function AdminClient({
             </div>
 
             <style>{`
-        .stats-overview { grid-template-columns: repeat(5,1fr); }
+        .stats-overview { grid-template-columns: repeat(5, minmax(0, 1fr)); }
         .two-col { grid-template-columns: 1fr 1fr; }
-        .user-row { grid-template-columns: 1fr auto auto auto; }
+        .user-row { grid-template-columns: 40px minmax(0, 1fr) auto auto auto; }
         @media (max-width: 900px) {
-          .stats-overview { grid-template-columns: repeat(2,1fr) !important; }
+          .stats-overview { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
           .two-col { grid-template-columns: 1fr !important; }
-          .user-row { grid-template-columns: 1fr auto !important; }
+          .user-row { grid-template-columns: 40px minmax(0, 1fr) auto !important; }
           .user-row > span:first-of-type { display: none; }
         }
       `}</style>

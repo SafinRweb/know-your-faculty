@@ -23,7 +23,7 @@ export default function OnboardingPage() {
   const { data: session, update } = useSession();
   const user = session?.user as any;
 
-  const [alias, setAlias] = useState("");
+  const [alias, setAlias] = useState(generateAnonymousName());
   const [color, setColor] = useState(AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -212,19 +212,34 @@ export default function OnboardingPage() {
             }}>
               Display name
             </div>
-            <input
-              type="text"
-              value={alias}
-              onChange={(e) => setAlias(e.target.value)}
-              placeholder="e.g. night_owl_cse"
-              maxLength={24}
-              style={{
-                width: "100%", fontFamily: "var(--font-mono)",
-                fontSize: "14px", padding: "13px 16px",
-                border: "1.5px solid #f5f2eb", background: "transparent",
-                color: "#f5f2eb", outline: "none", letterSpacing: "0.02em",
-              }}
-            />
+            <div style={{ position: "relative" }}>
+              <input
+                type="text"
+                value={alias}
+                onChange={(e) => setAlias(e.target.value)}
+                placeholder="e.g. night_owl_cse"
+                maxLength={24}
+                style={{
+                  width: "100%", fontFamily: "var(--font-mono)",
+                  fontSize: "14px", padding: "13px 16px",
+                  paddingRight: "48px",
+                  border: "1.5px solid #f5f2eb", background: "transparent",
+                  color: "#f5f2eb", outline: "none", letterSpacing: "0.02em",
+                }}
+              />
+              <button
+                onClick={() => setAlias(generateAnonymousName())}
+                style={{
+                  position: "absolute", right: "12px", top: "50%",
+                  transform: "translateY(-50%)", background: "none",
+                  border: "none", cursor: "pointer", fontSize: "16px",
+                  opacity: 0.5,
+                }}
+                title="Generate another name"
+              >
+                🔄
+              </button>
+            </div>
             <div style={{
               fontFamily: "var(--font-mono)", fontSize: "11px",
               opacity: 0.35, marginTop: "6px",

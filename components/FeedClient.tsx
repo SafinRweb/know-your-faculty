@@ -37,6 +37,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyBody, setReplyBody] = useState("");
   const [replyingLoading, setReplyingLoading] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(20);
 
   async function handlePost() {
     if (!body.trim()) return;
@@ -124,6 +125,25 @@ export default function FeedClient({ initialPosts, session }: Props) {
     } catch {}
   }
 
+  async function handleDeletePost(postId: string) {
+    if (!confirm("Are you sure you want to delete this post?")) return;
+    try {
+      const res = await fetch("/api/admin/feed/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postId }),
+      });
+      if (res.ok) {
+        setPosts((prev) => prev.filter((p) => p.id !== postId));
+      } else {
+        const data = await res.json();
+        alert(data.error || "Failed to delete post");
+      }
+    } catch (e: any) {
+      alert("Error deleting post");
+    }
+  }
+
   function getTimeAgo(dateStr: string) {
     const diff = Date.now() - new Date(dateStr).getTime();
     const mins = Math.floor(diff / 60000);
@@ -161,6 +181,13 @@ export default function FeedClient({ initialPosts, session }: Props) {
               <textarea
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
+                onKeyDown={(e) => {
+                  // Submit on Enter only on Desktop (width > 768)
+                  if (e.key === "Enter" && !e.shiftKey && typeof window !== 'undefined' && window.innerWidth > 768) {
+                    e.preventDefault();
+                    handlePost();
+                  }
+                }}
                 placeholder="Ask a question or share an update…"
                 rows={3}
                 maxLength={500}
@@ -261,13 +288,13 @@ export default function FeedClient({ initialPosts, session }: Props) {
             </div>
           </div>
         ) : (
-          posts.map((post) => (
+          posts.slice(0, visibleCount).map((post) => (
             <div key={post.id} className="feed-post" style={{
               borderBottom: "1px solid #1e1c1a",
               transition: "background 0.15s",
             }}>
               {/* Post */}
-              <div style={{ padding: "28px 32px" }}>
+              <div className="feed-post-inner" style={{ padding: "28px 32px" }}>
                 <div style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
                   <div style={{
                     width: "38px", height: "38px", borderRadius: "50%",
@@ -351,7 +378,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
                             : `Reply${(post.replies?.length ?? 0) > 0 ? ` · ${post.replies?.length}` : ""}`}
                         </button>
                       )}
-                      {session && session.id !== post.user?.alias && (
+                      {session && session.role !== "admin" && session.id !== post.user?.alias && (
                         <button
                           onClick={() => handleReport(post.id)}
                           disabled={reportedIds.has(post.id)}
@@ -367,6 +394,21 @@ export default function FeedClient({ initialPosts, session }: Props) {
                           {reportedIds.has(post.id) ? "Reported ✓" : "Report"}
                         </button>
                       )}
+                      {session && session.role === "admin" && (
+                        <button
+                          onClick={() => handleDeletePost(post.id)}
+                          className="feed-action-btn"
+                          style={{
+                            fontFamily: "var(--font-mono)", fontSize: "11px",
+                            letterSpacing: "0.06em", textTransform: "uppercase",
+                            background: "none", border: "none", cursor: "pointer",
+                            opacity: 0.5,
+                            color: "#ef4444", padding: "4px 0",
+                            transition: "opacity 0.15s",
+                          }}>
+                          Delete
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -374,7 +416,7 @@ export default function FeedClient({ initialPosts, session }: Props) {
 
               {/* Replies */}
               {(post.replies?.length ?? 0) > 0 && (
-                <div style={{
+                <div className="feed-replies-list" style={{
                   marginLeft: "84px", marginRight: "32px",
                   borderLeft: "2px solid rgba(232,98,44,0.2)",
                   marginBottom: "16px",
@@ -441,15 +483,16 @@ export default function FeedClient({ initialPosts, session }: Props) {
 
               {/* Reply box */}
               {replyingTo === post.id && session && (
-                <div style={{
+                <div className="feed-reply-container" style={{
                   marginLeft: "84px", marginRight: "32px",
                   marginBottom: "20px", display: "flex", gap: "10px",
                 }}>
-                  <input
+                  <textarea
                     value={replyBody}
                     onChange={(e) => setReplyBody(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey) {
+                      // Submit on Enter only on Desktop (width > 768)
+                      if (e.key === "Enter" && !e.shiftKey && typeof window !== 'undefined' && window.innerWidth > 768) {
                         e.preventDefault();
                         handleReply(post.id);
                       }
@@ -459,12 +502,14 @@ export default function FeedClient({ initialPosts, session }: Props) {
                         ? "Reply as Know_Your_Faculty…"
                         : "Write a reply…"
                     }
-                    className="feed-reply-input"
+                    rows={1}
+                    className="feed-reply-textarea"
                     style={{
                       flex: 1, fontFamily: "var(--font-mono)", fontSize: "13px",
                       padding: "10px 14px", border: "1.5px solid #2a2725",
                       background: "rgba(255,255,255,0.02)", color: "#f5f2eb",
-                      outline: "none", borderRadius: "2px",
+                      outline: "none", resize: "none", borderRadius: "2px",
+                      lineHeight: 1.5, minHeight: "40px",
                       transition: "border-color 0.2s",
                     }}
                   />
@@ -487,13 +532,32 @@ export default function FeedClient({ initialPosts, session }: Props) {
             </div>
           ))
         )}
+
+        {posts.length > visibleCount && (
+          <div style={{ padding: "32px", textAlign: "center" }}>
+            <button
+              onClick={() => setVisibleCount(prev => prev + 20)}
+              style={{
+                fontFamily: "var(--font-mono)", fontSize: "12px",
+                letterSpacing: "0.08em", textTransform: "uppercase",
+                background: "transparent", border: "1.5px solid #2a2725",
+                color: "#f5f2eb", padding: "14px 40px", cursor: "pointer",
+                transition: "all 0.2s",
+              }}
+              onMouseOver={(e) => (e.currentTarget.style.borderColor = "#e8622c")}
+              onMouseOut={(e) => (e.currentTarget.style.borderColor = "#2a2725")}
+            >
+              See more posts ({posts.length - visibleCount} left)
+            </button>
+          </div>
+        )}
       </div>
 
       <style>{`
         .feed-textarea:focus {
           border-color: #e8622c !important;
         }
-        .feed-reply-input:focus {
+        .feed-reply-textarea:focus {
           border-color: #e8622c !important;
         }
         .feed-post:hover {
@@ -504,6 +568,13 @@ export default function FeedClient({ initialPosts, session }: Props) {
         }
         .feed-post-btn:hover:not(:disabled) {
           transform: translateY(-1px);
+        }
+        @media (max-width: 640px) {
+          .feed-post-inner { padding: 20px 16px !important; }
+          .feed-replies-list, .feed-reply-container { 
+            margin-left: 48px !important; 
+            margin-right: 16px !important; 
+          }
         }
       `}</style>
     </div>
