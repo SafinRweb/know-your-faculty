@@ -24,13 +24,6 @@ export default auth((req) => {
     }
   }
 
-  // Protect review routes
-  if (pathname.includes("/review")) {
-    if (!session) {
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
-  }
-
   return NextResponse.next();
 });
 

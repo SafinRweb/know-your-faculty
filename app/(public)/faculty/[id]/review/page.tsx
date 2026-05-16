@@ -11,16 +11,19 @@ export default async function ReviewPage({
     params: Promise<{ id: string }>;
 }) {
     const resolvedParams = await params;
-    
-    const [faculty, semesters, questions, session] = await Promise.all([
+    const session = await auth();
+
+    if (!session?.user) {
+        redirect(`/login?callbackUrl=/faculty/${resolvedParams.id}/review`);
+    }
+
+    const [faculty, semesters, questions] = await Promise.all([
         getFacultyById(resolvedParams.id),
         getAllSemesters(),
         getActiveQuestions(),
-        auth(),
     ]);
 
     if (!faculty) notFound();
-    if (!session?.user) redirect("/login");
 
     const existingReview = await getUserReviewForFaculty((session.user as any).id, faculty.id);
 

@@ -15,15 +15,11 @@ export default async function FacultyProfilePage({
     params: Promise<{ id: string }>;
     searchParams: Promise<{ semester?: string }>;
 }) {
-    const [resolvedParams, resolvedSearch] = await Promise.all([
-        params,
-        searchParams,
-    ]);
+    const resolvedParams = await params;
+    const resolvedSearch = await searchParams;
+    const session = await auth();
 
-    const [faculty, session] = await Promise.all([
-        getFacultyById(resolvedParams.id),
-        auth(),
-    ]);
+    const faculty = await getFacultyById(resolvedParams.id);
 
     if (!faculty) notFound();
 

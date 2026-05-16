@@ -69,7 +69,7 @@ export default async function HomePage() {
                   textDecoration: "none", display: "inline-flex",
                   alignItems: "center", gap: "10px",
                 }}>
-                  Browse faculty <span>→</span>
+                  Browse faculty <span style={{ lineHeight: 1 }}>→</span>
                 </Link>
                 <Link href="/schedule" style={{
                   fontFamily: "var(--font-mono)", fontSize: "13px", fontWeight: 500,
@@ -78,7 +78,7 @@ export default async function HomePage() {
                   padding: "14px 28px", border: "1.5px solid #f5f2eb",
                   textDecoration: "none",
                 }}>
-                  View schedule
+                  View Courses
                 </Link>
               </>
             ) : (
@@ -91,7 +91,7 @@ export default async function HomePage() {
                   textDecoration: "none", display: "inline-flex",
                   alignItems: "center", gap: "10px",
                 }}>
-                  Sign in with EWU email <span>→</span>
+                  Sign in with EWU email <span style={{ lineHeight: 1 }}>→</span>
                 </Link>
                 <Link href="/faculty" style={{
                   fontFamily: "var(--font-mono)", fontSize: "13px", fontWeight: 500,

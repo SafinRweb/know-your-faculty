@@ -123,7 +123,7 @@ export default async function SchedulePage({
               fontSize: "clamp(36px, 5vw, 64px)",
               fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 0.95,
             }}>
-              Master<br />
+              Course<br />
               <em style={{
                 fontFamily: "var(--font-serif)", fontStyle: "italic",
                 fontWeight: 400, color: "#e8622c",
