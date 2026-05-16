@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
@@ -9,16 +9,48 @@ const AVATAR_COLORS = [
   "#8b2fc9", "#c4841a", "#1a8bc4", "#c41a6b",
 ];
 
+const ADJECTIVES = ["Silent", "Mystic", "Clever", "Brave", "Night", "Hidden", "Wandering", "Cosmic", "Neon", "Phantom"];
+const NOUNS = ["Panda", "Tiger", "Owl", "Fox", "Wolf", "Raven", "Bear", "Phoenix", "Dragon", "Leopard"];
+
+function generateAnonymousName() {
+  const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
+  const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
+  return `${adj}_${noun}_${Math.floor(Math.random() * 100)}`;
+}
+
 export default function OnboardingPage() {
   const router = useRouter();
   const { data: session, update } = useSession();
   const user = session?.user as any;
 
-  const defaultAlias = user?.email?.split("@")[0] || "";
-  const [alias, setAlias] = useState(defaultAlias);
-  const [color, setColor] = useState(AVATAR_COLORS[0]);
+  const [alias, setAlias] = useState("");
+  const [color, setColor] = useState(AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Initialize alias on mount to avoid hydration mismatch
+  useEffect(() => {
+    if (!alias) {
+      setAlias(generateAnonymousName());
+    }
+    
+    // Failsafe: check if user is already setup in the DB
+    async function verifySetupStatus() {
+      try {
+        const res = await fetch("/api/user/status");
+        if (res.ok) {
+          const { isSetup, alias, avatarColor } = await res.json();
+          if (isSetup) {
+            await update({ isSetup: true, alias, avatarColor });
+            router.push("/");
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+    verifySetupStatus();
+  }, []);
 
   async function handleSave() {
     if (!alias.trim()) {

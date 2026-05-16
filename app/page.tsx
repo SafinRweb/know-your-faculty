@@ -49,8 +49,8 @@ export default async function HomePage() {
             fontFamily: "var(--font-mono)", fontSize: "14px",
             lineHeight: 1.65, opacity: 0.65, maxWidth: "400px", marginBottom: "16px",
           }}>
-            Real reviews from EWU students. Attendance patterns, grading clarity,
-            teaching quality — filtered by semester, backed by data. No fluff.
+            Real reviews from EWU students. Strict Attendance policies? Fair grading? Helpful or not?
+            teaching quality & more!!!!!
           </p>
 
 

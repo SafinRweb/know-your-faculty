@@ -126,8 +126,8 @@ export default function AnalyticsBlock({ analytics }: Props) {
               </div>
               <div style={{ fontFamily: "var(--font-mono)", fontSize: "13px", fontWeight: 600, color: "#e8622c", textAlign: "right" }}>
                 {(() => {
-                  const yesRow = recommendGroup.rows.find((r) => r.answer_value === "Yes");
-                  return yesRow ? `${yesRow.percentage}% say Yes` : "No data";
+                  const topAns = [...recommendGroup.rows].sort((a, b) => b.vote_count - a.vote_count)[0];
+                  return topAns ? `${topAns.percentage}% say ${topAns.answer_value}` : "No data";
                 })()}
               </div>
             </div>
@@ -194,11 +194,10 @@ function RecommendationCard({ group }: { group: { question: string; rows: Facult
     vote_count: r.vote_count,
   }));
 
-  const yesRow = group.rows.find((r) => r.answer_value === "Yes");
-  const dropRow = group.rows.find((r) => r.answer_value === "Drop");
   const totalVotes = group.rows.reduce((sum, r) => sum + r.vote_count, 0);
-  const yesPercent = yesRow ? Number(yesRow.percentage) : 0;
-  const isRecommended = yesPercent >= 50;
+  const topAns = [...group.rows].sort((a, b) => b.vote_count - a.vote_count)[0];
+  const topPercent = topAns ? Number(topAns.percentage) : 0;
+  const isRecommended = topAns?.answer_value === "Yes";
 
   return (
     <div style={{
@@ -249,14 +248,14 @@ function RecommendationCard({ group }: { group: { question: string; rows: Facult
             letterSpacing: "-0.04em", lineHeight: 1,
             color: isRecommended ? "#34d399" : "#ef4444",
           }}>
-            {yesPercent}%
+            {topPercent}%
           </div>
           <div style={{
             fontFamily: "var(--font-mono)", fontSize: "11px",
             letterSpacing: "0.08em", textTransform: "uppercase",
             opacity: 0.5, marginTop: "8px",
           }}>
-            say Yes
+            say {topAns?.answer_value || "Yes"}
           </div>
 
           {/* Stacked bar */}

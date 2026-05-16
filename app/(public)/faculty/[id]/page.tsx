@@ -6,6 +6,7 @@ import { getAllSemesters } from "@/lib/db/semesters";
 import { getFacultySections } from "@/lib/db/sections";
 import { getUserReviewForFaculty } from "@/lib/db/reviews";
 import AnalyticsBlock from "@/components/faculty/AnalyticsBlock";
+import ReviewList from "@/components/faculty/ReviewList";
 
 export default async function FacultyProfilePage({
     params,
@@ -188,73 +189,7 @@ export default async function FacultyProfilePage({
                             )}
                         </div>
 
-                        {textReviews.length === 0 ? (
-                            <div style={{
-                                fontFamily: "var(--font-mono)", fontSize: "13px",
-                                opacity: 0.4, lineHeight: 1.6,
-                            }}>
-                                No written comments yet for this period.
-                            </div>
-                        ) : (
-                            <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
-                                {textReviews.map((review: any, i: number) => {
-                                    const textAnswer = review.answers?.find(
-                                        (a: any) => a.question?.type === "text" && a.answer_value?.trim()
-                                    );
-                                    const courseAnswer = review.answers?.find(
-                                        (a: any) => a.question?.question_text === "Which course did you take with this faculty?" && a.answer_value?.trim()
-                                    );
-                                    if (!textAnswer) return null;
-                                    return (
-                                        <div key={review.id} style={{
-                                            padding: "28px 0",
-                                            borderBottom: i < textReviews.length - 1
-                                                ? "1px solid #2a2725" : "none",
-                                        }}>
-                                            <div style={{
-                                                display: "flex", alignItems: "center",
-                                                gap: "12px", marginBottom: "12px",
-                                            }}>
-                                                <div style={{
-                                                    width: "28px", height: "28px",
-                                                    background: "#f5f2eb", borderRadius: "50%",
-                                                    display: "flex", alignItems: "center",
-                                                    justifyContent: "center",
-                                                    fontFamily: "var(--font-mono)", fontSize: "11px",
-                                                    color: "#0f0f0f", flexShrink: 0,
-                                                }}>
-                                                    {review.user?.alias?.[0]?.toUpperCase() || "S"}
-                                                </div>
-                                                <div>
-                                                    <div style={{
-                                                        fontFamily: "var(--font-mono)", fontSize: "12px",
-                                                        fontWeight: 500, letterSpacing: "0.04em",
-                                                    }}>
-                                                        {review.user?.alias || "Student"}
-                                                    </div>
-                                                    <div style={{
-                                                        fontFamily: "var(--font-mono)", fontSize: "11px",
-                                                        opacity: 0.4, letterSpacing: "0.04em",
-                                                    }}>
-                                                        {new Date(review.created_at).toLocaleDateString("en-GB", {
-                                                            month: "short", year: "numeric",
-                                                        })}
-                                                        {courseAnswer ? ` · ${courseAnswer.answer_value}` : ""}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <p style={{
-                                                fontFamily: "var(--font-mono)", fontSize: "13px",
-                                                lineHeight: 1.7, opacity: 0.75,
-                                                paddingLeft: "40px",
-                                            }}>
-                                                {textAnswer.answer_value}
-                                            </p>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        )}
+                        <ReviewList textReviews={textReviews} />
                     </div>
                 </div>
 
