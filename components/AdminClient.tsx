@@ -893,7 +893,7 @@ export default function AdminClient({
                                 style={inputStyle}
                               >
                                 <option value="" disabled>Select a role...</option>
-                                <option value="Idea and Marketing">Idea and Marketing</option>
+                                <option value="Co Founder & Lead Data Curator">Co Founder & Lead Data Curator</option>
                                 <option value="Data Collector">Data Collector</option>
                               </select>
                             ) : (
