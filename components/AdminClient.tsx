@@ -60,12 +60,20 @@ export default function AdminClient({
     // Reviews management
     const [adminReviews, setAdminReviews] = useState<any[]>([]);
     const [reviewsLoading, setReviewsLoading] = useState(false);
-    const [reviewFilter, setReviewFilter] = useState("");
+    const [reviewSearch, setReviewSearch] = useState("");
+    const [reviewOffset, setReviewOffset] = useState(0);
+    const [hasMoreReviews, setHasMoreReviews] = useState(false);
     const [reviewsLoaded, setReviewsLoaded] = useState(false);
 
-    // Pagination
-    const [userLimit, setUserLimit] = useState(50);
-    const [reviewLimit, setReviewLimit] = useState(50);
+    // Users management
+    const [adminUsers, setAdminUsers] = useState<any[]>(users);
+    const [usersLoading, setUsersLoading] = useState(false);
+    const [userSearch, setUserSearch] = useState("");
+    const [userOffset, setUserOffset] = useState(0);
+    const [hasMoreUsers, setHasMoreUsers] = useState(false);
+    const [usersLoaded, setUsersLoaded] = useState(false);
+
+    const LIMIT = 50;
 
     async function handleDeptAction(action: string, id?: string, name?: string) {
         setSaving("dept");
@@ -238,12 +246,32 @@ export default function AdminClient({
         setSaving(null);
     }
 
-    async function loadReviews() {
+    async function loadReviews(isAppend = false) {
         setReviewsLoading(true);
-        const res = await fetch("/api/admin/reviews");
+        const currentOffset = isAppend ? reviewOffset + LIMIT : 0;
+        const res = await fetch(`/api/admin/reviews?search=${encodeURIComponent(reviewSearch)}&limit=${LIMIT}&offset=${currentOffset}`);
         const data = await res.json();
-        if (res.ok) { setAdminReviews(data.reviews || []); setReviewsLoaded(true); }
+        if (res.ok) { 
+            setAdminReviews(isAppend ? [...adminReviews, ...(data.reviews || [])] : (data.reviews || [])); 
+            setHasMoreReviews(data.hasMore);
+            setReviewOffset(currentOffset);
+            setReviewsLoaded(true); 
+        }
         setReviewsLoading(false);
+    }
+
+    async function loadUsers(isAppend = false) {
+        setUsersLoading(true);
+        const currentOffset = isAppend ? userOffset + LIMIT : 0;
+        const res = await fetch(`/api/admin/users?search=${encodeURIComponent(userSearch)}&limit=${LIMIT}&offset=${currentOffset}`);
+        const data = await res.json();
+        if (res.ok) {
+            setAdminUsers(isAppend ? [...adminUsers, ...(data.users || [])] : (data.users || []));
+            setHasMoreUsers(data.hasMore);
+            setUserOffset(currentOffset);
+            setUsersLoaded(true);
+        }
+        setUsersLoading(false);
     }
 
     async function handleReviewAdminAction(reviewId: string, action: "delete" | "hide" | "show") {
@@ -286,7 +314,11 @@ export default function AdminClient({
 
                 <div style={{ display: "flex", overflowX: "auto" }}>
                     {TABS.map((t) => (
-                        <button key={t} onClick={() => setTab(t)} style={{
+                        <button key={t} onClick={() => {
+                            setTab(t);
+                            if (t === "reviews" && !reviewsLoaded) loadReviews();
+                            if (t === "users" && !usersLoaded) loadUsers();
+                        }} style={{
                             fontFamily: "var(--font-mono)", fontSize: "11px",
                             letterSpacing: "0.08em", textTransform: "uppercase",
                             padding: "14px 20px",
@@ -584,84 +616,102 @@ export default function AdminClient({
                 {/* ── USERS ── */}
                 {tab === "users" && (
                     <div>
-                        <div style={sectionLabel}>{users.length} registered students</div>
-                        {users.slice(0, userLimit).map((u) => (
-                            <div key={u.id} style={{
-                                display: "grid",
-                                gridTemplateColumns: "40px 1fr auto auto auto",
-                                alignItems: "center", gap: "16px",
-                                padding: "16px 0", borderBottom: "1px solid #2a2725",
-                            }} className="user-row">
-                                <div style={{
-                                    width: "32px", height: "32px", borderRadius: "50%",
-                                    background: u.avatar_color || "#2a2725",
-                                    display: "flex", alignItems: "center", justifyContent: "center",
-                                    fontFamily: "var(--font-mono)", fontSize: "12px",
-                                    fontWeight: 700, color: u.avatar_color ? "#0f0f0f" : "#f5f2eb",
-                                }}>
-                                    {u.alias?.[0]?.toUpperCase() || "?"}
-                                </div>
-                                <div>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "24px", flexWrap: "wrap", gap: "16px" }}>
+                            <div style={sectionLabel}>Registered students</div>
+                            <form onSubmit={(e) => { e.preventDefault(); loadUsers(false); }} style={{ display: "flex", gap: "8px" }}>
+                                <input 
+                                    value={userSearch} 
+                                    onChange={e => setUserSearch(e.target.value)}
+                                    placeholder="Search email or alias..." 
+                                    style={inputStyle} 
+                                />
+                                <button type="submit" style={{ ...primaryBtn, padding: "10px 16px" }}>Search</button>
+                            </form>
+                        </div>
+                        {usersLoading && adminUsers.length === 0 ? (
+                            <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", opacity: 0.5 }}>Loading users...</div>
+                        ) : adminUsers.length === 0 ? (
+                            <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", opacity: 0.5 }}>No users found.</div>
+                        ) : (
+                            adminUsers.map((u) => (
+                                <div key={u.id} style={{
+                                    display: "grid",
+                                    gridTemplateColumns: "40px 1fr auto auto auto",
+                                    alignItems: "center", gap: "16px",
+                                    padding: "16px 0", borderBottom: "1px solid #2a2725",
+                                }} className="user-row">
                                     <div style={{
-                                        fontFamily: "var(--font-mono)", fontSize: "13px",
-                                        fontWeight: 500, marginBottom: "2px",
+                                        width: "32px", height: "32px", borderRadius: "50%",
+                                        background: u.avatar_color || "#2a2725",
+                                        display: "flex", alignItems: "center", justifyContent: "center",
+                                        fontFamily: "var(--font-mono)", fontSize: "12px",
+                                        fontWeight: 700, color: u.avatar_color ? "#0f0f0f" : "#f5f2eb",
                                     }}>
-                                        {u.alias}
+                                        {u.alias?.[0]?.toUpperCase() || "?"}
                                     </div>
-                                    <div style={{
-                                        fontFamily: "var(--font-mono)", fontSize: "11px", opacity: 0.4,
+                                    <div>
+                                        <div style={{
+                                            fontFamily: "var(--font-mono)", fontSize: "13px",
+                                            fontWeight: 500, marginBottom: "2px",
+                                        }}>
+                                            {u.alias}
+                                        </div>
+                                        <div style={{
+                                            fontFamily: "var(--font-mono)", fontSize: "11px", opacity: 0.4,
+                                        }}>
+                                            {u.email}
+                                        </div>
+                                    </div>
+                                    <span style={{
+                                        ...badge,
+                                        background: u.role === "admin" ? "#f5f2eb" : "#2a2725",
+                                        color: u.role === "admin" ? "#0f0f0f" : "#f5f2eb",
                                     }}>
-                                        {u.email}
+                                        {u.role}
+                                    </span>
+                                    <span style={{
+                                        ...badge,
+                                        background: u.is_banned ? "#e8622c" : "#2a2725",
+                                        color: u.is_banned ? "#0f0f0f" : "#f5f2eb",
+                                    }}>
+                                        {u.is_banned ? "Banned" : "Active"}
+                                    </span>
+                                    <div style={{ display: "flex", gap: "8px" }}>
+                                        <button
+                                            onClick={() => handleToggleBan(u.id, u.is_banned)}
+                                            disabled={saving === u.id || u.role === "admin"}
+                                            style={{
+                                                fontFamily: "var(--font-mono)", fontSize: "11px",
+                                                letterSpacing: "0.06em", textTransform: "uppercase",
+                                                padding: "7px 14px", background: "transparent",
+                                                color: u.is_banned ? "#1a4fd4" : "#e8622c",
+                                                border: `1px solid ${u.is_banned ? "#1a4fd4" : "#e8622c"}`,
+                                                cursor: u.role === "admin" ? "not-allowed" : "pointer",
+                                                opacity: u.role === "admin" ? 0.3 : 1,
+                                            }}>
+                                            {saving === u.id ? "…" : u.is_banned ? "Unban" : "Ban"}
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteUser(u.id, u.email)}
+                                            disabled={saving === u.id || u.role === "admin"}
+                                            style={{
+                                                fontFamily: "var(--font-mono)", fontSize: "11px",
+                                                letterSpacing: "0.06em", textTransform: "uppercase",
+                                                padding: "7px 14px", background: "transparent",
+                                                color: "#f87171", border: "1px solid rgba(248,113,113,0.4)",
+                                                cursor: u.role === "admin" ? "not-allowed" : "pointer",
+                                                opacity: u.role === "admin" ? 0.3 : 1,
+                                            }}>
+                                            Remove
+                                        </button>
                                     </div>
                                 </div>
-                                <span style={{
-                                    ...badge,
-                                    background: u.role === "admin" ? "#f5f2eb" : "#2a2725",
-                                    color: u.role === "admin" ? "#0f0f0f" : "#f5f2eb",
-                                }}>
-                                    {u.role}
-                                </span>
-                                <span style={{
-                                    ...badge,
-                                    background: u.is_banned ? "#e8622c" : "#2a2725",
-                                    color: u.is_banned ? "#0f0f0f" : "#f5f2eb",
-                                }}>
-                                    {u.is_banned ? "Banned" : "Active"}
-                                </span>
-                                <div style={{ display: "flex", gap: "8px" }}>
-                                    <button
-                                        onClick={() => handleToggleBan(u.id, u.is_banned)}
-                                        disabled={saving === u.id || u.role === "admin"}
-                                        style={{
-                                            fontFamily: "var(--font-mono)", fontSize: "11px",
-                                            letterSpacing: "0.06em", textTransform: "uppercase",
-                                            padding: "7px 14px", background: "transparent",
-                                            color: u.is_banned ? "#1a4fd4" : "#e8622c",
-                                            border: `1px solid ${u.is_banned ? "#1a4fd4" : "#e8622c"}`,
-                                            cursor: u.role === "admin" ? "not-allowed" : "pointer",
-                                            opacity: u.role === "admin" ? 0.3 : 1,
-                                        }}>
-                                        {saving === u.id ? "…" : u.is_banned ? "Unban" : "Ban"}
-                                    </button>
-                                    <button
-                                        onClick={() => handleDeleteUser(u.id, u.email)}
-                                        disabled={saving === u.id || u.role === "admin"}
-                                        style={{
-                                            fontFamily: "var(--font-mono)", fontSize: "11px",
-                                            letterSpacing: "0.06em", textTransform: "uppercase",
-                                            padding: "7px 14px", background: "transparent",
-                                            color: "#f87171", border: "1px solid rgba(248,113,113,0.4)",
-                                            cursor: u.role === "admin" ? "not-allowed" : "pointer",
-                                            opacity: u.role === "admin" ? 0.3 : 1,
-                                        }}>
-                                        Remove
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                        {users.length > userLimit && (
+                            ))
+                        )}
+                        {hasMoreUsers && (
                             <button
-                                onClick={() => setUserLimit(p => p + 50)}
+                                onClick={() => loadUsers(true)}
+                                disabled={usersLoading}
                                 style={{
                                     width: "100%", marginTop: "24px", padding: "14px",
                                     background: "transparent", border: "1.5px solid #2a2725",
@@ -669,7 +719,7 @@ export default function AdminClient({
                                     fontSize: "12px", letterSpacing: "0.06em",
                                     textTransform: "uppercase", cursor: "pointer",
                                 }}>
-                                See more ({users.length - userLimit} left)
+                                {usersLoading ? "Loading..." : "See more"}
                             </button>
                         )}
                     </div>
@@ -1008,37 +1058,32 @@ export default function AdminClient({
                                 <p style={{ fontFamily: "var(--font-mono)", fontSize: "13px", opacity: 0.5, marginBottom: "20px" }}>
                                     Load all reviews to search, hide, or delete them.
                                 </p>
-                                <button onClick={loadReviews} disabled={reviewsLoading} style={primaryBtn}>
+                                <button onClick={() => loadReviews(false)} disabled={reviewsLoading} style={primaryBtn}>
                                     {reviewsLoading ? "Loading…" : "Load reviews →"}
                                 </button>
                             </div>
                         ) : (
                             <div>
-                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
-                                    <div style={sectionLabel}>{adminReviews.length} reviews total</div>
-                                    <input
-                                        value={reviewFilter}
-                                        onChange={(e) => setReviewFilter(e.target.value)}
-                                        placeholder="Filter by faculty name, student alias…"
-                                        style={{ ...inputStyle, maxWidth: "360px" }}
-                                    />
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "24px", flexWrap: "wrap", gap: "12px" }}>
+                                    <div style={sectionLabel}>Review Management</div>
+                                    <form onSubmit={(e) => { e.preventDefault(); loadReviews(false); }} style={{ display: "flex", gap: "8px" }}>
+                                        <input
+                                            value={reviewSearch}
+                                            onChange={(e) => setReviewSearch(e.target.value)}
+                                            placeholder="Search faculty or student..."
+                                            style={{ ...inputStyle, maxWidth: "360px" }}
+                                        />
+                                        <button type="submit" style={{ ...primaryBtn, padding: "10px 16px" }}>Search</button>
+                                    </form>
                                 </div>
                                 <div style={{ maxHeight: "700px", overflowY: "auto" }}>
-                                    {(() => {
-                                        const filtered = adminReviews.filter((r) => {
-                                            if (!reviewFilter.trim()) return true;
-                                            const q = reviewFilter.toLowerCase();
-                                            return (
-                                                r.faculty?.name?.toLowerCase().includes(q) ||
-                                                r.user?.alias?.toLowerCase().includes(q) ||
-                                                r.user?.email?.toLowerCase().includes(q)
-                                            );
-                                        });
-                                        const visible = filtered.slice(0, reviewLimit);
-
-                                        return (
-                                            <>
-                                                {visible.map((r) => (
+                                    {reviewsLoading && adminReviews.length === 0 ? (
+                                        <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", opacity: 0.5 }}>Loading reviews...</div>
+                                    ) : adminReviews.length === 0 ? (
+                                        <div style={{ fontFamily: "var(--font-mono)", fontSize: "12px", opacity: 0.5 }}>No reviews found.</div>
+                                    ) : (
+                                        <>
+                                            {adminReviews.map((r) => (
                                                     <div key={r.id} style={{
                                                         padding: "20px", border: "1.5px solid #2a2725",
                                                         marginBottom: "12px",
@@ -1113,25 +1158,25 @@ export default function AdminClient({
                                                         )}
                                                     </div>
                                                 ))}
-                                                {filtered.length > reviewLimit && (
+                                                {hasMoreReviews && (
                                                     <button
-                                                        onClick={() => setReviewLimit(p => p + 50)}
+                                                        onClick={() => loadReviews(true)}
+                                                        disabled={reviewsLoading}
                                                         style={{
-                                                            width: "100%", marginTop: "12px", padding: "14px",
+                                                            width: "100%", marginTop: "24px", padding: "14px",
                                                             background: "transparent", border: "1.5px solid #2a2725",
                                                             color: "#f5f2eb", fontFamily: "var(--font-mono)",
                                                             fontSize: "12px", letterSpacing: "0.06em",
                                                             textTransform: "uppercase", cursor: "pointer",
                                                         }}>
-                                                        See more ({filtered.length - reviewLimit} left)
+                                                        {reviewsLoading ? "Loading..." : "See more"}
                                                     </button>
                                                 )}
                                             </>
-                                        );
-                                    })()}
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
                     </div>
                 )}
 
@@ -1649,7 +1694,7 @@ function ReviewImporter({ faculty }: { faculty: any[] }) {
           fontFamily: "var(--font-mono)", fontSize: "11px",
           opacity: 0.35, marginTop: "10px", lineHeight: 1.6,
         }}>
-          For "Recommended?" use <strong style={{ opacity: 0.8 }}>Yes</strong> or <strong style={{ opacity: 0.8 }}>Drop</strong>.
+          For &quot;Recommended?&quot; use <strong style={{ opacity: 0.8 }}>Yes</strong> or <strong style={{ opacity: 0.8 }}>Drop</strong>.
           Other MCQ questions use Yes/No.
         </div>
       </div>

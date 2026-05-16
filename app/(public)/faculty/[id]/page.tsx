@@ -73,7 +73,7 @@ export default async function FacultyProfilePage({
                         fontWeight: 800, letterSpacing: "-0.03em",
                         lineHeight: 1, marginBottom: "12px",
                     }}>
-                        {faculty.name}
+                        {faculty.initial || faculty.name}
                     </h1>
 
                     <div style={{
@@ -90,11 +90,11 @@ export default async function FacultyProfilePage({
                         {faculty.initial && (
                             <span style={{
                                 fontFamily: "var(--font-mono)", fontSize: "12px",
-                                letterSpacing: "0.08em", textTransform: "uppercase",
-                                background: "#e8622c", color: "#f5f2eb",
+                                letterSpacing: "normal", textTransform: "none",
+                                background: "#2a2725", color: "#f5f2eb",
                                 padding: "4px 10px",
                             }}>
-                                {faculty.initial}
+                                {faculty.name}
                             </span>
                         )}
                         <span style={{
@@ -285,4 +285,4 @@ function ctaButtonStyle(bg: string, color: string): React.CSSProperties {
         border: `1.5px solid ${bg}`, textDecoration: "none",
         display: "inline-block", whiteSpace: "nowrap",
     };
-}
+}

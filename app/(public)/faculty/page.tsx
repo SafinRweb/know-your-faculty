@@ -202,27 +202,29 @@ export default async function FacultyDirectoryPage({
                   {String(i + 1).padStart(2, "0")}
                 </div>
 
-                <div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
                   <div style={{
                     fontFamily: "var(--font-sans)", fontSize: "18px",
-                    fontWeight: 700, letterSpacing: "-0.02em", marginBottom: "4px",
+                    fontWeight: 700, letterSpacing: "-0.02em",
                   }}>
-                    {f.name}
+                    {f.initial || f.name}
                   </div>
+                  {f.initial && (
+                    <div style={{
+                      fontFamily: "var(--font-mono)", fontSize: "11px",
+                      opacity: 0.8, color: "#e8622c",
+                      background: "#2a2725", padding: "2px 7px",
+                      alignSelf: "flex-start"
+                    }}>
+                      {f.name}
+                    </div>
+                  )}
                   <div style={{
                     fontFamily: "var(--font-mono)", fontSize: "11px",
                     letterSpacing: "0.08em", textTransform: "uppercase",
-                    opacity: 0.4, display: "flex", alignItems: "center", gap: "8px",
+                    opacity: 0.4,
                   }}>
                     {f.department}
-                    {f.initial && (
-                      <span style={{
-                        background: "#e8622c", color: "#f5f2eb",
-                        padding: "2px 7px", fontSize: "10px",
-                      }}>
-                        {f.initial}
-                      </span>
-                    )}
                   </div>
                 </div>
 
@@ -235,11 +237,10 @@ export default async function FacultyDirectoryPage({
                 </div>
 
                 <div style={{
-                  fontFamily: "var(--font-mono)", fontSize: "12px",
-                  letterSpacing: "0.06em", textTransform: "uppercase",
+                  fontFamily: "var(--font-mono)", fontSize: "15px",
                   opacity: 0.4, whiteSpace: "nowrap",
                 }}>
-                  View →
+                  →
                 </div>
               </Link>
             ))}
@@ -254,6 +255,7 @@ export default async function FacultyDirectoryPage({
           .faculty-header { grid-template-columns: 1fr !important; }
           .faculty-row { grid-template-columns: 40px 1fr auto !important; }
           .faculty-row > div:nth-child(3) { display: none; }
+          .faculty-meta { flex-wrap: wrap; align-items: flex-start !important; gap: 6px !important; margin-top: 4px; }
         }
       `}</style>
     </div>

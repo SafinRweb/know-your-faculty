@@ -237,7 +237,7 @@ export default async function HomePage() {
 
         <div>
           {preview.map((f, i) => (
-            <Link key={f.id} href={`/faculty/${f.id}`} style={{
+            <Link key={f.id} href={`/faculty/${f.id}`} className="faculty-preview-row" style={{
               display: "grid", gridTemplateColumns: "48px 1fr auto",
               alignItems: "center", gap: "24px", padding: "22px 0",
               borderBottom: i === preview.length - 1 ? "1.5px solid #f5f2eb" : "1px solid #2a2725",
@@ -247,12 +247,26 @@ export default async function HomePage() {
               <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", opacity: 0.3 }}>
                 {String(i + 1).padStart(2, "0")}
               </div>
-              <div>
-                <div style={{ fontFamily: "var(--font-sans)", fontSize: "17px", fontWeight: 700, letterSpacing: "-0.01em" }}>{f.name}</div>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", letterSpacing: "0.06em", textTransform: "uppercase", opacity: 0.4, marginTop: "4px" }}>{f.department}</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+                <div style={{ fontFamily: "var(--font-sans)", fontSize: "17px", fontWeight: 700, letterSpacing: "-0.01em" }}>
+                  {f.initial || f.name}
+                </div>
+                {f.initial && (
+                  <div style={{
+                    fontFamily: "var(--font-mono)", fontSize: "11px",
+                    opacity: 0.8, color: "#e8622c",
+                    background: "#2a2725", padding: "2px 7px",
+                    alignSelf: "flex-start"
+                  }}>
+                    {f.name}
+                  </div>
+                )}
+                <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", letterSpacing: "0.06em", textTransform: "uppercase", opacity: 0.4 }}>
+                  {f.department}
+                </div>
               </div>
-              <div style={{ fontFamily: "var(--font-mono)", fontSize: "11px", opacity: 0.4, letterSpacing: "0.04em" }}>
-                View profile →
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: "15px", opacity: 0.4 }}>
+                →
               </div>
             </Link>
           ))}
@@ -308,6 +322,9 @@ export default async function HomePage() {
           .feature-card { border-right: none !important; border-bottom: 1.5px solid #f5f2eb !important; }
           .feature-card:last-child { border-bottom: none !important; }
           .cta-band { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 768px) {
+          .faculty-preview-row { grid-template-columns: 32px 1fr auto !important; gap: 16px !important; }
         }
       `}</style>
     </>

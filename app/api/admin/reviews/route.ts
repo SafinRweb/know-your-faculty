@@ -12,29 +12,45 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const facultyId = searchParams.get("facultyId");
+    const search = searchParams.get("search")?.trim() || "";
+    const limit = parseInt(searchParams.get("limit") || "50", 10);
+    const offset = parseInt(searchParams.get("offset") || "0", 10);
 
+    // Notice we filter faculty separately since Supabase .or() with nested tables can be tricky.
+    // Instead we do a simpler approach: if searching, we try to match faculty name or user alias via join.
     let query = supabase
         .from("reviews")
         .select(`
             *,
-            user:users(alias, email),
-            faculty:faculty(name, department),
+            user:users!inner(alias, email),
+            faculty:faculty!inner(name, department),
             semester:semesters(label),
             answers:review_answers(
                 *,
                 question:review_questions(question_text, type)
             )
-        `)
-        .order("created_at", { ascending: false })
-        .limit(200);
+        `, { count: "exact" })
+        .order("created_at", { ascending: false });
 
     if (facultyId) {
         query = query.eq("faculty_id", facultyId);
     }
 
-    const { data, error } = await query;
+    if (search) {
+        // Search by faculty name or user alias/email
+        query = query.or(`faculty.name.ilike.%${search}%,user.alias.ilike.%${search}%,user.email.ilike.%${search}%`);
+    }
+
+    query = query.range(offset, offset + limit - 1);
+
+    const { data, error, count } = await query;
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-    return NextResponse.json({ reviews: data });
+    
+    return NextResponse.json({ 
+        reviews: data,
+        hasMore: count !== null ? (offset + limit < count) : false,
+        total: count
+    });
 }
 
 // POST — admin actions on reviews (delete, toggle visibility)

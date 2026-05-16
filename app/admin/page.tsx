@@ -4,7 +4,6 @@ import {
     getAdminStats,
     getPendingReports,
     getAllFacultyAdmin,
-    getAllUsers,
     getAdminAccounts,
     getDepartments,
     getContributorsAdmin,
@@ -19,11 +18,10 @@ export default async function AdminPage() {
 
     if (!session || user?.role !== "admin") redirect("/admin/login");
 
-    const [stats, reports, faculty, users, adminAccounts, departments, semesters, contributors, siteConfig] = await Promise.all([
+    const [stats, reports, faculty, adminAccounts, departments, semesters, contributors, siteConfig] = await Promise.all([
         getAdminStats(),
         getPendingReports(),
         getAllFacultyAdmin(),
-        getAllUsers(),
         getAdminAccounts(),
         getDepartments(),
         getAllSemesters(),
@@ -37,7 +35,7 @@ export default async function AdminPage() {
                 stats={stats}
                 reports={reports}
                 faculty={faculty}
-                users={users}
+                users={[]}
                 adminAccounts={adminAccounts}
                 departments={departments}
                 semesters={semesters}
