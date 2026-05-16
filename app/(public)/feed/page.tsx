@@ -11,7 +11,7 @@ export default async function FeedPage() {
     const user = session?.user as any;
 
     return (
-        <div style={{ paddingTop: "57px", overflowX: "hidden", width: "100%" }}>
+        <div style={{ paddingTop: "57px", width: "100%" }}>
             <div style={{
                 alignItems: "start", minHeight: "calc(100svh - 57px)",
             }} className="feed-layout">
