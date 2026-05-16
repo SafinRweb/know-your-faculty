@@ -279,6 +279,17 @@ export async function POST(req: NextRequest) {
                 continue;
             }
 
+            // Update faculty name if it's missing or just an initial and the CSV has the full name
+            if (facultyName && matchedFaculty.name !== facultyName) {
+                const { error: updateErr } = await supabase
+                    .from("faculty")
+                    .update({ name: facultyName })
+                    .eq("id", matchedFaculty.id);
+                if (!updateErr) {
+                    matchedFaculty.name = facultyName;
+                }
+            }
+
             // Create a unique anonymous user for this review
             const anonUserId = await createAnonymousUser();
 

@@ -12,9 +12,9 @@ interface Props {
 }
 
 const COLORS: Record<string, string> = {
-  "Yes":           "#34d399",
-  "No":            "#f87171",
-  "Drop":          "#ef4444",
+  "Yes": "#34d399",
+  "No": "#f87171",
+  "Drop": "#ef4444",
 };
 
 const FALLBACK_COLORS = [

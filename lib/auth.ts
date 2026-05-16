@@ -6,6 +6,7 @@ import { supabaseAdmin as supabase } from "./supabase";
 export const { handlers, signIn, signOut, auth } = NextAuth({
     secret: process.env.NEXTAUTH_SECRET,
     trustHost: true,
+    basePath: "/api/auth",
 
     providers: [
         // ── STUDENT: Google OAuth (EWU only) ──

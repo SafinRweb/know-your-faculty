@@ -19,20 +19,17 @@ export default async function FacultyProfilePage({
         searchParams,
     ]);
 
-    const [faculty, semesters, session] = await Promise.all([
+    const [faculty, session] = await Promise.all([
         getFacultyById(resolvedParams.id),
-        getAllSemesters(),
         auth(),
     ]);
 
     if (!faculty) notFound();
 
-    const selectedSemesterId = resolvedSearch.semester || undefined;
-
     const [analytics, reviews, sections, reviewCount, userReview] =
         await Promise.all([
-            getFacultyAnalytics(faculty.id, selectedSemesterId),
-            getFacultyReviews(faculty.id, selectedSemesterId),
+            getFacultyAnalytics(faculty.id, undefined),
+            getFacultyReviews(faculty.id, undefined),
             getFacultySections(faculty.id),
             getFacultyReviewCount(faculty.id),
             session?.user
@@ -130,42 +127,6 @@ export default async function FacultyProfilePage({
                 </div>
             </div>
 
-            {/* SEMESTER TABS */}
-            {semesters.length > 0 && (
-                <div style={{
-                    display: "flex", gap: "0",
-                    borderBottom: "1.5px solid #f5f2eb",
-                    overflowX: "auto", padding: "0 32px",
-                }}>
-                    <Link
-                        href={`/faculty/${faculty.id}`}
-                        style={{
-                            ...tabStyle,
-                            background: !selectedSemesterId ? "#f5f2eb" : "transparent",
-                            color: !selectedSemesterId ? "#0f0f0f" : "#f5f2eb",
-                        }}>
-                        All time
-                    </Link>
-                    {semesters.map((s) => (
-                        <Link
-                            key={s.id}
-                            href={`/faculty/${faculty.id}?semester=${s.id}`}
-                            style={{
-                                ...tabStyle,
-                                background: selectedSemesterId === s.id ? "#f5f2eb" : "transparent",
-                                color: selectedSemesterId === s.id ? "#0f0f0f" : "#f5f2eb",
-                            }}>
-                            {s.label}
-                            {s.is_active && (
-                                <span style={{
-                                    width: "5px", height: "5px", borderRadius: "50%",
-                                    background: "#1a4fd4", display: "inline-block", marginLeft: "6px",
-                                }} />
-                            )}
-                        </Link>
-                    ))}
-                </div>
-            )}
 
             <div style={{
                 display: "grid", gridTemplateColumns: "1fr 320px",
@@ -240,6 +201,9 @@ export default async function FacultyProfilePage({
                                     const textAnswer = review.answers?.find(
                                         (a: any) => a.question?.type === "text" && a.answer_value?.trim()
                                     );
+                                    const courseAnswer = review.answers?.find(
+                                        (a: any) => a.question?.question_text === "Which course did you take with this faculty?" && a.answer_value?.trim()
+                                    );
                                     if (!textAnswer) return null;
                                     return (
                                         <div key={review.id} style={{
@@ -275,6 +239,7 @@ export default async function FacultyProfilePage({
                                                         {new Date(review.created_at).toLocaleDateString("en-GB", {
                                                             month: "short", year: "numeric",
                                                         })}
+                                                        {courseAnswer ? ` · ${courseAnswer.answer_value}` : ""}
                                                     </div>
                                                 </div>
                                             </div>
@@ -389,13 +354,4 @@ function ctaButtonStyle(bg: string, color: string): React.CSSProperties {
         border: `1.5px solid ${bg}`, textDecoration: "none",
         display: "inline-block", whiteSpace: "nowrap",
     };
-}
-
-const tabStyle: React.CSSProperties = {
-    fontFamily: "var(--font-mono)", fontSize: "11px",
-    letterSpacing: "0.08em", textTransform: "uppercase",
-    padding: "14px 20px", textDecoration: "none",
-    borderRight: "1px solid #2a2725", whiteSpace: "nowrap",
-    display: "flex", alignItems: "center",
-    transition: "background 0.12s",
-};
+}
